@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { House, Package, ClipboardText, Users } from 'phosphor-react';
 
 const links = [
-  { to: '/', icon: House, label: 'Início' },
+  { to: '/dashboard', icon: House, label: 'Início' },
   { to: '/produtos', icon: Package, label: 'Produtos' },
   { to: '/pedidos', icon: ClipboardText, label: 'Pedidos' },
   { to: '/clientes', icon: Users, label: 'Clientes' }
@@ -15,7 +15,7 @@ export default function MobileBottomNav() {
         <NavLink
           key={to}
           to={to}
-          end={to === '/'}
+          end={to === '/dashboard'}
           className={({ isActive }) =>
             `flex flex-col items-center text-xs font-semibold ${isActive ? 'text-primaria' : 'text-texto'}`
           }
