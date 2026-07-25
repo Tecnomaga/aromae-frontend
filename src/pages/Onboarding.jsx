@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { Storefront, Sparkle, ShareNetwork, ArrowRight, Upload, CheckCircle } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import { onboardingSchema } from '../schemas';
+import toast from 'react-hot-toast';
 
 const slides = [
   {
@@ -34,23 +38,23 @@ function gerarSlug(texto) {
 }
 
 export default function Onboarding() {
-  const [passo, setPasso] = useState(0); // 0,1,2 = slides, 3 = formulário
-  const [nomeLoja, setNomeLoja] = useState('');
-  const [slug, setSlug] = useState('');
-  const [slugEditadoManualmente, setSlugEditadoManualmente] = useState(false);
+  const [passo, setPasso] = useState(0);
   const [fotoPerfil, setFotoPerfil] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
-  const [erro, setErro] = useState('');
-  const [carregando, setCarregando] = useState(false);
   const { atualizarUsuario } = useAuth();
   const navigate = useNavigate();
 
-  const totalSlides = slides.length;
-  const naFormulario = passo === totalSlides;
+  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(onboardingSchema),
+    defaultValues: { nomeLoja: '', slug: '' }
+  });
 
-  const handleNomeLoja = (valor) => {
-    setNomeLoja(valor);
-    if (!slugEditadoManualmente) setSlug(gerarSlug(valor));
+  const nomeLoja = watch('nomeLoja');
+
+  const handleNomeLoja = (e) => {
+    const valor = e.target.value;
+    setValue('nomeLoja', valor);
+    setValue('slug', gerarSlug(valor));
   };
 
   const handleFoto = (e) => {
@@ -61,28 +65,32 @@ export default function Onboarding() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!nomeLoja || !slug) {
-      setErro('Preencha o nome da loja e o link personalizado.');
-      return;
-    }
-    setErro('');
-    setCarregando(true);
+  const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-      formData.append('nomeLoja', nomeLoja);
-      formData.append('slug', slug);
+      formData.append('nomeLoja', data.nomeLoja);
+      formData.append('slug', data.slug);
       if (fotoPerfil) formData.append('foto', fotoPerfil);
-      const { data } = await api.put('/auth/loja', formData);
-      atualizarUsuario(data);
+
+      await toast.promise(
+        api.put('/auth/loja', formData),
+        {
+          loading: 'Salvando sua loja...',
+          success: 'Vitrine criada com sucesso!',
+          error: 'Erro ao criar a loja.'
+        }
+      );
+
+      const { data: usuario } = await api.get('/auth/me');
+      atualizarUsuario(usuario);
       navigate('/');
     } catch (err) {
-      setErro('Não foi possível salvar agora. Confira sua conexão com o servidor e tente novamente.');
-    } finally {
-      setCarregando(false);
+      toast.error('Não foi possível salvar agora. Confira sua conexão.');
     }
   };
+
+  const totalSlides = slides.length;
+  const naFormulario = passo === totalSlides;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -132,9 +140,7 @@ export default function Onboarding() {
             <h1 className="font-titulo text-2xl text-primaria mb-1">Quase lá!</h1>
             <p className="text-texto/70 mb-6">Vamos dar identidade à sua vitrine.</p>
 
-            {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="text-center">
                 <div className="w-20 h-20 mx-auto rounded-full bg-primaria/10 flex items-center justify-center overflow-hidden mb-2">
                   {previewFoto ? (
@@ -153,35 +159,31 @@ export default function Onboarding() {
                 <label className="block text-sm font-semibold mb-1">Nome da sua loja *</label>
                 <input
                   type="text"
-                  value={nomeLoja}
-                  onChange={(e) => handleNomeLoja(e.target.value)}
+                  {...register('nomeLoja')}
+                  onChange={handleNomeLoja}
                   placeholder="Ex.: Flores Perfumadas"
-                  required
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
                 />
+                {errors.nomeLoja && <p className="text-red-500 text-xs mt-1">{errors.nomeLoja.message}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-1">Link personalizado *</label>
                 <input
                   type="text"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlugEditadoManualmente(true);
-                    setSlug(gerarSlug(e.target.value));
-                  }}
-                  required
+                  {...register('slug')}
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
                 />
-                <p className="text-xs text-texto/50 mt-1">Sua vitrine: aromae.app/loja/{slug || 'sua-loja'}</p>
+                {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
+                <p className="text-xs text-texto/50 mt-1">Sua vitrine: aromae.app/loja/{watch('slug') || 'sua-loja'}</p>
               </div>
 
               <button
                 type="submit"
-                disabled={carregando}
+                disabled={isSubmitting}
                 className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <CheckCircle size={20} /> {carregando ? 'Salvando...' : 'Concluir e entrar na loja'}
+                <CheckCircle size={20} /> {isSubmitting ? 'Salvando...' : 'Concluir e entrar na loja'}
               </button>
             </form>
           </div>
