@@ -10,6 +10,7 @@ export default function CatalogoPublico() {
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const [whatsAppModal, setWhatsAppModal] = useState(null);
 
   useEffect(() => {
     api.get(`/catalogo/${slug}`)
@@ -94,12 +95,12 @@ export default function CatalogoPublico() {
                   <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
                   <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
                   <p className="text-primaria font-bold text-lg mt-2">R$ {produto.preco?.toFixed(2)}</p>
-                  <a
-                    href={gerarMensagemWhatsApp(produto)} target="_blank" rel="noopener noreferrer"
+                  <button
+                    onClick={() => setWhatsAppModal(produto)}
                     className="mt-3 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"
                   >
                     <WhatsappLogo size={18} weight="fill" /> Pedir via WhatsApp
-                  </a>
+                  </button>
                 </div>
               </div>
             ))}
@@ -125,6 +126,31 @@ export default function CatalogoPublico() {
           <span className="text-xs">Instagram</span>
         </button>
       </footer>
+
+      {/* Modal de confirmação WhatsApp */}
+      {whatsAppModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full animate-pop">
+            <h3 className="font-titulo text-xl text-primaria mb-2">Confirmar pedido</h3>
+            <p className="text-sm text-texto/70 mb-4">
+              Você será direcionado ao WhatsApp para pedir <strong>{whatsAppModal.nome}</strong>.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setWhatsAppModal(null)} className="flex-1 py-2 border border-gray-200 rounded-lg font-semibold text-texto hover:bg-gray-50">
+                Cancelar
+              </button>
+              <a
+                href={gerarMensagemWhatsApp(whatsAppModal)}
+                target="_blank" rel="noopener noreferrer"
+                onClick={() => setWhatsAppModal(null)}
+                className="flex-1 py-2 bg-green-500 text-white rounded-lg font-semibold text-center hover:bg-green-600 transition"
+              >
+                Ir para WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
