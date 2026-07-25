@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, MagnifyingGlass, Funnel, Package, Warning, Pencil, Trash, ArrowDown } from 'phosphor-react';
 import api from '../services/api';
 import StockModal from '../components/StockModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -10,6 +11,7 @@ export default function Produtos() {
   const [filtro, setFiltro] = useState('todos');
   const [loading, setLoading] = useState(true);
   const [estoqueModal, setEstoqueModal] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const carregarProdutos = async () => {
     try {
@@ -36,14 +38,11 @@ export default function Produtos() {
     p.marca.toLowerCase().includes(busca.toLowerCase())
   );
 
-  const handleExcluir = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir este produto?')) return;
-    try {
-      await api.delete(`/produtos/${id}`);
-      setProdutos(produtos.filter((p) => p._id !== id));
-    } catch (err) {
-      alert('Erro ao excluir produto.');
-    }
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    await api.delete(`/produtos/${deleteTarget}`);
+    setProdutos(produtos.filter((p) => p._id !== deleteTarget));
+    setDeleteTarget(null);
   };
 
   const handleBaixaEstoque = (produto) => setEstoqueModal({ ...produto, acao: 'baixa' });
@@ -139,7 +138,7 @@ export default function Produtos() {
                   <Pencil size={16} /> Editar
                 </Link>
                 <button
-                  onClick={() => handleExcluir(produto._id)}
+                  onClick={() => setDeleteTarget(produto._id)}
                   className="flex-1 flex items-center justify-center gap-1 bg-red-50 hover:bg-red-100 text-red-500 py-1.5 rounded text-sm"
                 >
                   <Trash size={16} /> Excluir
@@ -157,6 +156,15 @@ export default function Produtos() {
           onUpdate={carregarProdutos}
         />
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Excluir Produto"
+        message="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+      />
     </div>
   );
 }
