@@ -29,7 +29,7 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 py-20 md:py-28 text-center">
         <div className="inline-block bg-primaria/10 text-primaria px-4 py-1 rounded-full text-sm font-semibold mb-6">
-          ⚡ Lançamento: 7 dias grátis
+          ⚡ Lançamento: 3 dias grátis {/* <--- ALTERADO DE 7 PARA 3 */}
         </div>
         <h2 className="font-titulo text-4xl md:text-6xl text-texto leading-tight mb-4">
           Sua vitrine de perfumes <br />
@@ -130,7 +130,7 @@ export default function Landing() {
       {/* Pricing */}
       <section id="planos" className="max-w-7xl mx-auto px-4 py-16 md:py-24">
         <h3 className="font-titulo text-3xl text-center text-primaria mb-4">Escolha o plano ideal</h3>
-        <p className="text-center text-texto/70 mb-12">Teste grátis por 7 dias. Sem compromisso.</p>
+        <p className="text-center text-texto/70 mb-12">Teste grátis por 3 dias. Sem compromisso. {/* <--- ALTERADO DE 7 PARA 3 */}</p>
         <div className="flex flex-col md:flex-row gap-8 justify-center">
           {/* Mensal */}
           <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-gray-100 flex-1 max-w-sm">
@@ -177,7 +177,7 @@ export default function Landing() {
             </details>
             <details className="bg-white p-4 rounded-lg shadow-sm">
               <summary className="font-semibold cursor-pointer">Como funciona o período de teste?</summary>
-              <p className="mt-2 text-sm text-texto/70">Você tem 7 dias grátis para testar todos os recursos. Depois, escolhe um plano para continuar.</p>
+              <p className="mt-2 text-sm text-texto/70">Você tem 3 dias grátis para testar todos os recursos. Depois, escolhe um plano para continuar.</p>
             </details>
             <details className="bg-white p-4 rounded-lg shadow-sm">
               <summary className="font-semibold cursor-pointer">Posso cancelar quando quiser?</summary>
