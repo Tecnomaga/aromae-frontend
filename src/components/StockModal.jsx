@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { X, ArrowDown, Clock } from 'phosphor-react';
+import toast from 'react-hot-toast';
 import api from '../services/api';
 
 export default function StockModal({ produto, onClose, onUpdate }) {
@@ -19,11 +20,18 @@ export default function StockModal({ produto, onClose, onUpdate }) {
   const handleBaixa = async () => {
     if (quantidade < 1) return;
     try {
-      await api.post(`/produtos/${produto._id}/baixa`, { quantidade, motivo });
+      await toast.promise(
+        api.post(`/produtos/${produto._id}/baixa`, { quantidade, motivo }),
+        {
+          loading: 'Registrando baixa...',
+          success: 'Baixa realizada com sucesso!',
+          error: 'Erro ao dar baixa no estoque.'
+        }
+      );
       onUpdate();
       onClose();
     } catch (err) {
-      alert('Erro ao dar baixa no estoque.');
+      // erro já tratado pelo toast.promise
     }
   };
 
