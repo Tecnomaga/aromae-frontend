@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Pencil, Storefront, Link as LinkIcon, WhatsappLogo, InstagramLogo } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function Perfil() {
   const { logout } = useAuth();
@@ -21,8 +22,9 @@ export default function Perfil() {
     try {
       await api.patch('/auth/toggle-loja');
       setLoja({ ...loja, ativo: !loja.ativo });
+      toast.success('Status da loja alterado com sucesso!');
     } catch (err) {
-      alert('Erro ao alterar status da loja.');
+      toast.error('Erro ao alterar status da loja.');
     }
   };
 
@@ -32,7 +34,7 @@ export default function Perfil() {
       navigator.share({ title: loja?.nomeLoja, url });
     } else {
       navigator.clipboard.writeText(url);
-      alert('Link copiado!');
+      toast.success('Link copiado para a área de transferência!');
     }
   };
 
@@ -98,7 +100,7 @@ export default function Perfil() {
           </div>
         </div>
 
-        <button onClick={logout} className="mt-6 text-sm text-red-500 font-semibold hover:underline">
+        <button onClick={() => { logout(); toast.success('Até logo!'); }} className="mt-6 text-sm text-red-500 font-semibold hover:underline">
           Sair da conta
         </button>
       </div>
