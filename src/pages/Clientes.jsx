@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, MagnifyingGlass, Users, Pencil, Trash, Phone, MapPin } from 'phosphor-react';
 import api from '../services/api';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
   const [busca, setBusca] = useState('');
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     api.get('/clientes')
@@ -19,14 +21,11 @@ export default function Clientes() {
     c.nome.toLowerCase().includes(busca.toLowerCase()) || c.telefone.includes(busca)
   );
 
-  const handleExcluir = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir este cliente?')) return;
-    try {
-      await api.delete(`/clientes/${id}`);
-      setClientes(clientes.filter((c) => c._id !== id));
-    } catch (err) {
-      alert('Erro ao excluir cliente.');
-    }
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    await api.delete(`/clientes/${deleteTarget}`);
+    setClientes(clientes.filter((c) => c._id !== deleteTarget));
+    setDeleteTarget(null);
   };
 
   if (loading) return <p className="text-center py-10">Carregando clientes...</p>;
@@ -88,7 +87,7 @@ export default function Clientes() {
                   <Pencil size={16} /> Editar
                 </Link>
                 <button
-                  onClick={() => handleExcluir(cliente._id)}
+                  onClick={() => setDeleteTarget(cliente._id)}
                   className="flex-1 flex items-center justify-center gap-1 bg-red-50 hover:bg-red-100 text-red-500 py-1.5 rounded text-sm"
                 >
                   <Trash size={16} /> Excluir
@@ -98,6 +97,15 @@ export default function Clientes() {
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Excluir Cliente"
+        message={`Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+      />
     </div>
   );
 }
