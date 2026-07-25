@@ -15,7 +15,7 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       await login(data.email, data.senha);
-      navigate('/');
+      navigate('/dashboard'); // <--- Redireciona para o Dashboard
     } catch (err) {
       setError('root', { message: 'E-mail ou senha inválidos.' });
     }
