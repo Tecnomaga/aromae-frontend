@@ -4,7 +4,7 @@ import {
   Package, 
   Users, 
   ClipboardText, 
-  WhatsAppLogo, 
+  WhatsappLogo, 
   Sparkle, 
   ChartBar, 
   ShieldCheck, 
@@ -68,7 +68,7 @@ export default function Landing() {
           </div>
           <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition">
             <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mb-4">
-              <WhatsAppLogo size={24} className="text-green-500" />
+              <WhatsappLogo size={24} className="text-green-500" />
             </div>
             <h4 className="font-bold text-lg">WhatsApp integrado</h4>
             <p className="text-texto/70 text-sm">Clientes pedem direto pelo WhatsApp com um clique. Você negocia sem sair do app.</p>
