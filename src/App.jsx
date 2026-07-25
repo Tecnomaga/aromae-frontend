@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
+import Landing from './pages/Landing'; // <--- Importe a Landing Page
 
 // Carregamento sob demanda (Code Splitting)
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -34,13 +35,16 @@ export default function App() {
       <BrowserRouter>
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
           <Routes>
+            {/* Rotas Públicas */}
+            <Route path="/" element={<Landing />} /> {/* <--- A raiz agora é a Landing */}
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/loja/:slug" element={<CatalogoPublico />} />
 
+            {/* Rotas Protegidas (Agora todas dentro de /dashboard) */}
             <Route element={<RotasProtegidas />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} /> {/* <--- Dashboard mudou de '/' para '/dashboard' */}
               <Route path="/produtos" element={<Produtos />} />
               <Route path="/produtos/novo" element={<ProdutoForm />} />
               <Route path="/produtos/:id" element={<ProdutoForm />} />
