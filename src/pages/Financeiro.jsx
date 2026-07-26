@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { TrendUp, Clock, CheckCircle } from 'phosphor-react';
+import { TrendUp, Clock, CheckCircle, Coin, Percent, CurrencyDollar } from 'phosphor-react';
 import api from '../services/api';
 
 export default function Financeiro() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
-  const [dados, setDados] = useState({ saldo: 0, historico: [] });
+  const [dados, setDados] = useState({ totalBruto: 0, totalLiquido: 0, comissaoTotal: 0, historico: [] });
 
   useEffect(() => {
     api.get('/financeiro/extrato')
@@ -23,20 +23,45 @@ export default function Financeiro() {
   if (loading) return <div className="p-8 text-center">Carregando seu financeiro...</div>;
   if (erro) return <div className="p-8 text-center text-red-500">{erro}</div>;
 
-  const { saldo, historico } = dados;
+  const { totalBruto, totalLiquido, comissaoTotal, historico } = dados;
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in-up">
       <h1 className="font-titulo text-3xl text-primaria mb-2">Minha Conta</h1>
-      <p className="text-texto/50 text-sm mb-6">Acompanhe seu saldo e histórico de repasses.</p>
+      <p className="text-texto/50 text-sm mb-6">Resumo financeiro dos últimos 30 dias.</p>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 flex items-center justify-between">
-        <div>
-          <p className="text-texto/50 text-sm">Saldo disponível</p>
-          <p className="text-3xl font-bold text-texto">R$ {saldo.toFixed(2)}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between">
+          <div>
+            <p className="text-texto/50 text-xs font-semibold uppercase">Total Vendido</p>
+            <p className="text-2xl font-bold text-texto">R$ {totalBruto.toFixed(2)}</p>
+            <p className="text-xs text-texto/40">Bruto (valor cheio)</p>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-primaria/10 flex items-center justify-center">
+            <CurrencyDollar size={24} className="text-primaria" weight="bold" />
+          </div>
         </div>
-        <div className="w-14 h-14 rounded-xl bg-primaria/10 flex items-center justify-center">
-          <TrendUp size={24} className="text-primaria" weight="bold" />
+
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between">
+          <div>
+            <p className="text-texto/50 text-xs font-semibold uppercase">Recebido (Líquido)</p>
+            <p className="text-2xl font-bold text-sucesso">R$ {totalLiquido.toFixed(2)}</p>
+            <p className="text-xs text-texto/40">Já enviado para seu Pix</p>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-sucesso/10 flex items-center justify-center">
+            <TrendUp size={24} className="text-sucesso" weight="bold" />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between">
+          <div>
+            <p className="text-texto/50 text-xs font-semibold uppercase">Comissão Plataforma</p>
+            <p className="text-2xl font-bold text-texto">R$ {comissaoTotal.toFixed(2)}</p>
+            <p className="text-xs text-texto/40">Taxa descontada</p>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
+            <Percent size={24} className="text-gray-500" weight="bold" />
+          </div>
         </div>
       </div>
 
@@ -63,7 +88,10 @@ export default function Financeiro() {
                     </p>
                   </div>
                 </div>
-                <p className="font-bold text-sucesso">+ R$ {item.valor.toFixed(2)}</p>
+                <div className="flex flex-col items-end">
+                  <p className="font-bold text-sucesso">+ R$ {item.valorLiquido.toFixed(2)}</p>
+                  <p className="text-[10px] text-texto/30">Bruto: R$ {item.valorBruto.toFixed(2)}</p>
+                </div>
               </li>
             ))}
           </ul>
