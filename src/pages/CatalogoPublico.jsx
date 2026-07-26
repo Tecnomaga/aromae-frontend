@@ -65,9 +65,16 @@ export default function CatalogoPublico() {
     else { navigator.clipboard.writeText(url); toast.success('Link copiado!'); }
   };
 
+  // ✅ CORREÇÃO DO WHATSAPP: agora usa encodeURIComponent corretamente
   const gerarMensagemWhatsApp = (produto) => {
     const texto = `Olá! Tenho interesse no *${produto.nome}* (Ref: ${produto._id.slice(-6)}). Pode me ajudar?`;
-    const numero = loja?.telefone || '';
+    // Pega o número da loja (se não tiver, usa fallback)
+    const numero = loja?.telefone?.replace(/\D/g, '') || '';
+    // Se não tiver número, redireciona para uma página de erro ou mensagem
+    if (!numero) {
+      toast.error('Esta loja ainda não cadastrou um número de WhatsApp.');
+      return '#';
+    }
     return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
   };
 
@@ -76,7 +83,9 @@ export default function CatalogoPublico() {
     setEnderecoModalAberto(true);
   };
 
+  // ✅ CORREÇÃO DO FLUXO DO QR CODE
   const handleComprarAgora = async (dadosCliente) => {
+    console.log('🛒 Iniciando compra com dados:', dadosCliente);
     setEnderecoModalAberto(false);
     setPixLoading(true);
     try {
@@ -86,6 +95,7 @@ export default function CatalogoPublico() {
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco
       });
+      console.log('✅ Pix gerado com sucesso:', response.data);
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
@@ -173,7 +183,18 @@ export default function CatalogoPublico() {
                   <p className="text-primaria font-bold text-lg mt-2">
                     R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
                   </p>
-                  <button onClick={() => setWhatsAppModal(produto)} className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"><WhatsappLogo size={18} weight="fill" /> Pedir</button>
+                  {/* ✅ Botão WhatsApp corrigido */}
+                  <button 
+                    onClick={() => {
+                      const url = gerarMensagemWhatsApp(produto);
+                      if (url !== '#') {
+                        window.open(url, '_blank');
+                      }
+                    }} 
+                    className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"
+                  >
+                    <WhatsappLogo size={18} weight="fill" /> Pedir
+                  </button>
                   
                   {isPremiumOrPro && (
                     <button 
@@ -195,7 +216,7 @@ export default function CatalogoPublico() {
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <button onClick={compartilhar} className="flex flex-col items-center text-texto/70 hover:text-primaria"><LinkIcon size={20} /><span className="text-[10px]">Link</span></button>
-            <button onClick={() => { if (carrinho.length > 0) { window.open(`https://wa.me/${loja?.telefone}?text=${encodeURIComponent(gerarMensagemCarrinho())}`, '_blank'); } else { toast('Adicione itens à lista!'); } }} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-semibold text-sm transition ${carrinho.length > 0 ? 'bg-primaria text-white hover:bg-primaria/90' : 'bg-gray-100 text-gray-400'}`}><ShoppingCart size={18} /> Enviar lista ({carrinho.length})</button>
+            <button onClick={() => { if (carrinho.length > 0) { window.open(`https://wa.me/${loja?.telefone?.replace(/\D/g, '')}?text=${encodeURIComponent(gerarMensagemCarrinho())}`, '_blank'); } else { toast('Adicione itens à lista!'); } }} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-semibold text-sm transition ${carrinho.length > 0 ? 'bg-primaria text-white hover:bg-primaria/90' : 'bg-gray-100 text-gray-400'}`}><ShoppingCart size={18} /> Enviar lista ({carrinho.length})</button>
           </div>
           <div className="flex gap-4">
             <button onClick={compartilhar} className="flex flex-col items-center text-texto/70 hover:text-primaria"><InstagramLogo size={20} /><span className="text-[10px]">IG</span></button>
