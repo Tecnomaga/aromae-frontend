@@ -1,28 +1,29 @@
 import { useEffect, useState } from 'react';
-import { TrendUp, ArrowRight, Clock, CheckCircle } from 'phosphor-react';
+import { TrendUp, Clock, CheckCircle } from 'phosphor-react';
 import api from '../services/api';
 
 export default function Financeiro() {
-  const [historico, setHistorico] = useState([]);
-  const [saldo, setSaldo] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState('');
+  const [dados, setDados] = useState({ saldo: 0, historico: [] });
 
   useEffect(() => {
-    // Simulação de busca de dados (Seu backend ainda não tem rota de extrato, mas já deixamos pronta)
-    // Você pode substituir isso futuramente por: api.get('/financeiro/extrato')
-    setLoading(true);
-    setTimeout(() => {
-      setSaldo(152.50); // Exemplo de saldo a receber
-      setHistorico([
-        { id: '1', data: '25/07/2026', valor: 47.50, tipo: 'Venda via Pix - Perfume X' },
-        { id: '2', data: '24/07/2026', valor: 50.00, tipo: 'Venda via Pix - Perfume Y' },
-        { id: '3', data: '23/07/2026', valor: 55.00, tipo: 'Venda via Pix - Perfume Z' },
-      ]);
-      setLoading(false);
-    }, 1000);
+    api.get('/financeiro/extrato')
+      .then(({ data }) => {
+        setDados(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Erro ao carregar financeiro:', err);
+        setErro('Não foi possível carregar os dados financeiros.');
+        setLoading(false);
+      });
   }, []);
 
   if (loading) return <div className="p-8 text-center">Carregando seu financeiro...</div>;
+  if (erro) return <div className="p-8 text-center text-red-500">{erro}</div>;
+
+  const { saldo, historico } = dados;
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in-up">
@@ -31,11 +32,11 @@ export default function Financeiro() {
 
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-8 flex items-center justify-between">
         <div>
-          <p className="text-texto/50 text-sm">Saldo disponível para saque</p>
-          <p className="text-3xl font-bold text-sucesso">R$ {saldo.toFixed(2)}</p>
+          <p className="text-texto/50 text-sm">Saldo disponível</p>
+          <p className="text-3xl font-bold text-texto">R$ {saldo.toFixed(2)}</p>
         </div>
-        <div className="w-14 h-14 rounded-xl bg-sucesso/10 flex items-center justify-center">
-          <TrendUp size={24} className="text-sucesso" weight="bold" />
+        <div className="w-14 h-14 rounded-xl bg-primaria/10 flex items-center justify-center">
+          <TrendUp size={24} className="text-primaria" weight="bold" />
         </div>
       </div>
 
@@ -46,11 +47,11 @@ export default function Financeiro() {
         </div>
         
         {historico.length === 0 ? (
-          <div className="p-8 text-center text-texto/40">Nenhum repasse registrado ainda.</div>
+          <div className="p-8 text-center text-texto/40">Nenhum repasse registrado nos últimos 30 dias.</div>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {historico.map((item) => (
-              <li key={item.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition">
+            {historico.map((item, index) => (
+              <li key={index} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 text-sucesso">
                     <CheckCircle size={18} weight="fill" />
