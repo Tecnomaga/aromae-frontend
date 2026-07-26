@@ -39,6 +39,9 @@ export default function Pedidos() {
 
   if (loading) return <p className="text-center py-10">Carregando pedidos...</p>;
 
+  // Data atual no formato YYYY-MM-DD para limitar o calendário
+  const today = new Date().toISOString().slice(0, 10);
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -78,7 +81,10 @@ export default function Pedidos() {
           ))}
         </select>
         <input
-          type="date" value={filtroData} onChange={(e) => setFiltroData(e.target.value)}
+          type="date"
+          value={filtroData}
+          onChange={(e) => setFiltroData(e.target.value)}
+          max={today}  // <--- IMPEDE DIAS FUTUROS
           className="px-4 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-primaria"
         />
       </div>
