@@ -65,12 +65,9 @@ export default function CatalogoPublico() {
     else { navigator.clipboard.writeText(url); toast.success('Link copiado!'); }
   };
 
-  // ✅ CORREÇÃO DO WHATSAPP: agora usa encodeURIComponent corretamente
   const gerarMensagemWhatsApp = (produto) => {
     const texto = `Olá! Tenho interesse no *${produto.nome}* (Ref: ${produto._id.slice(-6)}). Pode me ajudar?`;
-    // Pega o número da loja (se não tiver, usa fallback)
     const numero = loja?.telefone?.replace(/\D/g, '') || '';
-    // Se não tiver número, redireciona para uma página de erro ou mensagem
     if (!numero) {
       toast.error('Esta loja ainda não cadastrou um número de WhatsApp.');
       return '#';
@@ -83,7 +80,6 @@ export default function CatalogoPublico() {
     setEnderecoModalAberto(true);
   };
 
-  // ✅ CORREÇÃO DO FLUXO DO QR CODE
   const handleComprarAgora = async (dadosCliente) => {
     console.log('🛒 Iniciando compra com dados:', dadosCliente);
     setEnderecoModalAberto(false);
@@ -96,6 +92,7 @@ export default function CatalogoPublico() {
         endereco: dadosCliente.endereco
       });
       console.log('✅ Pix gerado com sucesso:', response.data);
+      // Exibe o modal com o QR Code
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
@@ -183,7 +180,6 @@ export default function CatalogoPublico() {
                   <p className="text-primaria font-bold text-lg mt-2">
                     R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
                   </p>
-                  {/* ✅ Botão WhatsApp corrigido */}
                   <button 
                     onClick={() => {
                       const url = gerarMensagemWhatsApp(produto);
@@ -259,4 +255,4 @@ export default function CatalogoPublico() {
       />
     </div>
   );
-      }
+}
