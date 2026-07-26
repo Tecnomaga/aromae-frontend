@@ -2,15 +2,15 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
-import InstallPrompt from './components/InstallPrompt'; // <--- Importe o novo componente
+import InstallPrompt from './components/InstallPrompt';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
 import Landing from './pages/Landing';
 import Bloqueado from './pages/Bloqueado';
 import Admin from './pages/Admin';
+import Planos from './pages/Planos';
 
-// Carregamento sob demanda
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
@@ -44,6 +44,7 @@ export default function App() {
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/loja/:slug" element={<CatalogoPublico />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/planos" element={<Planos />} />
             <Route element={<RotasProtegidas />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/produtos" element={<Produtos />} />
@@ -62,7 +63,6 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
-        {/* O prompt de instalação aparecerá em todas as telas */}
         <InstallPrompt />
       </BrowserRouter>
     </AuthProvider>
