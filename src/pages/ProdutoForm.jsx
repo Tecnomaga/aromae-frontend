@@ -99,6 +99,7 @@ export default function ProdutoForm() {
       formData.append('estoque', Number(data.estoque));
       formData.append('descricao', data.descricao);
       formData.append('ativo', data.ativo);
+      // Envia etiquetas como string JSON
       formData.append('etiquetas', JSON.stringify(etiquetasSelecionadas));
 
       fotos.forEach((foto) => {
@@ -111,7 +112,7 @@ export default function ProdutoForm() {
         {
           loading: 'Salvando produto...',
           success: 'Produto salvo com sucesso!',
-          error: 'Erro ao salvar produto.'
+          error: 'Erro ao salvar produto. Verifique os dados e sua conexão.'
         }
       );
       navigate('/produtos');
@@ -132,50 +133,33 @@ export default function ProdutoForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-2xl shadow-sm space-y-5">
         <div>
           <label className="block text-sm font-semibold mb-1">Nome do perfume *</label>
-          <input
-            type="text" {...register('nome')}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
+          <input type="text" {...register('nome')} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
           {errors.nome && <p className="text-red-500 text-xs mt-1">{errors.nome.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-semibold mb-1">Marca *</label>
-          <input
-            type="text" {...register('marca')} list="marcas-lista"
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
-          <datalist id="marcas-lista">
-            {marcasSugeridas.map((m) => <option key={m} value={m} />)}
-          </datalist>
+          <input type="text" {...register('marca')} list="marcas-lista" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <datalist id="marcas-lista">{marcasSugeridas.map(m => <option key={m} value={m} />)}</datalist>
           {errors.marca && <p className="text-red-500 text-xs mt-1">{errors.marca.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold mb-1">Preço (R$) *</label>
-            <input
-              type="number" {...register('preco', { valueAsNumber: true })} step="0.01" min="0"
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
+            <input type="number" {...register('preco', { valueAsNumber: true })} step="0.01" min="0" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             {errors.preco && <p className="text-red-500 text-xs mt-1">{errors.preco.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-semibold mb-1">Estoque (un.) *</label>
-            <input
-              type="number" {...register('estoque', { valueAsNumber: true })} min="0"
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
+            <input type="number" {...register('estoque', { valueAsNumber: true })} min="0" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             {errors.estoque && <p className="text-red-500 text-xs mt-1">{errors.estoque.message}</p>}
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-semibold mb-1">Descrição</label>
-          <textarea
-            {...register('descricao')} rows={3}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
+          <textarea {...register('descricao')} rows={3} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
         </div>
 
         <div>
@@ -184,12 +168,7 @@ export default function ProdutoForm() {
             {previewFotos.map((src, idx) => (
               <div key={idx} className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100">
                 <img src={src} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
-                <button
-                  type="button" onClick={() => removerFoto(idx)}
-                  className="absolute top-1 right-1 bg-white/80 rounded-full p-0.5 text-red-500 hover:bg-white"
-                >
-                  <Trash size={14} />
-                </button>
+                <button type="button" onClick={() => removerFoto(idx)} className="absolute top-1 right-1 bg-white/80 rounded-full p-0.5 text-red-500 hover:bg-white"><Trash size={14} /></button>
               </div>
             ))}
             {previewFotos.length < 3 && (
@@ -202,7 +181,6 @@ export default function ProdutoForm() {
           </div>
         </div>
 
-        {/* Campo de Etiquetas */}
         <div>
           <label className="block text-sm font-semibold mb-2">Etiquetas (opcional)</label>
           <div className="flex flex-wrap gap-2">
@@ -224,10 +202,7 @@ export default function ProdutoForm() {
         </div>
 
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox" {...register('ativo')} id="ativo"
-            className="w-4 h-4 text-primaria rounded"
-          />
+          <input type="checkbox" {...register('ativo')} id="ativo" className="w-4 h-4 text-primaria rounded" />
           <label htmlFor="ativo" className="text-sm font-semibold">Produto ativo na loja</label>
         </div>
 
