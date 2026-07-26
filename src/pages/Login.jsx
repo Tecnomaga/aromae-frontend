@@ -15,7 +15,7 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       await login(data.email, data.senha);
-      navigate('/dashboard'); // Redirecionamento correto
+      navigate('/dashboard');
     } catch (err) {
       setError('root', { message: 'E-mail ou senha inválidos.' });
     }
@@ -30,35 +30,14 @@ export default function Login() {
         {errors.root && <p className="text-red-500 text-sm mb-4">{errors.root.message}</p>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <input
-              type="email" placeholder="E-mail"
-              {...register('email')}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-          </div>
-
-          <div>
-            <input
-              type="password" placeholder="Senha"
-              {...register('senha')}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
-            {errors.senha && <p className="text-red-500 text-xs mt-1">{errors.senha.message}</p>}
-          </div>
-
-          <button
-            type="submit" disabled={isSubmitting}
-            className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition flex items-center justify-center gap-2 disabled:opacity-50"
-          >
+          <input type="email" placeholder="E-mail" {...register('email')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <input type="password" placeholder="Senha" {...register('senha')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition flex items-center justify-center gap-2 disabled:opacity-50">
             <SignIn size={20} /> {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-6">
-          Não tem uma loja? <Link to="/cadastro" className="text-primaria font-semibold">Criar agora</Link>
-        </p>
+        <p className="text-center text-sm mt-6">Não tem uma loja? <Link to="/cadastro" className="text-primaria font-semibold">Criar agora</Link></p>
       </div>
     </div>
   );
