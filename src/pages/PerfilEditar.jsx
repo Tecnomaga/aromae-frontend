@@ -2,10 +2,18 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload } from 'phosphor-react';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function PerfilEditar() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nome: '', nomeLoja: '', slug: '', chavePix: '', fotoPerfil: null });
+  const [form, setForm] = useState({ 
+    nome: '', 
+    nomeLoja: '', 
+    slug: '', 
+    telefone: '', // <-- Campo WhatsApp
+    chavePix: '', 
+    fotoPerfil: null 
+  });
   const [previewFoto, setPreviewFoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -17,6 +25,7 @@ export default function PerfilEditar() {
           nome: data.nome, 
           nomeLoja: data.nomeLoja, 
           slug: data.slug, 
+          telefone: data.telefone || '', 
           chavePix: data.chavePix || '', 
           fotoPerfil: data.fotoPerfil 
         });
@@ -47,9 +56,11 @@ export default function PerfilEditar() {
       formData.append('nome', form.nome);
       formData.append('nomeLoja', form.nomeLoja);
       formData.append('slug', form.slug);
+      formData.append('telefone', form.telefone); // <-- Envia o WhatsApp
       formData.append('chavePix', form.chavePix);
       if (form.fotoPerfil instanceof File) formData.append('foto', form.fotoPerfil);
       await api.put('/auth/perfil', formData);
+      toast.success('Perfil atualizado com sucesso!');
       navigate('/perfil');
     } catch (err) {
       setErro('Erro ao atualizar perfil. Verifique sua conexão.');
@@ -98,7 +109,21 @@ export default function PerfilEditar() {
           <p className="text-xs text-texto/50 mt-1">Link: aromae.app/loja/{form.slug}</p>
         </div>
 
-        {/* NOVO CAMPO: CHAVE PIX */}
+        {/* ✅ CAMPO WHATSAPP ADICIONADO */}
+        <div>
+          <label className="block text-sm font-semibold mb-1">WhatsApp (com DDD)</label>
+          <input 
+            type="text" 
+            name="telefone" 
+            value={form.telefone} 
+            onChange={handleChange} 
+            placeholder="(11) 99999-9999"
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" 
+          />
+          <p className="text-xs text-texto/50 mt-1">Esse número será usado no botão "Pedir" da sua vitrine.</p>
+        </div>
+
+        {/* ✅ CAMPO CHAVE PIX */}
         <div>
           <label className="block text-sm font-semibold mb-1">Chave Pix para recebimento</label>
           <input type="text" name="chavePix" value={form.chavePix} onChange={handleChange} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
