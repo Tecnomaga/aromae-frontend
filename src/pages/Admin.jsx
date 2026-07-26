@@ -10,7 +10,7 @@ export default function Admin() {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    // Pega o e-mail do usuário logado
+    // Tenta pegar o e-mail do localStorage (onde o AuthContext salva)
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user.email) setUserEmail(user.email);
 
@@ -29,7 +29,7 @@ export default function Admin() {
       .catch((err) => {
         const status = err.response?.status;
         if (status === 403) {
-          setErro(`Acesso negado. E-mail logado: ${userEmail || 'desconhecido'}. Verifique o adminController.js.`);
+          setErro(`Acesso negado. E-mail logado: ${userEmail || 'não encontrado'}. Certifique-se de estar logado com aromaevitrine@gmail.com.`);
         } else if (status === 401) {
           setErro('Sessão expirada. Faça login novamente.');
         } else {
