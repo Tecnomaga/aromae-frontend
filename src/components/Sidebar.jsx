@@ -1,13 +1,15 @@
 import { NavLink } from 'react-router-dom';
-import { House, Package, ClipboardText, Users, User, Gear } from 'phosphor-react';
+import { House, Package, ClipboardText, Users, User, Gear, Coins, Headset } from 'phosphor-react';
 
 const links = [
-  { to: '/dashboard', icon: House, label: 'Início' }, // <--- Agora aponta para /dashboard
+  { to: '/dashboard', icon: House, label: 'Início' },
   { to: '/produtos', icon: Package, label: 'Produtos' },
   { to: '/pedidos', icon: ClipboardText, label: 'Pedidos' },
   { to: '/clientes', icon: Users, label: 'Clientes' },
   { to: '/perfil', icon: User, label: 'Perfil' },
-  { to: '/configuracoes', icon: Gear, label: 'Config.' }
+  { to: '/configuracoes', icon: Gear, label: 'Config.' },
+  { to: '/financeiro', icon: Coins, label: 'Financeiro' },
+  { to: '/suporte', icon: Headset, label: 'Suporte' }
 ];
 
 export default function Sidebar() {
@@ -19,7 +21,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/dashboard'} // <--- Importante: só marcar como ativo se estiver exatamente em /dashboard
+            end={to === '/dashboard'}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
                 isActive ? 'bg-primaria/10 text-primaria' : 'text-texto hover:bg-gray-50'
