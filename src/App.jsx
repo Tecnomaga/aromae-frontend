@@ -6,9 +6,10 @@ import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
 import Landing from './pages/Landing';
-import Bloqueado from './pages/Bloqueado'; // <--- Importe a tela de bloqueio
+import Bloqueado from './pages/Bloqueado';
+import Admin from './pages/Admin'; // <--- Importe o Admin
 
-// Carregamento sob demanda (Code Splitting)
+// Carregamento sob demanda
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
@@ -21,22 +22,13 @@ const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
-// Função que protege as rotas internas
 function RotasProtegidas() {
   const { user, loading } = useAuth();
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
-  
-  // Se não estiver logado, manda para o Login
   if (!user) return <Navigate to="/login" replace />;
+  if (!user.ativo) return <Bloqueado />;
 
-  // SE O USUÁRIO ESTIVER LOGADO, MAS ESTIVER BLOQUEADO (ativo: false)
-  // O sistema o impede de ver o Dashboard e exibe a tela "Bloqueado.jsx"
-  if (!user.ativo) {
-    return <Bloqueado />;
-  }
-
-  // Se estiver logado e ativo, mostra o Layout (Sidebar e Dashboard)
   return <Layout />;
 }
 
@@ -53,7 +45,10 @@ export default function App() {
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/loja/:slug" element={<CatalogoPublico />} />
 
-            {/* Rotas Protegidas (Acessadas apenas se estiver logado e ativo) */}
+            {/* Rota do Admin (Pública, mas o componente verifica se é admin) */}
+            <Route path="/admin" element={<Admin />} />
+
+            {/* Rotas Protegidas (precisa estar logado e ativo) */}
             <Route element={<RotasProtegidas />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/produtos" element={<Produtos />} />
@@ -70,6 +65,7 @@ export default function App() {
               <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
 
+            {/* Se nenhuma rota bater, redireciona para a Landing (ou para o login se quiser) */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
