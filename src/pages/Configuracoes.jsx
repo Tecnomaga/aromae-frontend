@@ -27,7 +27,7 @@ const faq = [
 export default function Configuracoes() {
   const [aberto, setAberto] = useState(null);
   const toggleFaq = (index) => setAberto(aberto === index ? null : index);
-  const contatoSuporte = '5511999999999';
+  const contatoSuporte = '5513996984764'; // <--- SEU NÚMERO AQUI
 
   return (
     <div className="max-w-2xl mx-auto">
