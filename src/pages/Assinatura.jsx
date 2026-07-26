@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { CheckCircle, Clock, XCircle, CreditCard } from 'phosphor-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { CheckCircle, Clock, XCircle, CreditCard, Warning } from 'phosphor-react';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function Assinatura() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/auth/me')
@@ -14,10 +17,28 @@ export default function Assinatura() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleCancelSubscription = async () => {
+    try {
+      await toast.promise(
+        api.post('/payments/cancel'),
+        {
+          loading: 'Cancelando assinatura...',
+          success: 'Assinatura cancelada com sucesso!',
+          error: 'Erro ao cancelar. Tente novamente.'
+        }
+      );
+      // Recarrega os dados do usuário
+      const { data } = await api.get('/auth/me');
+      setUser(data);
+      setShowConfirmCancel(false);
+    } catch (err) {
+      toast.error('Não foi possível cancelar. Verifique sua conexão.');
+    }
+  };
+
   if (loading) return <div className="p-8 text-center">Carregando informações da assinatura...</div>;
   if (!user) return <div className="p-8 text-center">Usuário não encontrado.</div>;
 
-  // Funções auxiliares
   const planoNome = {
     basico: 'Básico',
     pro: 'Pro',
@@ -67,20 +88,9 @@ export default function Assinatura() {
             {expirado && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full">Expirado</span>}
           </span>
         </div>
-
-        {/* Próximo ciclo (se for recorrência) */}
-        {user.assinaturaAtiva && user.assinaturaExpira && !expirado && (
-          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-            <span className="text-texto/60 text-sm">Próximo ciclo</span>
-            <span className="font-medium flex items-center gap-2">
-              <Clock size={16} className="text-texto/40" />
-              {new Date(user.assinaturaExpira).toLocaleDateString('pt-BR')}
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Botão de ação */}
+      {/* Botões de ação */}
       <div className="mt-6 flex flex-col sm:flex-row gap-4">
         {(!user.assinaturaAtiva || expirado) && (
           <Link to="/planos" className="btn-primary flex items-center justify-center gap-2 flex-1">
@@ -88,11 +98,50 @@ export default function Assinatura() {
           </Link>
         )}
         {user.assinaturaAtiva && !expirado && (
-          <Link to="/planos" className="btn-secondary flex items-center justify-center gap-2 flex-1">
-            <CreditCard size={18} /> Gerenciar
-          </Link>
+          <>
+            <Link to="/planos" className="btn-secondary flex items-center justify-center gap-2 flex-1">
+              <CreditCard size={18} /> Trocar Plano
+            </Link>
+            {user.plano !== 'trial' && (
+              <button
+                onClick={() => setShowConfirmCancel(true)}
+                className="bg-red-50 text-red-500 py-2 rounded-xl font-semibold flex items-center justify-center gap-2 flex-1 hover:bg-red-100 transition"
+              >
+                <XCircle size={18} /> Cancelar
+              </button>
+            )}
+          </>
         )}
       </div>
+
+      {/* Modal de confirmação de cancelamento */}
+      {showConfirmCancel && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full animate-pop">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <Warning size={24} className="text-red-500" weight="bold" />
+            </div>
+            <h3 className="font-titulo text-xl text-texto text-center mb-2">Cancelar assinatura</h3>
+            <p className="text-sm text-texto/70 text-center mb-6">
+              Tem certeza? Sua loja será desativada e você perderá acesso ao painel. Seus dados ficarão salvos.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowConfirmCancel(false)}
+                className="flex-1 py-2 border border-gray-200 rounded-xl font-semibold text-texto hover:bg-gray-50 transition"
+              >
+                Voltar
+              </button>
+              <button
+                onClick={handleCancelSubscription}
+                className="flex-1 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+              >
+                Cancelar mesmo assim
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-        }
+}
