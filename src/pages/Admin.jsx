@@ -7,8 +7,13 @@ export default function Admin() {
   const [revendedoras, setRevendedoras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
+    // Pega o e-mail do usuário logado
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.email) setUserEmail(user.email);
+
     const token = localStorage.getItem('token');
     if (!token) {
       setErro('Você precisa estar logado para acessar o painel.');
@@ -24,7 +29,7 @@ export default function Admin() {
       .catch((err) => {
         const status = err.response?.status;
         if (status === 403) {
-          setErro('Acesso negado. Apenas o administrador pode acessar.');
+          setErro(`Acesso negado. E-mail logado: ${userEmail || 'desconhecido'}. Verifique o adminController.js.`);
         } else if (status === 401) {
           setErro('Sessão expirada. Faça login novamente.');
         } else {
@@ -32,7 +37,7 @@ export default function Admin() {
         }
         setLoading(false);
       });
-  }, []);
+  }, [userEmail]);
 
   const toggleStatus = async (id) => {
     try {
