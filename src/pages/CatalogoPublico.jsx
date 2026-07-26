@@ -27,7 +27,6 @@ export default function CatalogoPublico() {
       .then(({ data }) => {
         setLoja(data.loja);
         setProdutos(data.produtos);
-        console.log('🧾 Plano da loja:', data.loja?.plano);
       })
       .catch(() => setErro('Loja não encontrada ou está pausada.'))
       .finally(() => setLoading(false));
@@ -92,7 +91,8 @@ export default function CatalogoPublico() {
         endereco: dadosCliente.endereco
       });
       console.log('✅ Pix gerado com sucesso:', response.data);
-      // Exibe o modal com o QR Code
+      
+      // 🔥 FORÇA A ABERTURA DO MODAL DO QR CODE
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
@@ -102,9 +102,7 @@ export default function CatalogoPublico() {
       console.error('🔥 Erro ao gerar Pix:', error);
       let mensagem = 'Erro ao gerar Pix. Tente novamente.';
       if (error.response && error.response.data) {
-        // Se o backend retornou uma mensagem específica, usamos ela
         mensagem = error.response.data.message || mensagem;
-        console.log('📦 Resposta do backend:', error.response.data);
       } else if (error.request) {
         mensagem = 'Erro de conexão com o servidor.';
       }
