@@ -58,8 +58,8 @@ export default function Dashboard() {
     { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
     { label: 'Estoque baixo', valor: estoqueBaixo.length, icon: Warning, cor: estoqueBaixo.length > 0 ? 'text-red-500 bg-red-50' : 'text-sucesso bg-sucesso/10' },
     { label: 'Pedidos pendentes', valor: pedidosPendentes, icon: ClipboardText, cor: 'text-secundaria bg-secundaria/10' },
-    { label: 'Faturamento do mês', valor: `R$ ${faturamentoMes.toFixed(2)}`, icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
-    { label: 'Lucro líquido (mês)', valor: `R$ ${lucro.lucroLiquido.toFixed(2)}`, icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
+    { label: 'Faturamento do mês', valor: faturamentoMes > 0 ? `R$ ${faturamentoMes.toFixed(2)}` : 'R$ 0,00', icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
+    { label: 'Lucro líquido (mês)', valor: lucro.lucroLiquido > 0 ? `R$ ${lucro.lucroLiquido.toFixed(2)}` : 'R$ 0,00', icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
   ];
 
   if (loading) return (
