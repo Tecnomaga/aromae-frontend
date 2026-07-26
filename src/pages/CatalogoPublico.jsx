@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart } from 'phosphor-react';
+import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import PixModal from '../components/PixModal';
 
 export default function CatalogoPublico() {
   const { slug } = useParams();
@@ -13,6 +14,8 @@ export default function CatalogoPublico() {
   const [erro, setErro] = useState('');
   const [carrinho, setCarrinho] = useState([]);
   const [whatsAppModal, setWhatsAppModal] = useState(null);
+  const [pixModal, setPixModal] = useState(null);
+  const [pixLoading, setPixLoading] = useState(false);
 
   useEffect(() => {
     api.get(`/catalogo/${slug}`)
@@ -62,6 +65,24 @@ export default function CatalogoPublico() {
     return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
   };
 
+  const handleComprarAgora = async (produto) => {
+    setPixLoading(true);
+    try {
+      const response = await api.post(`/checkout/pix/${produto._id}`, {
+        revendedoraId: loja._id
+      });
+      setPixModal({
+        qrCodeBase64: response.data.qrCodeBase64,
+        qrCodeText: response.data.qrCode,
+        produto: produto
+      });
+    } catch (error) {
+      toast.error('Erro ao gerar Pix. Tente novamente.');
+    } finally {
+      setPixLoading(false);
+    }
+  };
+
   if (loading) return <div className="min-h-screen bg-fundo flex items-center justify-center">Carregando vitrine...</div>;
   if (erro) return (
     <div className="min-h-screen bg-fundo flex flex-col items-center justify-center p-4">
@@ -99,8 +120,6 @@ export default function CatalogoPublico() {
                 <div className="h-40 bg-gray-100 flex items-center justify-center relative">
                   {produto.fotos?.[0] ? (<img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />) : 
                     (<Package size={48} className="text-texto/20" />)}
-                  
-                  {/* Etiquetas */}
                   <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                     {produto.etiquetas?.map((etiqueta, idx) => {
                       let bgClass = 'bg-primaria text-white';
@@ -109,31 +128,17 @@ export default function CatalogoPublico() {
                       if (etiqueta === 'Edição limitada') bgClass = 'bg-purple-500 text-white';
                       if (etiqueta === 'Novidade') bgClass = 'bg-green-500 text-white';
                       if (etiqueta === 'Lançamento') bgClass = 'bg-blue-500 text-white';
-                      return (
-                        <span key={idx} className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${bgClass}`}>
-                          {etiqueta}
-                        </span>
-                      );
+                      return (<span key={idx} className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${bgClass}`}>{etiqueta}</span>);
                     })}
                   </div>
-
-                  <button 
-                    onClick={() => adicionarAoCarrinho(produto)}
-                    className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow hover:bg-primaria hover:text-white transition"
-                  >
-                    <Plus size={18} />
-                  </button>
+                  <button onClick={() => adicionarAoCarrinho(produto)} className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow hover:bg-primaria hover:text-white transition"><Plus size={18} /></button>
                 </div>
                 <div className="p-3 flex-1 flex flex-col">
                   <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
                   <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
                   <p className="text-primaria font-bold text-lg mt-2">R$ {produto.preco?.toFixed(2)}</p>
-                  <button
-                    onClick={() => setWhatsAppModal(produto)}
-                    className="mt-3 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"
-                  >
-                    <WhatsappLogo size={18} weight="fill" /> Pedir
-                  </button>
+                  <button onClick={() => setWhatsAppModal(produto)} className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"><WhatsappLogo size={18} weight="fill" /> Pedir</button>
+                  <button onClick={() => handleComprarAgora(produto)} disabled={pixLoading} className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition"><CreditCard size={18} /> Comprar (Pix)</button>
                 </div>
               </div>
             ))}
@@ -144,23 +149,12 @@ export default function CatalogoPublico() {
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 py-3 px-4 z-10">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-4 w-full sm:w-auto">
-            <button onClick={compartilhar} className="flex flex-col items-center text-texto/70 hover:text-primaria">
-              <LinkIcon size={20} /><span className="text-[10px]">Link</span>
-            </button>
-            <button 
-              onClick={() => { if (carrinho.length > 0) { window.open(`https://wa.me/${loja?.telefone}?text=${encodeURIComponent(gerarMensagemCarrinho())}`, '_blank'); } else { toast('Adicione itens à lista!'); } }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-semibold text-sm transition ${carrinho.length > 0 ? 'bg-primaria text-white hover:bg-primaria/90' : 'bg-gray-100 text-gray-400'}`}
-            >
-              <ShoppingCart size={18} /> Enviar lista ({carrinho.length})
-            </button>
+            <button onClick={compartilhar} className="flex flex-col items-center text-texto/70 hover:text-primaria"><LinkIcon size={20} /><span className="text-[10px]">Link</span></button>
+            <button onClick={() => { if (carrinho.length > 0) { window.open(`https://wa.me/${loja?.telefone}?text=${encodeURIComponent(gerarMensagemCarrinho())}`, '_blank'); } else { toast('Adicione itens à lista!'); } }} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-semibold text-sm transition ${carrinho.length > 0 ? 'bg-primaria text-white hover:bg-primaria/90' : 'bg-gray-100 text-gray-400'}`}><ShoppingCart size={18} /> Enviar lista ({carrinho.length})</button>
           </div>
           <div className="flex gap-4">
-            <button onClick={compartilhar} className="flex flex-col items-center text-texto/70 hover:text-primaria">
-              <InstagramLogo size={20} /><span className="text-[10px]">IG</span>
-            </button>
-            {carrinho.length > 0 && (
-              <button onClick={limparCarrinho} className="text-xs text-red-500 underline">Limpar</button>
-            )}
+            <button onClick={compartilhar} className="flex flex-col items-center text-texto/70 hover:text-primaria"><InstagramLogo size={20} /><span className="text-[10px]">IG</span></button>
+            {carrinho.length > 0 && (<button onClick={limparCarrinho} className="text-xs text-red-500 underline">Limpar</button>)}
           </div>
         </div>
       </footer>
@@ -176,6 +170,14 @@ export default function CatalogoPublico() {
             </div>
           </div>
         </div>
+      )}
+
+      {pixModal && (
+        <PixModal
+          qrCodeBase64={pixModal.qrCodeBase64}
+          qrCodeText={pixModal.qrCodeText}
+          onClose={() => setPixModal(null)}
+        />
       )}
     </div>
   );
