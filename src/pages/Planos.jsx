@@ -6,7 +6,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function Planos() {
-  const [periodo, setPeriodo] = useState('mensal'); // 'mensal' ou 'anual'
+  const [periodo, setPeriodo] = useState('mensal');
   const [loading, setLoading] = useState(false);
 
   const handleAssinar = async (tipoPlano) => {
