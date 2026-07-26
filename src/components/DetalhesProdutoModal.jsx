@@ -1,14 +1,17 @@
 import { X } from 'phosphor-react';
 
-export default function DetalhesProdutoModal({ produto, onClose }) {
-  if (!produto) return null;
+export default function DetalhesProdutoModal({ produto, isOpen, onClose }) {
+  if (!isOpen || !produto) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-pop">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="font-titulo text-xl text-primaria">{produto.nome}</h3>
-          <button onClick={onClose} className="text-texto/40 hover:text-texto">
+          <button 
+            onClick={onClose} 
+            className="text-texto/40 hover:text-texto transition-colors p-1"
+          >
             <X size={24} />
           </button>
         </div>
