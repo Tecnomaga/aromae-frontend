@@ -12,7 +12,11 @@ export function AuthProvider({ children }) {
     if (token) {
       api.get('/auth/me')
         .then(({ data }) => setUser(data))
-        .catch(() => localStorage.removeItem('token'))
+        .catch((err) => {
+          console.error('Erro ao buscar usuário:', err);
+          localStorage.removeItem('token');
+          setUser(null);
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -20,15 +24,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function login(email, senha) {
-    const { data } = await api.post('/auth/login', { email, senha });
-    localStorage.setItem('token', data.token);
-    setUser(data.revendedora);
+    try {
+      const { data } = await api.post('/auth/login', { email, senha });
+      localStorage.setItem('token', data.token);
+      setUser(data.revendedora);
+    } catch (error) {
+      throw error; // O erro será capturado no Login.jsx
+    }
   }
 
-  async function registrar(nome, email, senha) {
-    const { data } = await api.post('/auth/register', { nome, email, senha });
-    localStorage.setItem('token', data.token);
-    setUser(data.revendedora);
+  async function registrar(nome, email, senha, indicadoPor = '') {
+    try {
+      const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
+      localStorage.setItem('token', data.token);
+      setUser(data.revendedora);
+    } catch (error) {
+      throw error;
+    }
   }
 
   function atualizarUsuario(dadosParciais) {
