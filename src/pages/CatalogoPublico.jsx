@@ -48,7 +48,7 @@ export default function CatalogoPublico() {
     if (carrinho.length === 0) return '';
     let texto = `Olá! Tenho interesse nos seguintes perfumes:\n\n`;
     carrinho.forEach((p, i) => {
-      texto += `${i+1}. ${p.nome} (Ref: ${p._id.slice(-6)}) - R$ ${p.preco?.toFixed(2)}\n`;
+      texto += `${i+1}. ${p.nome} (Ref: ${p._id.slice(-6)}) - R$ ${p.preco?.toFixed(2) || '0.00'}\n`;
     });
     return texto;
   };
@@ -77,7 +77,7 @@ export default function CatalogoPublico() {
         produto: produto
       });
     } catch (error) {
-      toast.error('Erro ao gerar Pix. Tente novamente.');
+      toast.error('Erro ao gerar Pix. Verifique o plano da loja.');
     } finally {
       setPixLoading(false);
     }
@@ -91,6 +91,8 @@ export default function CatalogoPublico() {
       <button onClick={() => navigate('/')} className="mt-4 text-primaria font-semibold">Voltar para o início</button>
     </div>
   );
+
+  const isPremiumOrPro = loja && (loja.plano === 'pro' || loja.plano === 'premium');
 
   return (
     <div className="min-h-screen bg-fundo font-corpo pb-32">
@@ -136,9 +138,16 @@ export default function CatalogoPublico() {
                 <div className="p-3 flex-1 flex flex-col">
                   <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
                   <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
-                  <p className="text-primaria font-bold text-lg mt-2">R$ {produto.preco?.toFixed(2)}</p>
+                  <p className="text-primaria font-bold text-lg mt-2">
+                    R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
+                  </p>
                   <button onClick={() => setWhatsAppModal(produto)} className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"><WhatsappLogo size={18} weight="fill" /> Pedir</button>
-                  <button onClick={() => handleComprarAgora(produto)} disabled={pixLoading} className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition"><CreditCard size={18} /> Comprar (Pix)</button>
+                  
+                  {isPremiumOrPro && (
+                    <button onClick={() => handleComprarAgora(produto)} disabled={pixLoading} className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition">
+                      <CreditCard size={18} /> Comprar (Pix)
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
