@@ -13,7 +13,7 @@ import {
   ShieldCheck
 } from 'phosphor-react';
 
-// Variantes de animação (para reutilizar)
+// Variantes de animação
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 50, damping: 15 } }
@@ -35,13 +35,13 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-fundo font-corpo overflow-x-hidden relative">
       
-      {/* Fundo de Blur decorativo (efeito 3D sutil) */}
+      {/* Fundo de Blur decorativo */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute -top-20 -left-20 w-96 h-96 bg-primaria/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-1/2 right-0 w-96 h-96 bg-secundaria/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
-      {/* Header com Glassmorphism */}
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <motion.h1 
@@ -82,7 +82,7 @@ export default function Landing() {
           Sua vitrine de perfumes <br />
           <span className="text-primaria relative inline-block">
             organizada e profissional
-            {/* Sublinhado corrigido: mais fino, rente ao texto e menos intrusivo */}
+            {/* Sublinhado corrigido */}
             <motion.div 
               className="absolute bottom-[2px] left-0 w-full h-1.5 bg-primaria/20 -z-10 rounded-full"
               initial={{ width: 0 }}
@@ -96,7 +96,7 @@ export default function Landing() {
           className="text-texto/70 text-xl md:text-2xl max-w-3xl mx-auto mb-10 font-corpo font-light"
           variants={fadeInUp}
         >
-          Crie um catálogo lindo, controle estoque, pedidos e clientes, e compartilhe sua loja no WhatsApp e Instagram em minutos.
+          Em poucos minutos, transforme seu celular em uma vitrine profissional. Controle tudo e venda mais sem perder a elegância.
         </motion.p>
         
         <motion.div 
@@ -112,7 +112,7 @@ export default function Landing() {
         </motion.div>
       </motion.section>
 
-      {/* Benefits Section com Stagger */}
+      {/* Benefits Section */}
       <motion.section 
         initial="hidden"
         whileInView="visible"
@@ -126,12 +126,12 @@ export default function Landing() {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
-            { icon: Package, title: 'Catálogo digital', desc: 'Adicione fotos, preços e descrições. Sua vitrine fica pronta em minutos.', color: 'text-primaria' },
-            { icon: ChartBar, title: 'Dashboard inteligente', desc: 'Acompanhe vendas, estoque baixo e pedidos pendentes em um só lugar.', color: 'text-secundaria' },
-            { icon: WhatsappLogo, title: 'WhatsApp integrado', desc: 'Clientes pedem direto pelo WhatsApp com um clique. Você negocia sem sair do app.', color: 'text-green-500' },
-            { icon: Users, title: 'Gestão de clientes', desc: 'Cadastre e organize sua base de clientes com telefone e cidade.', color: 'text-blue-500' },
-            { icon: ClipboardText, title: 'Pedidos completos', desc: 'Registre pedidos, escolha cliente e produtos, e o estoque baixa automaticamente.', color: 'text-orange-500' },
-            { icon: Storefront, title: 'Vitrine pública', desc: 'Compartilhe o link da sua loja. Qualquer pessoa pode ver seu catálogo e pedir.', color: 'text-primaria' }
+            { icon: Package, title: 'Catálogo digital', desc: 'Como ter uma loja de perfumes no bolso dos seus clientes. Adicione fotos e preços em segundos.', color: 'text-primaria' },
+            { icon: ChartBar, title: 'Dashboard inteligente', desc: 'De olho no seu império: estoque, vendas e clientes em um só painel. Nunca perca uma venda.', color: 'text-secundaria' },
+            { icon: WhatsappLogo, title: 'WhatsApp integrado', desc: 'Clientes clicam em "Pedir", você vende. O caminho mais curto entre o desejo e a compra.', color: 'text-green-500' },
+            { icon: Users, title: 'Gestão de clientes', desc: 'Fidelize quem ama seus perfumes. Tenha o histórico de cada cliente na palma da mão.', color: 'text-blue-500' },
+            { icon: ClipboardText, title: 'Pedidos completos', desc: 'O pedido certo, no estoque certo. O sistema dá baixa automática para você não se preocupar.', color: 'text-orange-500' },
+            { icon: Storefront, title: 'Vitrine pública', desc: 'Compartilhe o link. O mundo inteiro pode ver seu catálogo e pedir. Sem segredos, sem complicação.', color: 'text-primaria' }
           ].map((item, index) => (
             <motion.div 
               key={index} 
@@ -199,7 +199,8 @@ export default function Landing() {
         className="max-w-7xl mx-auto px-4 py-20 md:py-28"
       >
         <motion.h3 initial={{ y: 20 }} whileInView={{ y: 0 }} className="font-titulo text-4xl text-center text-primaria mb-4">Escolha o plano ideal</motion.h3>
-        <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-texto/70 mb-14">Teste grátis por 3 dias. Sem compromisso.</motion.p>
+        <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-texto/70 mb-4">Teste grátis por 3 dias. Sem compromisso.</motion.p>
+        <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-primaria/60 text-sm mb-12">Sem fidelidade. Cancele quando quiser.</motion.p>
         
         <div className="flex flex-col md:flex-row gap-8 justify-center">
           
@@ -299,4 +300,4 @@ export default function Landing() {
       </footer>
     </div>
   );
-}
+                  }
