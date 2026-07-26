@@ -3,17 +3,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { cadastroSchema } from '../schemas';
+import { useState } from 'react';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function Cadastro() {
   const { registrar } = useAuth();
   const navigate = useNavigate();
+  const [indicadoPor, setIndicadoPor] = useState('');
+
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(cadastroSchema)
   });
 
   const onSubmit = async (data) => {
     try {
-      await registrar(data.nome, data.email, data.senha);
+      // Verifica se o código de indicação é válido (opcional, checa no backend)
+      await registrar(data.nome, data.email, data.senha, indicadoPor);
       navigate('/onboarding');
     } catch (err) {
       setError('root', { message: err.response?.data?.message || 'Erro ao criar conta.' });
@@ -54,6 +60,17 @@ export default function Cadastro() {
               className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
             />
             {errors.senha && <p className="text-red-500 text-xs mt-1">{errors.senha.message}</p>}
+          </div>
+
+          {/* NOVO CAMPO: Código de indicação */}
+          <div>
+            <input
+              type="text" placeholder="Código de indicação (opcional)"
+              value={indicadoPor}
+              onChange={(e) => setIndicadoPor(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
+            />
+            <p className="text-xs text-texto/40 mt-1">Se alguém te indicou, coloque o e-mail dela aqui.</p>
           </div>
 
           <button
