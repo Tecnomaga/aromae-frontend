@@ -6,12 +6,32 @@ import { Storefront, CheckCircle, XCircle, User } from 'phosphor-react';
 export default function Admin() {
   const [revendedoras, setRevendedoras] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
+    // Verifica se o token existe antes de fazer a requisição
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setErro('Você precisa estar logado para acessar o painel.');
+      setLoading(false);
+      return;
+    }
+
     api.get('/admin/revendedoras')
-      .then(({ data }) => setRevendedoras(data))
-      .catch(() => toast.error('Erro ao carregar revendedoras'))
-      .finally(() => setLoading(false));
+      .then(({ data }) => {
+        setRevendedoras(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.response?.status === 403) {
+          setErro('Acesso negado. Apenas o administrador pode acessar.');
+        } else if (err.response?.status === 401) {
+          setErro('Sessão expirada. Faça login novamente.');
+        } else {
+          setErro('Erro ao carregar as revendedoras.');
+        }
+        setLoading(false);
+      });
   }, []);
 
   const toggleStatus = async (id) => {
@@ -20,11 +40,22 @@ export default function Admin() {
       setRevendedoras(revendedoras.map(r => r._id === id ? data : r));
       toast.success('Status alterado!');
     } catch (err) {
-      toast.error('Erro ao alterar status');
+      toast.error('Erro ao alterar status.');
     }
   };
 
   if (loading) return <div className="p-8 text-center">Carregando painel admin...</div>;
+  if (erro) return (
+    <div className="max-w-2xl mx-auto p-8 text-center">
+      <p className="text-red-500 font-semibold">{erro}</p>
+      <button 
+        onClick={() => window.location.href = '/login'}
+        className="mt-4 bg-primaria text-white px-6 py-2 rounded-lg"
+      >
+        Ir para Login
+      </button>
+    </div>
+  );
 
   return (
     <div className="max-w-5xl mx-auto p-4">
