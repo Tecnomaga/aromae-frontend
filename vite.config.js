@@ -7,9 +7,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Aromaê - Sua Vitrine de Perfumes',
-        short_name: 'Aromaê',
+        name: 'Aromaê - Vitrine de Perfumes',          // Nome completo
+        short_name: 'Aromaê',                         // Nome curto que aparece embaixo do ícone
         description: 'Monte sua loja virtual de perfumes',
         theme_color: '#C17B7B',
         background_color: '#FDFBF7',
@@ -17,18 +18,8 @@ export default defineConfig({
         scope: '/',
         start_url: '/',
         icons: [
-          { 
-            src: '/icon-192.png', 
-            sizes: '192x192', 
-            type: 'image/png',
-            purpose: 'any maskable' // Isso ajuda o ícone a se adaptar a diferentes formatos de tela
-          },
-          { 
-            src: '/icon-512.png', 
-            sizes: '512x512', 
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
+          { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       }
     })
