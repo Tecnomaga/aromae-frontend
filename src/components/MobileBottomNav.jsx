@@ -22,58 +22,60 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around py-2 z-50">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-gray-100/50 flex justify-around py-2 z-50 shadow-lg">
       {mainLinks.map(({ to, icon: Icon, label }) => (
         <NavLink
           key={to}
           to={to}
           end={to === '/dashboard'}
           className={({ isActive }) =>
-            `flex flex-col items-center text-xs font-semibold ${
-              isActive ? 'text-primaria' : 'text-texto'
+            `flex flex-col items-center text-xs font-semibold transition-colors duration-200 ${
+              isActive ? 'text-primaria' : 'text-texto/50 hover:text-texto'
             }`
           }
         >
-          <Icon size={24} />
-          <span>{label}</span>
+          <Icon size={24} weight={({ isActive }) => isActive ? 'fill' : 'regular'} />
+          <span className="mt-0.5">{label}</span>
         </NavLink>
       ))}
 
-      {/* Botão do menu de usuário */}
       <div className="relative">
         <button
           onClick={() => setMenuAberto(!menuAberto)}
-          className={`flex flex-col items-center text-xs font-semibold transition-colors ${
-            menuAberto ? 'text-primaria' : 'text-texto'
+          className={`flex flex-col items-center text-xs font-semibold transition-colors duration-200 ${
+            menuAberto ? 'text-primaria' : 'text-texto/50 hover:text-texto'
           }`}
         >
-          <User size={24} />
-          <span>Conta</span>
+          <User size={24} weight={menuAberto ? 'fill' : 'regular'} />
+          <span className="mt-0.5">Conta</span>
         </button>
 
-        {/* Menu flutuante - Ajustado para não ficar "comido" */}
         {menuAberto && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-44 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in-up z-[60]">
-            <NavLink
-              to="/perfil"
-              onClick={() => setMenuAberto(false)}
-              className="flex items-center gap-2 px-4 py-3 hover:bg-gray-50 text-sm font-semibold text-texto"
-            >
-              <User size={18} /> Perfil
-            </NavLink>
-            <NavLink
-              to="/configuracoes"
-              onClick={() => setMenuAberto(false)}
-              className="flex items-center gap-2 px-4 py-3 hover:bg-gray-50 text-sm font-semibold text-texto"
-            >
-              <Gear size={18} /> Configurações
-            </NavLink>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-4 py-3 hover:bg-red-50 text-sm font-semibold text-red-500 border-t border-gray-100"
-            >
-              <User size={18} /> Sair
-            </button>
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden animate-fade-in-up backdrop-blur-sm">
+            <div className="p-2 space-y-1">
+              <NavLink
+                to="/perfil"
+                onClick={() => setMenuAberto(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+              >
+                <User size={18} className="text-primaria" /> Perfil
+              </NavLink>
+              <NavLink
+                to="/configuracoes"
+                onClick={() => setMenuAberto(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+              >
+                <Gear size={18} className="text-primaria" /> Configurações
+              </NavLink>
+            </div>
+            <div className="border-t border-gray-100/50 p-2">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-xl text-sm font-semibold text-red-500 transition-colors"
+              >
+                <User size={18} /> Sair
+              </button>
+            </div>
           </div>
         )}
       </div>
