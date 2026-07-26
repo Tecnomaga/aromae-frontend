@@ -10,7 +10,9 @@ import {
   ChartBar, 
   ArrowRight, 
   CheckCircle,
-  ShieldCheck
+  ShieldCheck,
+  FileCsv,
+  CreditCard
 } from 'phosphor-react';
 
 // Variantes de animação
@@ -202,43 +204,63 @@ export default function Landing() {
         <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-primaria/60 text-sm mb-12">Sem fidelidade. Cancele quando quiser.</motion.p>
         
         <div className="flex flex-col md:flex-row gap-8 justify-center">
-          {/* Mensal */}
+          {/* Básico */}
           <motion.div 
             whileHover="hover"
             variants={scaleOnHover}
             className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex-1 max-w-sm"
           >
-            <h4 className="font-titulo text-2xl text-texto">Mensal</h4>
+            <h4 className="font-titulo text-2xl text-texto">Básico</h4>
             <p className="text-4xl font-bold text-primaria mt-4">R$ 19,90</p>
             <p className="text-sm text-texto/50">por mês</p>
             <ul className="mt-8 space-y-3 text-sm text-texto/70">
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Vitrine ilimitada</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Gestão de estoque</li>
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Pedidos e clientes</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Pedidos via WhatsApp</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Suporte via WhatsApp</li>
             </ul>
             <Link to="/cadastro" className="mt-8 block w-full bg-primaria text-white py-3 rounded-xl font-semibold text-center hover:bg-primaria/90 active:scale-95 transition-all shadow-md">
-              Assinar mensal
+              Assinar básico
             </Link>
           </motion.div>
 
-          {/* Anual (Destaque) */}
+          {/* Pro (Destaque) */}
           <motion.div 
             whileHover={{ scale: 1.05, transition: { type: 'spring', stiffness: 200 } }}
             className="bg-white p-8 rounded-3xl shadow-xl border-2 border-primaria relative flex-1 max-w-sm"
           >
-            <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secundaria text-white px-4 py-1 rounded-full text-xs font-bold shadow-md">Mais econômico</span>
-            <h4 className="font-titulo text-2xl text-texto">Anual</h4>
-            <p className="text-4xl font-bold text-primaria mt-4">R$ 199,00</p>
-            <p className="text-sm text-texto/50">por ano (economize R$ 40)</p>
+            <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secundaria text-white px-4 py-1 rounded-full text-xs font-bold shadow-md">Mais popular</span>
+            <h4 className="font-titulo text-2xl text-texto">Pro</h4>
+            <p className="text-4xl font-bold text-primaria mt-4">R$ 29,90</p>
+            <p className="text-sm text-texto/50">por mês</p>
             <ul className="mt-8 space-y-3 text-sm text-texto/70">
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Todos os benefícios</li>
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> 2 meses grátis</li>
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Prioridade no suporte</li>
-              <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Acesso a novidades</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Tudo do Básico</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Relatórios de lucro</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Exportação CSV</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Checkout Pix (vendas diretas)</li>
             </ul>
             <Link to="/cadastro" className="mt-8 block w-full bg-primaria text-white py-3 rounded-xl font-semibold text-center hover:bg-primaria/90 active:scale-95 transition-all shadow-lg">
-              Assinar anual
+              Assinar Pro
+            </Link>
+          </motion.div>
+
+          {/* Premium */}
+          <motion.div 
+            whileHover="hover"
+            variants={scaleOnHover}
+            className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex-1 max-w-sm"
+          >
+            <h4 className="font-titulo text-2xl text-texto">Premium</h4>
+            <p className="text-4xl font-bold text-primaria mt-4">R$ 49,90</p>
+            <p className="text-sm text-texto/50">por mês</p>
+            <ul className="mt-8 space-y-3 text-sm text-texto/70">
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Tudo do Pro</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Múltiplos usuários</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Suporte prioritário</li>
+              <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Checkout Pix + comissão reduzida</li>
+            </ul>
+            <Link to="/cadastro" className="mt-8 block w-full bg-primaria text-white py-3 rounded-xl font-semibold text-center hover:bg-primaria/90 active:scale-95 transition-all shadow-md">
+              Assinar Premium
             </Link>
           </motion.div>
         </div>
@@ -253,7 +275,7 @@ export default function Landing() {
               'Preciso de um site separado?',
               'Como funciona o período de teste?',
               'Posso cancelar quando quiser?',
-              'Qual a comissão da plataforma?', // <--- NOVA PERGUNTA ADICIONADA
+              'Qual a comissão da plataforma?',
               'O sistema funciona no celular?'
             ].map((q, i) => (
               <motion.details 
@@ -300,4 +322,4 @@ export default function Landing() {
       </footer>
     </div>
   );
-}
+                                                        }
