@@ -11,6 +11,9 @@ import Landing from './pages/Landing';
 import Bloqueado from './pages/Bloqueado';
 import Admin from './pages/Admin';
 import Planos from './pages/Planos';
+import CheckoutSuccess from './pages/CheckoutSuccess';
+import Suporte from './pages/Suporte';
+import Financeiro from './pages/Financeiro';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
@@ -40,6 +43,7 @@ export default function App() {
         <ErrorBoundary>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
             <Routes>
+              {/* Rotas Públicas */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
@@ -47,6 +51,11 @@ export default function App() {
               <Route path="/loja/:slug" element={<CatalogoPublico />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/planos" element={<Planos />} />
+              <Route path="/checkout/sucesso" element={<CheckoutSuccess />} />
+              <Route path="/suporte" element={<Suporte />} />
+              <Route path="/financeiro" element={<Financeiro />} />
+
+              {/* Rotas Protegidas */}
               <Route element={<RotasProtegidas />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/produtos" element={<Produtos />} />
@@ -62,6 +71,7 @@ export default function App() {
                 <Route path="/perfil/editar" element={<PerfilEditar />} />
                 <Route path="/configuracoes" element={<Configuracoes />} />
               </Route>
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
