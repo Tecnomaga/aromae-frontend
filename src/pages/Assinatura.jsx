@@ -58,13 +58,11 @@ export default function Assinatura() {
       <p className="text-texto/50 text-sm mb-6">Gerencie seu plano e veja os detalhes da sua assinatura.</p>
 
       <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
-        {/* Plano atual */}
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
           <span className="text-texto/60 text-sm">Plano atual</span>
           <span className="font-bold text-lg text-primaria">{planoNome}</span>
         </div>
 
-        {/* Status */}
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
           <span className="text-texto/60 text-sm">Status</span>
           <span className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${
@@ -75,7 +73,6 @@ export default function Assinatura() {
           </span>
         </div>
 
-        {/* Data de expiração */}
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
           <span className="text-texto/60 text-sm">Data de expiração</span>
           <span className="font-medium flex items-center gap-2">
@@ -90,7 +87,6 @@ export default function Assinatura() {
         </div>
       </div>
 
-      {/* Botões de ação */}
       <div className="mt-6 flex flex-col sm:flex-row gap-4">
         {(!user.assinaturaAtiva || expirado) && (
           <Link to="/planos" className="btn-primary flex items-center justify-center gap-2 flex-1">
