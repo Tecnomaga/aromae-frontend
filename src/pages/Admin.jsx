@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { Storefront, CheckCircle, XCircle, User } from 'phosphor-react';
+import { Storefront, CheckCircle, XCircle } from 'phosphor-react';
 
 export default function Admin() {
   const [revendedoras, setRevendedoras] = useState([]);
@@ -9,7 +9,6 @@ export default function Admin() {
   const [erro, setErro] = useState('');
 
   useEffect(() => {
-    // Verifica se o token existe antes de fazer a requisição
     const token = localStorage.getItem('token');
     if (!token) {
       setErro('Você precisa estar logado para acessar o painel.');
@@ -23,9 +22,10 @@ export default function Admin() {
         setLoading(false);
       })
       .catch((err) => {
-        if (err.response?.status === 403) {
+        const status = err.response?.status;
+        if (status === 403) {
           setErro('Acesso negado. Apenas o administrador pode acessar.');
-        } else if (err.response?.status === 401) {
+        } else if (status === 401) {
           setErro('Sessão expirada. Faça login novamente.');
         } else {
           setErro('Erro ao carregar as revendedoras.');
@@ -96,7 +96,7 @@ export default function Admin() {
         </table>
         {revendedoras.length === 0 && <p className="p-8 text-center text-texto/50">Nenhuma revendedora cadastrada ainda.</p>}
       </div>
-      <p className="mt-4 text-xs text-texto/50 text-center">Apenas o dono da plataforma pode acessar essa página.</p>
+      <p className="mt-4 text-xs text-texto/50 text-center">Apenas o administrador pode acessar essa página.</p>
     </div>
   );
 }
