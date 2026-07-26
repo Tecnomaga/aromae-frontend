@@ -7,9 +7,8 @@ import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
 import Landing from './pages/Landing';
 import Bloqueado from './pages/Bloqueado';
-import Admin from './pages/Admin'; // <--- Importe o Admin
+import Admin from './pages/Admin';
 
-// Carregamento sob demanda
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
@@ -24,11 +23,9 @@ const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
-
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (!user.ativo) return <Bloqueado />;
-
   return <Layout />;
 }
 
@@ -38,17 +35,12 @@ export default function App() {
       <BrowserRouter>
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
           <Routes>
-            {/* Rotas Públicas */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/loja/:slug" element={<CatalogoPublico />} />
-
-            {/* Rota do Admin (Pública, mas o componente verifica se é admin) */}
             <Route path="/admin" element={<Admin />} />
-
-            {/* Rotas Protegidas (precisa estar logado e ativo) */}
             <Route element={<RotasProtegidas />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/produtos" element={<Produtos />} />
@@ -64,8 +56,6 @@ export default function App() {
               <Route path="/perfil/editar" element={<PerfilEditar />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
-
-            {/* Se nenhuma rota bater, redireciona para a Landing (ou para o login se quiser) */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
