@@ -5,7 +5,7 @@ import api from '../services/api';
 
 export default function PerfilEditar() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nome: '', nomeLoja: '', slug: '', fotoPerfil: null });
+  const [form, setForm] = useState({ nome: '', nomeLoja: '', slug: '', chavePix: '', fotoPerfil: null });
   const [previewFoto, setPreviewFoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -13,7 +13,13 @@ export default function PerfilEditar() {
   useEffect(() => {
     api.get('/auth/me')
       .then(({ data }) => {
-        setForm({ nome: data.nome, nomeLoja: data.nomeLoja, slug: data.slug, fotoPerfil: data.fotoPerfil });
+        setForm({ 
+          nome: data.nome, 
+          nomeLoja: data.nomeLoja, 
+          slug: data.slug, 
+          chavePix: data.chavePix || '', 
+          fotoPerfil: data.fotoPerfil 
+        });
         setPreviewFoto(data.fotoPerfil || null);
       })
       .catch(() => navigate('/perfil'));
@@ -41,11 +47,12 @@ export default function PerfilEditar() {
       formData.append('nome', form.nome);
       formData.append('nomeLoja', form.nomeLoja);
       formData.append('slug', form.slug);
+      formData.append('chavePix', form.chavePix);
       if (form.fotoPerfil instanceof File) formData.append('foto', form.fotoPerfil);
       await api.put('/auth/perfil', formData);
       navigate('/perfil');
     } catch (err) {
-      setErro('Erro ao atualizar perfil. Verifique sua conexão com o servidor.');
+      setErro('Erro ao atualizar perfil. Verifique sua conexão.');
     } finally {
       setLoading(false);
     }
@@ -77,33 +84,28 @@ export default function PerfilEditar() {
 
         <div>
           <label className="block text-sm font-semibold mb-1">Seu nome</label>
-          <input
-            type="text" name="nome" value={form.nome} onChange={handleChange} required
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
+          <input type="text" name="nome" value={form.nome} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
         </div>
 
         <div>
           <label className="block text-sm font-semibold mb-1">Nome da loja</label>
-          <input
-            type="text" name="nomeLoja" value={form.nomeLoja} onChange={handleChange} required
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
+          <input type="text" name="nomeLoja" value={form.nomeLoja} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
         </div>
 
         <div>
           <label className="block text-sm font-semibold mb-1">Slug da loja</label>
-          <input
-            type="text" name="slug" value={form.slug} onChange={handleChange} required
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
+          <input type="text" name="slug" value={form.slug} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
           <p className="text-xs text-texto/50 mt-1">Link: aromae.app/loja/{form.slug}</p>
         </div>
 
-        <button
-          type="submit" disabled={loading}
-          className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50"
-        >
+        {/* NOVO CAMPO: CHAVE PIX */}
+        <div>
+          <label className="block text-sm font-semibold mb-1">Chave Pix para recebimento</label>
+          <input type="text" name="chavePix" value={form.chavePix} onChange={handleChange} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <p className="text-xs text-texto/50 mt-1">O valor líquido das vendas será enviado automaticamente para esta chave.</p>
+        </div>
+
+        <button type="submit" disabled={loading} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50">
           {loading ? 'Salvando...' : 'Salvar alterações'}
         </button>
       </form>
