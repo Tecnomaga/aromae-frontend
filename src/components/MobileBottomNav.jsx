@@ -34,7 +34,7 @@ export default function MobileBottomNav() {
             }`
           }
         >
-          <Icon size={24} weight={({ isActive }) => isActive ? 'fill' : 'regular'} />
+          <Icon size={24} />
           <span className="mt-0.5">{label}</span>
         </NavLink>
       ))}
@@ -46,7 +46,7 @@ export default function MobileBottomNav() {
             menuAberto ? 'text-primaria' : 'text-texto/50 hover:text-texto'
           }`}
         >
-          <User size={24} weight={menuAberto ? 'fill' : 'regular'} />
+          <User size={24} />
           <span className="mt-0.5">Conta</span>
         </button>
 
