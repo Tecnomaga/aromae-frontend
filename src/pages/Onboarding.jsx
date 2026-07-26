@@ -8,26 +8,12 @@ import api from '../services/api';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 
-// Slides do carrossel
 const slides = [
-  {
-    icon: Storefront,
-    titulo: 'Sua vitrine de perfumes, do seu jeito',
-    texto: 'Monte um catálogo lindo em minutos e mostre seus produtos com a cara do seu negócio.'
-  },
-  {
-    icon: Sparkle,
-    titulo: 'Gerencie seu império perfumado',
-    texto: 'Controle estoque, pedidos e clientes em um só lugar, sempre pela palma da mão.'
-  },
-  {
-    icon: ShareNetwork,
-    titulo: 'Compartilhe sua essência',
-    texto: 'Envie o link da sua loja pelo WhatsApp e Instagram e receba pedidos direto por lá.'
-  }
+  { icon: Storefront, titulo: 'Sua vitrine de perfumes, do seu jeito', texto: 'Monte um catálogo lindo em minutos e mostre seus produtos com a cara do seu negócio.' },
+  { icon: Sparkle, titulo: 'Gerencie seu império perfumado', texto: 'Controle estoque, pedidos e clientes em um só lugar, sempre pela palma da mão.' },
+  { icon: ShareNetwork, titulo: 'Compartilhe sua essência', texto: 'Envie o link da sua loja pelo WhatsApp e Instagram e receba pedidos direto por lá.' }
 ];
 
-// Função para gerar slug a partir do nome
 function gerarSlug(texto) {
   return texto
     .normalize('NFD')
@@ -39,7 +25,6 @@ function gerarSlug(texto) {
     .replace(/-+/g, '-');
 }
 
-// Schema de validação (inclui telefone)
 const onboardingSchema = z.object({
   nomeLoja: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
   slug: z.string().min(3, 'Link deve ter pelo menos 3 caracteres'),
@@ -60,14 +45,12 @@ export default function Onboarding() {
 
   const nomeLoja = watch('nomeLoja');
 
-  // Atualiza o slug automaticamente quando o nome da loja muda
   const handleNomeLoja = (e) => {
     const valor = e.target.value;
     setValue('nomeLoja', valor);
     setValue('slug', gerarSlug(valor));
   };
 
-  // Máscara para telefone
   const formatTelefone = (e) => {
     let value = e.target.value.replace(/\D/g, '');
     value = value.replace(/^(\d{2})(\d)/, '($1) $2')
@@ -76,7 +59,6 @@ export default function Onboarding() {
     return value;
   };
 
-  // Upload da foto de perfil
   const handleFoto = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -85,13 +67,12 @@ export default function Onboarding() {
     }
   };
 
-  // Envia os dados para o backend
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
       formData.append('nomeLoja', data.nomeLoja);
       formData.append('slug', data.slug);
-      formData.append('telefone', data.telefone); // <--- Envia o telefone
+      formData.append('telefone', data.telefone);
       if (fotoPerfil) formData.append('foto', fotoPerfil);
 
       await toast.promise(
@@ -105,7 +86,7 @@ export default function Onboarding() {
 
       const { data: usuario } = await api.get('/auth/me');
       atualizarUsuario(usuario);
-      navigate('/dashboard'); // agora redireciona para o dashboard
+      navigate('/dashboard');
     } catch (err) {
       toast.error('Não foi possível salvar agora. Confira sua conexão.');
     }
@@ -134,25 +115,12 @@ export default function Onboarding() {
             })()}
 
             <div className="flex justify-center gap-2 my-8">
-              {slides.map((_, i) => (
-                <span
-                  key={i}
-                  className={`h-2 rounded-full transition-all ${i === passo ? 'w-6 bg-primaria' : 'w-2 bg-primaria/20'}`}
-                />
-              ))}
+              {slides.map((_, i) => <span key={i} className={`h-2 rounded-full transition-all ${i === passo ? 'w-6 bg-primaria' : 'w-2 bg-primaria/20'}`} />)}
             </div>
 
             <div className="flex items-center justify-between">
-              <button
-                onClick={() => setPasso(totalSlides)}
-                className="text-sm text-texto/50 font-semibold"
-              >
-                Pular
-              </button>
-              <button
-                onClick={() => setPasso(passo + 1)}
-                className="flex items-center gap-2 bg-primaria text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primaria/90 transition"
-              >
+              <button onClick={() => setPasso(totalSlides)} className="text-sm text-texto/50 font-semibold">Pular</button>
+              <button onClick={() => setPasso(passo + 1)} className="flex items-center gap-2 bg-primaria text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primaria/90 transition">
                 {passo === totalSlides - 1 ? 'Criar minha loja' : 'Próximo'} <ArrowRight size={18} />
               </button>
             </div>
@@ -163,14 +131,9 @@ export default function Onboarding() {
             <p className="text-texto/70 mb-6">Vamos dar identidade à sua vitrine.</p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Foto de perfil */}
               <div className="text-center">
                 <div className="w-20 h-20 mx-auto rounded-full bg-primaria/10 flex items-center justify-center overflow-hidden mb-2">
-                  {previewFoto ? (
-                    <img src={previewFoto} alt="Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-2xl font-titulo text-primaria">{nomeLoja?.charAt(0) || 'A'}</span>
-                  )}
+                  {previewFoto ? <img src={previewFoto} alt="Preview" className="w-full h-full object-cover" /> : <span className="text-2xl font-titulo text-primaria">{nomeLoja?.charAt(0) || 'A'}</span>}
                 </div>
                 <label className="inline-flex items-center gap-1 text-sm text-primaria font-semibold cursor-pointer">
                   <Upload size={16} /> Adicionar foto de perfil
@@ -178,50 +141,28 @@ export default function Onboarding() {
                 </label>
               </div>
 
-              {/* Nome da loja */}
               <div>
                 <label className="block text-sm font-semibold mb-1">Nome da sua loja *</label>
-                <input
-                  type="text"
-                  {...register('nomeLoja')}
-                  onChange={handleNomeLoja}
-                  placeholder="Ex.: Flores Perfumadas"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-                />
+                <input type="text" {...register('nomeLoja')} onChange={handleNomeLoja} placeholder="Ex.: Flores Perfumadas" className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
                 {errors.nomeLoja && <p className="text-red-500 text-xs mt-1">{errors.nomeLoja.message}</p>}
               </div>
 
-              {/* Slug (link personalizado) */}
               <div>
                 <label className="block text-sm font-semibold mb-1">Link personalizado *</label>
-                <input
-                  type="text"
-                  {...register('slug')}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-                />
+                <input type="text" {...register('slug')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
                 {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
                 <p className="text-xs text-texto/50 mt-1">Sua vitrine: aromae.app/loja/{watch('slug') || 'sua-loja'}</p>
               </div>
 
-              {/* Telefone (WhatsApp) */}
+              {/* ✅ CAMPO WHATSAPP NO ONBOARDING */}
               <div>
                 <label className="block text-sm font-semibold mb-1">WhatsApp (com DDD) *</label>
-                <input
-                  type="tel"
-                  {...register('telefone')}
-                  onChange={(e) => { e.target.value = formatTelefone(e); }}
-                  placeholder="(11) 99999-9999"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-                />
+                <input type="tel" {...register('telefone')} onChange={(e) => { e.target.value = formatTelefone(e); }} placeholder="(11) 99999-9999" className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
                 {errors.telefone && <p className="text-red-500 text-xs mt-1">{errors.telefone.message}</p>}
                 <p className="text-xs text-texto/50 mt-1">Esse número será usado no botão "Pedir via WhatsApp" da sua vitrine.</p>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-              >
+              <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50 flex items-center justify-center gap-2">
                 <CheckCircle size={20} /> {isSubmitting ? 'Salvando...' : 'Concluir e entrar na loja'}
               </button>
             </form>
