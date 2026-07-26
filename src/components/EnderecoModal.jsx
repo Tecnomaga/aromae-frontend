@@ -10,12 +10,22 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm }) {
   };
 
   const handleConfirm = () => {
-    if (form.nome.trim().length < 2 || form.endereco.trim().length < 5) {
-      alert('Por favor, preencha seu nome e endereço.');
+    if (form.nome.trim().length < 2) {
+      alert('Por favor, preencha seu nome.');
       return;
     }
+    if (form.telefone.trim().length < 10) {
+      alert('Por favor, informe um telefone válido com DDD.');
+      return;
+    }
+    if (form.endereco.trim().length < 5) {
+      alert('Por favor, preencha seu endereço completo.');
+      return;
+    }
+
+    console.log('📦 Dados do cliente enviados:', form);
+    // ✅ Chama a função de confirmação e passa os dados
     onConfirm(form);
-    setForm({ nome: '', telefone: '', endereco: '' });
   };
 
   if (!isOpen) return null;
