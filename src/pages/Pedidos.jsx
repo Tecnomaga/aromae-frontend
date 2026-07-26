@@ -39,7 +39,6 @@ export default function Pedidos() {
 
   if (loading) return <p className="text-center py-10">Carregando pedidos...</p>;
 
-  // Data atual no formato YYYY-MM-DD para limitar o calendário
   const today = new Date().toISOString().slice(0, 10);
 
   return (
@@ -84,7 +83,7 @@ export default function Pedidos() {
           type="date"
           value={filtroData}
           onChange={(e) => setFiltroData(e.target.value)}
-          max={today}  // <--- IMPEDE DIAS FUTUROS
+          max={today}
           className="px-4 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-primaria"
         />
       </div>
@@ -107,7 +106,9 @@ export default function Pedidos() {
                 <p className="text-xs text-texto/40 mt-1">Pedido #{pedido._id.slice(-6)}</p>
               </div>
               <div className="flex items-center gap-4">
-                <span className="font-bold text-primaria">R$ {pedido.total?.toFixed(2)}</span>
+                <span className="font-bold text-primaria">
+                  R$ {pedido.total ? pedido.total.toFixed(2) : '0.00'}
+                </span>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusMap[pedido.status]?.cor}`}>
                   {statusMap[pedido.status]?.label}
                 </span>
