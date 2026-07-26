@@ -2,19 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  -webkit-tap-highlight-color: transparent;
+@layer base {
+  body {
+    @apply bg-fundo text-texto font-corpo antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Scrollbar elegante */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primaria/30 rounded-full hover:bg-primaria/50 transition-colors;
+  }
+
+  /* Placeholder dos inputs */
+  ::placeholder {
+    @apply text-texto/30;
+  }
 }
 
-/* Respect reduced motion preferences */
+@layer components {
+  /* Card padrão com sombra e borda arredondada */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100/50;
+  }
+  
+  .card-lg {
+    @apply card p-6 md:p-8;
+  }
+  
+  .card-sm {
+    @apply card p-4;
+  }
+
+  /* Botões com interações suaves */
+  .btn-primary {
+    @apply bg-primaria text-white px-6 py-3 rounded-xl font-semibold 
+           hover:bg-primaria/90 active:scale-95 transition-all duration-200 
+           shadow-sm hover:shadow-md;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primaria px-6 py-3 rounded-xl font-semibold 
+           border-2 border-primaria hover:bg-primaria/5 active:scale-95 
+           transition-all duration-200;
+  }
+  
+  .btn-danger {
+    @apply bg-red-500 text-white px-4 py-2 rounded-xl font-semibold 
+           hover:bg-red-600 active:scale-95 transition-all duration-200;
+  }
+  
+  .btn-success {
+    @apply bg-sucesso text-white px-4 py-2 rounded-xl font-semibold 
+           hover:bg-sucesso/90 active:scale-95 transition-all duration-200;
+  }
+
+  /* Inputs elegantes */
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-xl 
+           focus:outline-none focus:border-primaria focus:ring-2 
+           focus:ring-primaria/20 transition-all duration-200 
+           bg-white placeholder:text-texto/30;
+  }
+
+  .input-label {
+    @apply block text-sm font-semibold text-texto/80 mb-1.5;
+  }
+
+  /* Modais */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50 
+           flex items-center justify-center p-4 animate-fade-in;
+  }
+  
+  .modal-content {
+    @apply bg-white rounded-3xl shadow-2xl w-full max-w-md 
+           animate-pop overflow-hidden;
+  }
+
+  /* Toast personalizado */
+  .toast-success {
+    @apply bg-sucesso text-white rounded-xl shadow-lg font-semibold px-4 py-3;
+  }
+  .toast-error {
+    @apply bg-red-500 text-white rounded-xl shadow-lg font-semibold px-4 py-3;
+  }
+  .toast-info {
+    @apply bg-primaria text-white rounded-xl shadow-lg font-semibold px-4 py-3;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Animações extras */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Placeholder de imagem elegante */
+.img-placeholder {
+  @apply bg-gradient-to-br from-gray-100 to-gray-200 
+         flex items-center justify-center text-gray-300 
+         rounded-xl overflow-hidden;
+}
+
+/* Respeitar preferências de movimento */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-}
-
-.toast-confirmacao {
-  animation: pop 0.3s ease-out;
 }
