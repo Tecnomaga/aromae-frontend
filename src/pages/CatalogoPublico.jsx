@@ -74,13 +74,15 @@ export default function CatalogoPublico() {
     setEnderecoModalAberto(true);
   };
 
-  const handleComprarAgora = async (endereco) => {
+  const handleComprarAgora = async (dadosCliente) => {
     setEnderecoModalAberto(false);
     setPixLoading(true);
     try {
       const response = await api.post(`/checkout/pix/${produtoSelecionado._id}`, {
         revendedoraId: loja._id,
-        endereco
+        nome: dadosCliente.nome,
+        telefone: dadosCliente.telefone,
+        endereco: dadosCliente.endereco
       });
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
