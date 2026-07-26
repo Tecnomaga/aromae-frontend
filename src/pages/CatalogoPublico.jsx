@@ -99,8 +99,15 @@ export default function CatalogoPublico() {
         produto: produtoSelecionado
       });
     } catch (error) {
-      console.error('🔥 Erro ao gerar Pix:', error.response?.data || error.message);
-      const mensagem = error.response?.data?.message || 'Erro ao gerar Pix. Tente novamente.';
+      console.error('🔥 Erro ao gerar Pix:', error);
+      let mensagem = 'Erro ao gerar Pix. Tente novamente.';
+      if (error.response && error.response.data) {
+        // Se o backend retornou uma mensagem específica, usamos ela
+        mensagem = error.response.data.message || mensagem;
+        console.log('📦 Resposta do backend:', error.response.data);
+      } else if (error.request) {
+        mensagem = 'Erro de conexão com o servidor.';
+      }
       toast.error(mensagem);
     } finally {
       setPixLoading(false);
