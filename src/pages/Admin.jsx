@@ -7,13 +7,8 @@ export default function Admin() {
   const [revendedoras, setRevendedoras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
-  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    // Tenta pegar o e-mail do localStorage (onde o AuthContext salva)
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.email) setUserEmail(user.email);
-
     const token = localStorage.getItem('token');
     if (!token) {
       setErro('Você precisa estar logado para acessar o painel.');
@@ -29,7 +24,7 @@ export default function Admin() {
       .catch((err) => {
         const status = err.response?.status;
         if (status === 403) {
-          setErro(`Acesso negado. E-mail logado: ${userEmail || 'não encontrado'}. Certifique-se de estar logado com aromaevitrine@gmail.com.`);
+          setErro('Acesso negado. Apenas o administrador pode acessar.');
         } else if (status === 401) {
           setErro('Sessão expirada. Faça login novamente.');
         } else {
@@ -37,7 +32,7 @@ export default function Admin() {
         }
         setLoading(false);
       });
-  }, [userEmail]);
+  }, []);
 
   const toggleStatus = async (id) => {
     try {
@@ -65,7 +60,9 @@ export default function Admin() {
   return (
     <div className="max-w-5xl mx-auto p-4">
       <h1 className="font-titulo text-3xl text-primaria mb-6">Painel Admin Aromaê</h1>
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+
+      {/* Versão Desktop (tabela) - oculta no celular */}
+      <div className="hidden md:block bg-white rounded-2xl shadow-sm overflow-hidden">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50 text-texto/70">
             <tr>
@@ -99,8 +96,35 @@ export default function Admin() {
             ))}
           </tbody>
         </table>
-        {revendedoras.length === 0 && <p className="p-8 text-center text-texto/50">Nenhuma revendedora cadastrada ainda.</p>}
       </div>
+
+      {/* Versão Mobile (cartões) - visível apenas no celular */}
+      <div className="md:hidden space-y-4">
+        {revendedoras.map((r) => (
+          <div key={r._id} className="bg-white rounded-xl shadow-sm p-4 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Storefront size={20} className="text-primaria" />
+                <span className="font-bold text-base">{r.nomeLoja || 'Sem nome'}</span>
+              </div>
+              <span className={`px-3 py-1 rounded-full text-xs font-bold ${r.ativo ? 'bg-sucesso/20 text-sucesso' : 'bg-red-100 text-red-500'}`}>
+                {r.ativo ? 'Ativa' : 'Bloqueada'}
+              </span>
+            </div>
+            <div className="text-sm text-texto/70">{r.email}</div>
+            <div className="flex justify-end">
+              <button 
+                onClick={() => toggleStatus(r._id)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold ${r.ativo ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-sucesso/10 text-sucesso hover:bg-sucesso/20'}`}
+              >
+                {r.ativo ? 'Bloquear' : 'Ativar'}
+              </button>
+            </div>
+          </div>
+        ))}
+        {revendedoras.length === 0 && <p className="text-center text-texto/50">Nenhuma revendedora cadastrada ainda.</p>}
+      </div>
+
       <p className="mt-4 text-xs text-texto/50 text-center">Apenas o administrador pode acessar essa página.</p>
     </div>
   );
