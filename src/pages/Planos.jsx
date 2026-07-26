@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, Sparkle, Users, FileCsv, X, CreditCard } from 'phosphor-react';
+import { CheckCircle, Sparkle, Users, FileCsv, X } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -22,8 +22,19 @@ export default function Planos() {
         toast.error('Erro: URL de pagamento não retornada.');
       }
     } catch (error) {
-      console.error(error);
-      toast.error('Erro ao gerar link de pagamento. Verifique sua conexão ou se está logado.');
+      console.error('Erro detalhado:', error);
+      // Verifica o tipo de erro
+      if (error.response && error.response.status === 401) {
+        toast.error('Você não está logado. Faça login novamente.');
+      } else if (error.response && error.response.status === 500) {
+        toast.error('Erro no servidor. Entre em contato com o suporte.');
+      } else if (error.response && error.response.data && error.response.data.message) {
+        toast.error(`Erro: ${error.response.data.message}`);
+      } else if (error.request) {
+        toast.error('Erro de conexão. Verifique se o servidor está no ar.');
+      } else {
+        toast.error('Erro ao gerar link de pagamento. Tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
