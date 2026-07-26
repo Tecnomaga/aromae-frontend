@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './components/ErrorBoundary'; // Já atualizado
 import InstallPrompt from './components/InstallPrompt';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
@@ -16,19 +16,27 @@ import Suporte from './pages/Suporte';
 import Financeiro from './pages/Financeiro';
 import Assinatura from './pages/Assinatura';
 
-// 🛡️ Técnica de pré-carregamento: força o navegador a baixar o Dashboard assim que o app inicia
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-
-// Pré-carrega o Dashboard em background (evita o erro de fetch)
-const preloadDashboard = () => {
+// Pré-carregamento de todos os módulos principais para evitar erros de chunk
+const preloadAll = () => {
   import('./pages/Dashboard');
+  import('./pages/Produtos');
+  import('./pages/ProdutoForm');
+  import('./pages/Pedidos');
+  import('./pages/PedidoForm');
+  import('./pages/Clientes');
+  import('./pages/ClienteForm');
+  import('./pages/Perfil');
+  import('./pages/PerfilEditar');
+  import('./pages/Configuracoes');
+  import('./pages/CatalogoPublico');
 };
 
-// Executa o pré-carregamento logo no início
+// Executa o pré-carregamento assim que o app inicia
 if (typeof window !== 'undefined') {
-  preloadDashboard();
+  preloadAll();
 }
 
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
 const Pedidos = lazy(() => import('./pages/Pedidos'));
@@ -45,9 +53,8 @@ function RotasProtegidas() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 🛡️ Quando o usuário estiver logado, garantimos que o Dashboard já foi pré-carregado
     if (user) {
-      preloadDashboard();
+      preloadAll(); // Reforça o pré-carregamento quando loga
     }
   }, [user]);
 
