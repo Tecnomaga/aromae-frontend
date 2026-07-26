@@ -80,7 +80,6 @@ export default function CatalogoPublico() {
   };
 
   const handleComprarAgora = async (dadosCliente) => {
-    console.log('🛒 Iniciando compra com dados:', dadosCliente);
     setEnderecoModalAberto(false);
     setPixLoading(true);
     try {
@@ -90,10 +89,10 @@ export default function CatalogoPublico() {
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco
       });
-      console.log('✅ Pix gerado com sucesso:', response.data);
       
-      // 🔥 FORÇA A ABERTURA DO MODAL DO QR CODE
+      // A MAGIA ESTÁ AQUI: O MODAL VAI ABRIR FORÇADAMENTE COM OS DADOS CORRETOS
       setPixModal({
+        isOpen: true, 
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
         produto: produtoSelecionado
@@ -239,8 +238,9 @@ export default function CatalogoPublico() {
         </div>
       )}
 
-      {pixModal && (
+      {pixModal && pixModal.isOpen && (
         <PixModal
+          isOpen={pixModal.isOpen}
           qrCodeBase64={pixModal.qrCodeBase64}
           qrCodeText={pixModal.qrCodeText}
           onClose={() => setPixModal(null)}
