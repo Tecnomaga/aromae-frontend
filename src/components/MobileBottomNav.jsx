@@ -51,7 +51,7 @@ export default function MobileBottomNav() {
         </button>
 
         {menuAberto && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden animate-fade-in-up backdrop-blur-sm">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-60 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden animate-fade-in-up backdrop-blur-sm">
             <div className="p-2 space-y-1">
               <NavLink
                 to="/perfil"
@@ -73,6 +73,13 @@ export default function MobileBottomNav() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
               >
                 <Coins size={18} className="text-sucesso" /> Financeiro
+              </NavLink>
+              <NavLink
+                to="/assinatura"
+                onClick={() => setMenuAberto(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+              >
+                <CreditCard size={18} className="text-primaria" /> Assinatura
               </NavLink>
               <NavLink
                 to="/configuracoes"
