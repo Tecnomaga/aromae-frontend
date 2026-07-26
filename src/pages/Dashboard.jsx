@@ -19,17 +19,25 @@ export default function Dashboard() {
   const [mostrarOnboarding, setMostrarOnboarding] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      api.get('/produtos').then(({ data }) => data).catch(() => []),
-      api.get('/pedidos').then(({ data }) => data).catch(() => []),
-      api.get('/relatorios/lucro-mensal').then(({ data }) => data).catch(() => ({})),
-    ]).then(([prods, peds, lucroData]) => {
-      setProdutos(prods);
-      setPedidos(peds);
-      setLucro(lucroData);
-      setLoading(false);
-      if (prods.length > 0) setMostrarOnboarding(false);
-    });
+    // 🛡️ Bloco de segurança: se a API demorar, evitamos crash
+    const fetchData = async () => {
+      try {
+        const [prods, peds, lucroData] = await Promise.all([
+          api.get('/produtos').then(({ data }) => data).catch(() => []),
+          api.get('/pedidos').then(({ data }) => data).catch(() => []),
+          api.get('/relatorios/lucro-mensal').then(({ data }) => data).catch(() => ({})),
+        ]);
+        setProdutos(prods);
+        setPedidos(peds);
+        setLucro(lucroData);
+        if (prods.length > 0) setMostrarOnboarding(false);
+      } catch (error) {
+        console.warn('⚠️ Erro ao carregar dados, mas Dashboard continua funcionando:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const produtosAtivos = produtos.filter((p) => p.ativo).length;
@@ -56,7 +64,6 @@ export default function Dashboard() {
     { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
     { label: 'Estoque baixo', valor: estoqueBaixo.length, icon: Warning, cor: estoqueBaixo.length > 0 ? 'text-red-500 bg-red-50' : 'text-sucesso bg-sucesso/10' },
     { label: 'Pedidos pendentes', valor: pedidosPendentes, icon: ClipboardText, cor: 'text-secundaria bg-secundaria/10' },
-    // VERIFICAÇÃO DE SEGURANÇA AQUI (Evita o erro de toFixed)
     { label: 'Faturamento do mês', valor: faturamentoMes > 0 ? `R$ ${faturamentoMes.toFixed(2)}` : 'R$ 0,00', icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
     { label: 'Lucro líquido (mês)', valor: lucro?.lucroLiquido > 0 ? `R$ ${lucro.lucroLiquido.toFixed(2)}` : 'R$ 0,00', icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
   ];
@@ -67,9 +74,7 @@ export default function Dashboard() {
     <div className="max-w-6xl mx-auto animate-fade-in-up">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-titulo text-4xl md:text-5xl text-primaria mb-1">
-            Olá, {user?.nome?.split(' ')[0] || 'Revendedora'}!
-          </h1>
+          <h1 className="font-titulo text-4xl md:text-5xl text-primaria mb-1">Olá, {user?.nome?.split(' ')[0] || 'Revendedora'}!</h1>
           <p className="text-texto/50 text-lg">Seu império perfumado em um só lugar</p>
         </div>
         <Link to="/planos" className="btn-primary text-sm px-4 py-2">Ver planos</Link>
@@ -77,9 +82,7 @@ export default function Dashboard() {
 
       {mostrarOnboarding && (
         <div className="card-lg bg-gradient-to-br from-primaria/5 to-secundaria/5 border-2 border-primaria/30 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 text-primaria/10 text-9xl -mr-6 -mt-6 select-none">
-            <Rocket size={128} weight="duotone" />
-          </div>
+          <div className="absolute top-0 right-0 text-primaria/10 text-9xl -mr-6 -mt-6 select-none"><Rocket size={128} weight="duotone" /></div>
           <div className="relative z-10">
             <h2 className="font-titulo text-2xl text-primaria mb-2">🚀 Primeiros passos!</h2>
             <p className="text-texto/70 text-sm mb-4">Siga essas 3 etapas para começar a vender hoje mesmo:</p>
@@ -107,9 +110,7 @@ export default function Dashboard() {
 
       {estoqueBaixo.length > 0 && (
         <div className="card-sm bg-red-50/80 border-red-200 mb-8 flex items-start gap-4 p-5">
-          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-            <Warning size={20} className="text-red-500" weight="bold" />
-          </div>
+          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0"><Warning size={20} className="text-red-500" weight="bold" /></div>
           <div className="flex-1">
             <p className="font-semibold text-red-700 text-sm">{estoqueBaixo.length} produto{estoqueBaixo.length > 1 ? 's' : ''} com estoque crítico</p>
             <Link to="/produtos" className="text-red-600 text-xs font-semibold underline mt-2 inline-block hover:text-red-700">Ver todos os produtos →</Link>
