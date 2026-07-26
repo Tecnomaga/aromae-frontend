@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -16,7 +16,19 @@ import Suporte from './pages/Suporte';
 import Financeiro from './pages/Financeiro';
 import Assinatura from './pages/Assinatura';
 
+// 🛡️ Técnica de pré-carregamento: força o navegador a baixar o Dashboard assim que o app inicia
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+
+// Pré-carrega o Dashboard em background (evita o erro de fetch)
+const preloadDashboard = () => {
+  import('./pages/Dashboard');
+};
+
+// Executa o pré-carregamento logo no início
+if (typeof window !== 'undefined') {
+  preloadDashboard();
+}
+
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
 const Pedidos = lazy(() => import('./pages/Pedidos'));
@@ -30,6 +42,14 @@ const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // 🛡️ Quando o usuário estiver logado, garantimos que o Dashboard já foi pré-carregado
+    if (user) {
+      preloadDashboard();
+    }
+  }, [user]);
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
   if (!user) return <Navigate to="/login" replace />;
