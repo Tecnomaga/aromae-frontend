@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MagnifyingGlass, ClipboardText, Eye } from 'phosphor-react';
+import { Plus, MagnifyingGlass, ClipboardText, Eye, FileCsv } from 'phosphor-react';
 import api from '../services/api';
 
 const statusMap = {
@@ -43,12 +43,20 @@ export default function Pedidos() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="font-titulo text-3xl text-primaria">Pedidos</h1>
-        <Link
-          to="/pedidos/novo"
-          className="flex items-center gap-2 bg-primaria text-white px-4 py-2 rounded-lg font-semibold hover:bg-primaria/90 transition"
-        >
-          <Plus size={20} /> Novo Pedido
-        </Link>
+        <div className="flex gap-3 flex-wrap">
+          <button
+            onClick={() => window.open('/api/relatorios/pedidos', '_blank')}
+            className="flex items-center gap-2 bg-gray-100 text-texto px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition"
+          >
+            <FileCsv size={20} /> Exportar CSV
+          </button>
+          <Link
+            to="/pedidos/novo"
+            className="flex items-center gap-2 bg-primaria text-white px-4 py-2 rounded-lg font-semibold hover:bg-primaria/90 transition"
+          >
+            <Plus size={20} /> Novo Pedido
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
