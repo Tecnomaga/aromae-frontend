@@ -23,7 +23,6 @@ export default function CatalogoPublico() {
       .then(({ data }) => {
         setLoja(data.loja);
         setProdutos(data.produtos);
-        // DEBUG: veja no console se o plano veio
         console.log('🧾 Plano da loja:', data.loja?.plano);
       })
       .catch(() => setErro('Loja não encontrada ou está pausada.'))
@@ -86,7 +85,9 @@ export default function CatalogoPublico() {
         produto: produto
       });
     } catch (error) {
-      toast.error('Erro ao gerar Pix. Verifique o plano da loja.');
+      console.error('🔥 Erro ao gerar Pix:', error.response?.data || error.message);
+      const mensagem = error.response?.data?.message || 'Erro ao gerar Pix. Verifique o plano da loja.';
+      toast.error(mensagem);
     } finally {
       setPixLoading(false);
     }
@@ -101,7 +102,6 @@ export default function CatalogoPublico() {
     </div>
   );
 
-  // Verificação segura do plano da loja
   const isPremiumOrPro = loja && loja.plano && (loja.plano === 'pro' || loja.plano === 'premium');
 
   return (
