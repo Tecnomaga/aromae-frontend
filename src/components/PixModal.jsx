@@ -1,16 +1,18 @@
-import { useState } from 'react';
 import { X, Copy } from 'phosphor-react';
 import toast from 'react-hot-toast';
 
-export default function PixModal({ qrCodeBase64, qrCodeText, onClose }) {
+export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose }) {
+  // Se não estiver aberto ou não tiver QR Code, não renderiza nada
+  if (!isOpen || !qrCodeBase64) return null;
+
   const copiarPix = () => {
     navigator.clipboard.writeText(qrCodeText);
     toast.success('Código Pix copiado!');
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content p-6 relative text-center">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 relative text-center animate-pop">
         <button onClick={onClose} className="absolute top-4 right-4 text-texto/40 hover:text-texto">
           <X size={24} />
         </button>
@@ -18,15 +20,11 @@ export default function PixModal({ qrCodeBase64, qrCodeText, onClose }) {
         <p className="text-sm text-texto/50 mb-6">Escaneie o QR Code ou copie o código abaixo.</p>
         
         <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block">
-          {qrCodeBase64 ? (
-            <img src={`data:image/png;base64,${qrCodeBase64}`} alt="QR Code Pix" className="w-48 h-48" />
-          ) : (
-            <div className="w-48 h-48 bg-gray-100 flex items-center justify-center text-texto/30">Gerando...</div>
-          )}
+          <img src={`data:image/png;base64,${qrCodeBase64}`} alt="QR Code Pix" className="w-48 h-48" />
         </div>
 
         <div className="mt-4 flex gap-2 justify-center">
-          <button onClick={copiarPix} className="btn-primary flex items-center gap-2 text-sm px-4 py-2">
+          <button onClick={copiarPix} className="bg-primaria text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-primaria/90 active:scale-95 transition-all">
             <Copy size={18} /> Copiar código
           </button>
         </div>
