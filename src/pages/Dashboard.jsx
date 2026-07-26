@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Warning, ClipboardText, Sparkle, ChartBar } from 'phosphor-react';
+import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
@@ -14,15 +14,18 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [produtos, setProdutos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
+  const [lucro, setLucro] = useState({ faturamentoBruto: 0, custoTotal: 0, lucroLiquido: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       api.get('/produtos').then(({ data }) => data).catch(() => []),
-      api.get('/pedidos').then(({ data }) => data).catch(() => [])
-    ]).then(([prods, peds]) => {
+      api.get('/pedidos').then(({ data }) => data).catch(() => []),
+      api.get('/relatorios/lucro-mensal').then(({ data }) => data).catch(() => ({})),
+    ]).then(([prods, peds, lucroData]) => {
       setProdutos(prods);
       setPedidos(peds);
+      setLucro(lucroData);
       setLoading(false);
     });
   }, []);
@@ -55,7 +58,8 @@ export default function Dashboard() {
     { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
     { label: 'Estoque baixo', valor: estoqueBaixo.length, icon: Warning, cor: estoqueBaixo.length > 0 ? 'text-red-500 bg-red-50' : 'text-sucesso bg-sucesso/10' },
     { label: 'Pedidos pendentes', valor: pedidosPendentes, icon: ClipboardText, cor: 'text-secundaria bg-secundaria/10' },
-    { label: 'Faturamento do mês', valor: `R$ ${faturamentoMes.toFixed(2)}`, icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' }
+    { label: 'Faturamento do mês', valor: `R$ ${faturamentoMes.toFixed(2)}`, icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
+    { label: 'Lucro líquido (mês)', valor: `R$ ${lucro.lucroLiquido.toFixed(2)}`, icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
   ];
 
   if (loading) return (
@@ -76,6 +80,9 @@ export default function Dashboard() {
           </h1>
           <p className="text-texto/50 text-lg">Seu império perfumado em um só lugar</p>
         </div>
+        <Link to="/planos" className="btn-primary text-sm px-4 py-2">
+          Ver planos
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
