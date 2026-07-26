@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MagnifyingGlass, Users, Pencil, Trash, Phone, MapPin } from 'phosphor-react';
+import { Plus, MagnifyingGlass, Users, Pencil, Trash, Phone, MapPin, FileCsv } from 'phosphor-react';
 import api from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
 
@@ -34,12 +34,20 @@ export default function Clientes() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="font-titulo text-3xl text-primaria">Clientes</h1>
-        <Link
-          to="/clientes/novo"
-          className="flex items-center gap-2 bg-primaria text-white px-4 py-2 rounded-lg font-semibold hover:bg-primaria/90 transition"
-        >
-          <Plus size={20} /> Novo Cliente
-        </Link>
+        <div className="flex gap-3 flex-wrap">
+          <button
+            onClick={() => window.open('/api/relatorios/clientes', '_blank')}
+            className="flex items-center gap-2 bg-gray-100 text-texto px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition"
+          >
+            <FileCsv size={20} /> Exportar CSV
+          </button>
+          <Link
+            to="/clientes/novo"
+            className="flex items-center gap-2 bg-primaria text-white px-4 py-2 rounded-lg font-semibold hover:bg-primaria/90 transition"
+          >
+            <Plus size={20} /> Novo Cliente
+          </Link>
+        </div>
       </div>
 
       <div className="relative mb-6">
@@ -103,7 +111,7 @@ export default function Clientes() {
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
         title="Excluir Cliente"
-        message={`Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.`}
+        message="Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita."
         confirmText="Excluir"
       />
     </div>
