@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
@@ -36,34 +37,36 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Cadastro />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/loja/:slug" element={<CatalogoPublico />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/planos" element={<Planos />} />
-            <Route element={<RotasProtegidas />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/produtos" element={<Produtos />} />
-              <Route path="/produtos/novo" element={<ProdutoForm />} />
-              <Route path="/produtos/:id" element={<ProdutoForm />} />
-              <Route path="/pedidos" element={<Pedidos />} />
-              <Route path="/pedidos/novo" element={<PedidoForm />} />
-              <Route path="/pedidos/:id" element={<PedidoForm />} />
-              <Route path="/clientes" element={<Clientes />} />
-              <Route path="/clientes/novo" element={<ClienteForm />} />
-              <Route path="/clientes/:id" element={<ClienteForm />} />
-              <Route path="/perfil" element={<Perfil />} />
-              <Route path="/perfil/editar" element={<PerfilEditar />} />
-              <Route path="/configuracoes" element={<Configuracoes />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-        <InstallPrompt />
+        <ErrorBoundary>
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/cadastro" element={<Cadastro />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/loja/:slug" element={<CatalogoPublico />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/planos" element={<Planos />} />
+              <Route element={<RotasProtegidas />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/produtos" element={<Produtos />} />
+                <Route path="/produtos/novo" element={<ProdutoForm />} />
+                <Route path="/produtos/:id" element={<ProdutoForm />} />
+                <Route path="/pedidos" element={<Pedidos />} />
+                <Route path="/pedidos/novo" element={<PedidoForm />} />
+                <Route path="/pedidos/:id" element={<PedidoForm />} />
+                <Route path="/clientes" element={<Clientes />} />
+                <Route path="/clientes/novo" element={<ClienteForm />} />
+                <Route path="/clientes/:id" element={<ClienteForm />} />
+                <Route path="/perfil" element={<Perfil />} />
+                <Route path="/perfil/editar" element={<PerfilEditar />} />
+                <Route path="/configuracoes" element={<Configuracoes />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+          <InstallPrompt />
+        </ErrorBoundary>
       </BrowserRouter>
     </AuthProvider>
   );
