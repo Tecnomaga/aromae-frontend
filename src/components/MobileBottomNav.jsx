@@ -29,7 +29,9 @@ export default function MobileBottomNav() {
           to={to}
           end={to === '/dashboard'}
           className={({ isActive }) =>
-            `flex flex-col items-center text-xs font-semibold ${isActive ? 'text-primaria' : 'text-texto'}`
+            `flex flex-col items-center text-xs font-semibold ${
+              isActive ? 'text-primaria' : 'text-texto'
+            }`
           }
         >
           <Icon size={24} />
@@ -41,7 +43,9 @@ export default function MobileBottomNav() {
       <div className="relative">
         <button
           onClick={() => setMenuAberto(!menuAberto)}
-          className={`flex flex-col items-center text-xs font-semibold transition-colors ${menuAberto ? 'text-primaria' : 'text-texto'}`}
+          className={`flex flex-col items-center text-xs font-semibold transition-colors ${
+            menuAberto ? 'text-primaria' : 'text-texto'
+          }`}
         >
           <User size={24} />
           <span>Conta</span>
