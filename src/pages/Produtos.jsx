@@ -136,7 +136,9 @@ export default function Produtos() {
               <p className="text-sm text-texto/50">{produto.marca}</p>
               
               <div className="flex justify-between items-center mt-3">
-                <span className="text-2xl font-bold text-primaria">R$ {produto.preco?.toFixed(2)}</span>
+                <span className="text-2xl font-bold text-primaria">
+                  R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
+                </span>
                 <span className={`text-sm font-medium flex items-center gap-1 ${produto.estoque <= 5 ? 'text-red-500' : 'text-texto/50'}`}>
                   {produto.estoque <= 5 && <Warning size={16} weight="bold" />}
                   {produto.estoque} un.
