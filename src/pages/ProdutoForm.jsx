@@ -8,7 +8,9 @@ import { produtoSchema } from '../schemas';
 import toast from 'react-hot-toast';
 
 const marcasSugeridas = ['Avon', 'Boticário', 'Natura', 'Jequiti', 'Mary Kay', 'Lancôme', 'Chanel', 'Dior', 'Importado', 'Outro'];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const etiquetasOpcoes = ['Lançamento', 'Mais vendido', 'Promoção', 'Edição limitada', 'Novidade'];
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export default function ProdutoForm() {
@@ -16,8 +18,9 @@ export default function ProdutoForm() {
   const navigate = useNavigate();
   const editando = !!id;
 
-  const [fotos, setFotos] = useState([]); // armazena objetos File ou strings (URLs existentes)
+  const [fotos, setFotos] = useState([]);
   const [previewFotos, setPreviewFotos] = useState([]);
+  const [etiquetasSelecionadas, setEtiquetasSelecionadas] = useState([]);
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(produtoSchema),
@@ -29,11 +32,16 @@ export default function ProdutoForm() {
       api.get(`/produtos/${id}`)
         .then(({ data }) => {
           reset({
-            nome: data.nome, marca: data.marca, preco: data.preco, estoque: data.estoque,
-            descricao: data.descricao, ativo: data.ativo
+            nome: data.nome,
+            marca: data.marca,
+            preco: data.preco,
+            estoque: data.estoque,
+            descricao: data.descricao,
+            ativo: data.ativo
           });
           setFotos(data.fotos || []);
           setPreviewFotos(data.fotos || []);
+          setEtiquetasSelecionadas(data.etiquetas || []);
         })
         .catch(() => navigate('/produtos'));
     }
@@ -74,6 +82,14 @@ export default function ProdutoForm() {
     setPreviewFotos(novasPreviews);
   };
 
+  const toggleEtiqueta = (etiqueta) => {
+    if (etiquetasSelecionadas.includes(etiqueta)) {
+      setEtiquetasSelecionadas(etiquetasSelecionadas.filter(e => e !== etiqueta));
+    } else {
+      setEtiquetasSelecionadas([...etiquetasSelecionadas, etiqueta]);
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
@@ -83,6 +99,7 @@ export default function ProdutoForm() {
       formData.append('estoque', Number(data.estoque));
       formData.append('descricao', data.descricao);
       formData.append('ativo', data.ativo);
+      formData.append('etiquetas', JSON.stringify(etiquetasSelecionadas));
 
       fotos.forEach((foto) => {
         if (foto instanceof File) formData.append('fotos', foto);
@@ -182,6 +199,27 @@ export default function ProdutoForm() {
                 <input type="file" accept="image/*" onChange={handleUpload} className="hidden" multiple />
               </label>
             )}
+          </div>
+        </div>
+
+        {/* Campo de Etiquetas */}
+        <div>
+          <label className="block text-sm font-semibold mb-2">Etiquetas (opcional)</label>
+          <div className="flex flex-wrap gap-2">
+            {etiquetasOpcoes.map((etiqueta) => (
+              <button
+                key={etiqueta}
+                type="button"
+                onClick={() => toggleEtiqueta(etiqueta)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                  etiquetasSelecionadas.includes(etiqueta)
+                    ? 'bg-primaria text-white'
+                    : 'bg-gray-100 text-texto/60 hover:bg-gray-200'
+                }`}
+              >
+                {etiqueta}
+              </button>
+            ))}
           </div>
         </div>
 
