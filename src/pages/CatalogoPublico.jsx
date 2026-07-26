@@ -16,7 +16,7 @@ export default function CatalogoPublico() {
   const [whatsAppModal, setWhatsAppModal] = useState(null);
   const [pixModal, setPixModal] = useState(null);
   const [pixLoading, setPixLoading] = useState(false);
-  const [enderecoCliente, setEnderecoCliente] = useState(''); // <-- Campo para endereço
+  const [enderecoCliente, setEnderecoCliente] = useState('');
 
   useEffect(() => {
     api.get(`/catalogo/${slug}`)
@@ -67,7 +67,6 @@ export default function CatalogoPublico() {
   };
 
   const handleComprarAgora = async (produto) => {
-    // Se o endereço não foi preenchido, solicita
     if (!enderecoCliente.trim()) {
       toast.error('Por favor, informe seu endereço para entrega.');
       return;
@@ -77,7 +76,7 @@ export default function CatalogoPublico() {
     try {
       const response = await api.post(`/checkout/pix/${produto._id}`, {
         revendedoraId: loja._id,
-        endereco: enderecoCliente // Envia o endereço para o backend (opcional)
+        endereco: enderecoCliente
       });
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
@@ -100,7 +99,6 @@ export default function CatalogoPublico() {
     </div>
   );
 
-  // Verificação segura do plano da loja
   const isPremiumOrPro = loja && loja.plano && (loja.plano === 'pro' || loja.plano === 'premium');
 
   return (
@@ -154,7 +152,6 @@ export default function CatalogoPublico() {
                   
                   {isPremiumOrPro && (
                     <div className="mt-2">
-                      {/* Input para o endereço do cliente */}
                       <input
                         type="text"
                         placeholder="Seu endereço para entrega"
