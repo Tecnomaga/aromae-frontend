@@ -5,6 +5,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import PixModal from '../components/PixModal';
 import EnderecoModal from '../components/EnderecoModal';
+import DetalhesProdutoModal from '../components/DetalhesProdutoModal';
 
 export default function CatalogoPublico() {
   const { slug } = useParams();
@@ -19,6 +20,7 @@ export default function CatalogoPublico() {
   const [pixLoading, setPixLoading] = useState(false);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [enderecoModalAberto, setEnderecoModalAberto] = useState(false);
+  const [detalhesModalAberto, setDetalhesModalAberto] = useState(false);
 
   useEffect(() => {
     api.get(`/catalogo/${slug}`)
@@ -99,6 +101,11 @@ export default function CatalogoPublico() {
     }
   };
 
+  const abrirDetalhes = (produto) => {
+    setProdutoSelecionado(produto);
+    setDetalhesModalAberto(true);
+  };
+
   if (loading) return <div className="min-h-screen bg-fundo flex items-center justify-center">Carregando vitrine...</div>;
   if (erro) return (
     <div className="min-h-screen bg-fundo flex flex-col items-center justify-center p-4">
@@ -136,8 +143,15 @@ export default function CatalogoPublico() {
             {produtos.map((produto) => (
               <div key={produto._id} className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col relative group">
                 <div className="h-40 bg-gray-100 flex items-center justify-center relative">
-                  {produto.fotos?.[0] ? (<img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />) : 
-                    (<Package size={48} className="text-texto/20" />)}
+                  <button onClick={() => abrirDetalhes(produto)} className="w-full h-full">
+                    {produto.fotos?.[0] ? (
+                      <img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package size={48} className="text-texto/20" />
+                      </div>
+                    )}
+                  </button>
                   <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                     {produto.etiquetas?.map((etiqueta, idx) => {
                       let bgClass = 'bg-primaria text-white';
@@ -152,7 +166,9 @@ export default function CatalogoPublico() {
                   <button onClick={() => adicionarAoCarrinho(produto)} className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow hover:bg-primaria hover:text-white transition"><Plus size={18} /></button>
                 </div>
                 <div className="p-3 flex-1 flex flex-col">
-                  <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
+                  <button onClick={() => abrirDetalhes(produto)} className="text-left hover:underline">
+                    <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
+                  </button>
                   <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
                   <p className="text-primaria font-bold text-lg mt-2">
                     R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
@@ -214,6 +230,12 @@ export default function CatalogoPublico() {
         onClose={() => setEnderecoModalAberto(false)}
         onConfirm={handleComprarAgora}
       />
+
+      <DetalhesProdutoModal
+        produto={produtoSelecionado}
+        isOpen={detalhesModalAberto}
+        onClose={() => setDetalhesModalAberto(false)}
+      />
     </div>
   );
-}
+      }
