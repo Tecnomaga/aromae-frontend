@@ -82,7 +82,6 @@ export default function Landing() {
           Sua vitrine de perfumes <br />
           <span className="text-primaria relative inline-block">
             organizada e profissional
-            {/* Sublinhado corrigido */}
             <motion.div 
               className="absolute bottom-[2px] left-0 w-full h-1.5 bg-primaria/20 -z-10 rounded-full"
               initial={{ width: 0 }}
@@ -203,7 +202,6 @@ export default function Landing() {
         <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-primaria/60 text-sm mb-12">Sem fidelidade. Cancele quando quiser.</motion.p>
         
         <div className="flex flex-col md:flex-row gap-8 justify-center">
-          
           {/* Mensal */}
           <motion.div 
             whileHover="hover"
@@ -255,6 +253,7 @@ export default function Landing() {
               'Preciso de um site separado?',
               'Como funciona o período de teste?',
               'Posso cancelar quando quiser?',
+              'Qual a comissão da plataforma?', // <--- NOVA PERGUNTA ADICIONADA
               'O sistema funciona no celular?'
             ].map((q, i) => (
               <motion.details 
@@ -277,7 +276,8 @@ export default function Landing() {
                   {i === 0 && 'Não! O Aromaê cria sua vitrine automaticamente. Você só compartilha o link.'}
                   {i === 1 && 'Você tem 3 dias grátis para testar todos os recursos. Depois, escolhe um plano para continuar.'}
                   {i === 2 && 'Sim! Você pode cancelar a qualquer momento. Não há fidelidade.'}
-                  {i === 3 && 'Sim! O Aromaê é 100% responsivo e pode ser usado pelo navegador do celular.'}
+                  {i === 3 && 'A Aromaê cobra uma taxa de 5% sobre as vendas realizadas via Checkout Pix (exclusivo dos planos Pro e Premium). A taxa é descontada automaticamente no momento da venda. Não há custo adicional para o cliente.'}
+                  {i === 4 && 'Sim! O Aromaê é 100% responsivo e pode ser usado pelo navegador do celular.'}
                 </motion.div>
               </motion.details>
             ))}
@@ -300,4 +300,4 @@ export default function Landing() {
       </footer>
     </div>
   );
-                  }
+}
