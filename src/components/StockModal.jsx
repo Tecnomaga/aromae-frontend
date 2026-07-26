@@ -31,31 +31,44 @@ export default function StockModal({ produto, onClose, onUpdate }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-texto/50 hover:text-texto">
-          <X size={24} />
+    <div className="modal-overlay">
+      <div className="modal-content p-6 relative">
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-4 text-texto/40 hover:text-texto transition-colors"
+        >
+          <X size={24} weight="bold" />
         </button>
 
-        <h2 className="font-titulo text-2xl text-primaria mb-4">Ajustar Estoque</h2>
+        <h2 className="font-titulo text-2xl text-primaria mb-2">
+          {modo === 'baixa' ? 'Ajustar Estoque' : 'Histórico'}
+        </h2>
+        <p className="text-sm text-texto/50 mb-6">
+          {modo === 'baixa' ? `Produto: ${produto.nome} – Estoque atual: ${produto.estoque} un.` : 'Movimentações recentes'}
+        </p>
 
         {modo === 'historico' ? (
           <div>
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-60 overflow-y-auto pr-2">
               {movimentacoes.length === 0 ? (
-                <p className="text-center text-texto/50 py-4">Sem movimentações.</p>
+                <p className="text-center text-texto/40 py-8 text-sm">Nenhuma movimentação registrada.</p>
               ) : (
                 <ul className="space-y-3">
                   {movimentacoes.map((mov) => (
-                    <li key={mov._id} className="flex items-start gap-3 border-b border-gray-100 pb-2">
-                      <Clock size={20} className="text-texto/40 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold">
-                          {mov.tipo === 'entrada' ? '+' : '-'}{mov.quantidade} un. - {mov.motivo || 'Sem motivo'}
-                        </p>
-                        <p className="text-xs text-texto/50">
-                          {new Date(mov.criadoEm).toLocaleString('pt-BR')}
-                        </p>
+                    <li key={mov._id} className="flex items-start gap-3 border-b border-gray-100 pb-3">
+                      <Clock size={18} className="text-texto/30 mt-0.5 shrink-0" />
+                      <div className="w-full">
+                        <div className="flex justify-between items-center">
+                          <p className="text-sm font-semibold">
+                            <span className={mov.tipo === 'entrada' ? 'text-sucesso' : 'text-red-500'}>
+                              {mov.tipo === 'entrada' ? '+' : '-'}{mov.quantidade}
+                            </span> un.
+                          </p>
+                          <span className="text-xs text-texto/40">
+                            {new Date(mov.criadoEm).toLocaleDateString('pt-BR')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-texto/50">{mov.motivo || 'Sem motivo'}</p>
                       </div>
                     </li>
                   ))}
@@ -63,63 +76,64 @@ export default function StockModal({ produto, onClose, onUpdate }) {
               )}
               <button
                 onClick={() => setModo('baixa')}
-                className="mt-4 text-primaria font-semibold text-sm underline"
+                className="mt-4 text-primaria font-semibold text-sm underline hover:text-primaria/80 transition"
               >
-                Voltar
+                ← Voltar para ajuste
               </button>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-texto/70">
-              Produto: <strong>{produto.nome}</strong> – Estoque atual: {produto.estoque}
-            </p>
-
-            <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+          <div className="space-y-5">
+            <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
               <button
                 onClick={() => setTipoAcao('saida')}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition ${
-                  tipoAcao === 'saida' ? 'bg-white shadow text-red-500' : 'text-texto'
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+                  tipoAcao === 'saida' 
+                    ? 'bg-white shadow-md text-red-500' 
+                    : 'text-texto/60 hover:text-texto'
                 }`}
               >
-                <ArrowDown size={16} /> Baixa
+                <ArrowDown size={18} weight="bold" /> Saída
               </button>
               <button
                 onClick={() => setTipoAcao('entrada')}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition ${
-                  tipoAcao === 'entrada' ? 'bg-white shadow text-sucesso' : 'text-texto'
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+                  tipoAcao === 'entrada' 
+                    ? 'bg-white shadow-md text-sucesso' 
+                    : 'text-texto/60 hover:text-texto'
                 }`}
               >
-                <ArrowUp size={16} /> Reposição
+                <ArrowUp size={18} weight="bold" /> Entrada
               </button>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-1">Quantidade</label>
+              <label className="input-label">Quantidade</label>
               <input
                 type="number"
                 min="1"
                 value={quantidade}
                 onChange={(e) => setQuantidade(Number(e.target.value))}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                className="input-field"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-1">Motivo (opcional)</label>
+              <label className="input-label">Motivo (opcional)</label>
               <input
                 type="text"
                 value={motivo}
                 onChange={(e) => setMotivo(e.target.value)}
                 placeholder="Ex.: venda, quebra, compra..."
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                className="input-field"
               />
             </div>
 
             <button
               onClick={handleAcao}
-              className="w-full bg-primaria text-white py-2 rounded-lg font-semibold hover:bg-primaria/90 transition"
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-2"
             >
+              {tipoAcao === 'saida' ? <ArrowDown size={18} /> : <ArrowUp size={18} />}
               Confirmar
             </button>
           </div>
