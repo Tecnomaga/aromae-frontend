@@ -28,12 +28,10 @@ export default function Dashboard() {
       setPedidos(peds);
       setLucro(lucroData);
       setLoading(false);
-      // Se já tiver produtos, esconde o onboarding
       if (prods.length > 0) setMostrarOnboarding(false);
     });
   }, []);
 
-  // Cálculos existentes
   const produtosAtivos = produtos.filter((p) => p.ativo).length;
   const estoqueBaixo = produtos.filter((p) => p.estoque <= 5);
   const pedidosPendentes = pedidos.filter((p) => p.status === 'pendente').length;
@@ -58,8 +56,9 @@ export default function Dashboard() {
     { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
     { label: 'Estoque baixo', valor: estoqueBaixo.length, icon: Warning, cor: estoqueBaixo.length > 0 ? 'text-red-500 bg-red-50' : 'text-sucesso bg-sucesso/10' },
     { label: 'Pedidos pendentes', valor: pedidosPendentes, icon: ClipboardText, cor: 'text-secundaria bg-secundaria/10' },
-    { label: 'Faturamento do mês', valor: `R$ ${faturamentoMes.toFixed(2)}`, icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
-    { label: 'Lucro líquido (mês)', valor: `R$ ${lucro.lucroLiquido.toFixed(2)}`, icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
+    // VERIFICAÇÃO DE SEGURANÇA AQUI (Evita o erro de toFixed)
+    { label: 'Faturamento do mês', valor: faturamentoMes > 0 ? `R$ ${faturamentoMes.toFixed(2)}` : 'R$ 0,00', icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
+    { label: 'Lucro líquido (mês)', valor: lucro?.lucroLiquido > 0 ? `R$ ${lucro.lucroLiquido.toFixed(2)}` : 'R$ 0,00', icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
   ];
 
   if (loading) return <div className="min-h-[60vh] flex items-center justify-center"><div className="text-center"><div className="w-12 h-12 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin mx-auto mb-4"></div><p className="text-texto/50 text-sm">Carregando seu império...</p></div></div>;
@@ -76,7 +75,6 @@ export default function Dashboard() {
         <Link to="/planos" className="btn-primary text-sm px-4 py-2">Ver planos</Link>
       </div>
 
-      {/* --- CARTÃO DE ONBOARDING (Primeiros Passos) --- */}
       {mostrarOnboarding && (
         <div className="card-lg bg-gradient-to-br from-primaria/5 to-secundaria/5 border-2 border-primaria/30 mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 text-primaria/10 text-9xl -mr-6 -mt-6 select-none">
@@ -94,7 +92,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      {/* --- FIM DO ONBOARDING --- */}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {cards.map(({ label, valor, icon: Icon, cor }) => (
@@ -108,7 +105,6 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Restante do Dashboard (Gráfico e aviso de estoque) - Mantido igual */}
       {estoqueBaixo.length > 0 && (
         <div className="card-sm bg-red-50/80 border-red-200 mb-8 flex items-start gap-4 p-5">
           <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
