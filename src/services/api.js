@@ -12,11 +12,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor de resposta: captura erros e não deixa o app quebrar
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Se for erro 401 (não autorizado), limpa token
+    // Log detalhado no console para debug
+    console.error('Erro na requisição:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
