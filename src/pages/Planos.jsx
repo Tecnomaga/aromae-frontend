@@ -23,23 +23,34 @@ export default function Planos() {
       }
     } catch (error) {
       console.error('Erro detalhado:', error);
-      // Verifica o tipo de erro
-      if (error.response && error.response.status === 401) {
-        toast.error('Você não está logado. Faça login novamente.');
-      } else if (error.response && error.response.status === 500) {
-        toast.error('Erro no servidor. Entre em contato com o suporte.');
-      } else if (error.response && error.response.data && error.response.data.message) {
-        toast.error(`Erro: ${error.response.data.message}`);
+      
+      // CAPTURA O ERRO REAL DO BACKEND
+      let mensagemErro = 'Erro desconhecido.';
+      if (error.response && error.response.data) {
+        // Se o backend retornou um detalhe, mostramos ele
+        if (error.response.data.detalhe) {
+          // Se for um objeto, transforma em string
+          const detalhe = typeof error.response.data.detalhe === 'object' 
+            ? JSON.stringify(error.response.data.detalhe) 
+            : error.response.data.detalhe;
+          mensagemErro = detalhe;
+        } else if (error.response.data.message) {
+          mensagemErro = error.response.data.message;
+        }
       } else if (error.request) {
-        toast.error('Erro de conexão. Verifique se o servidor está no ar.');
+        mensagemErro = 'Erro de conexão com o servidor.';
       } else {
-        toast.error('Erro ao gerar link de pagamento. Tente novamente.');
+        mensagemErro = error.message;
       }
+      
+      // Exibe o erro real no toast
+      toast.error(`Erro: ${mensagemErro}`);
     } finally {
       setLoading(false);
     }
   };
 
+  // ... (restante do componente Planos, sem alterações)
   const planos = [
     {
       id: 'basico',
