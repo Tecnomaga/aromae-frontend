@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
+import InstallPrompt from './components/InstallPrompt'; // <--- Importe o novo componente
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
@@ -9,6 +10,7 @@ import Landing from './pages/Landing';
 import Bloqueado from './pages/Bloqueado';
 import Admin from './pages/Admin';
 
+// Carregamento sob demanda
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
@@ -23,6 +25,7 @@ const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
+
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (!user.ativo) return <Bloqueado />;
@@ -59,6 +62,8 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        {/* O prompt de instalação aparecerá em todas as telas */}
+        <InstallPrompt />
       </BrowserRouter>
     </AuthProvider>
   );
