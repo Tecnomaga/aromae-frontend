@@ -23,6 +23,8 @@ export default function CatalogoPublico() {
       .then(({ data }) => {
         setLoja(data.loja);
         setProdutos(data.produtos);
+        // DEBUG: veja no console se o plano veio
+        console.log('🧾 Plano da loja:', data.loja?.plano);
       })
       .catch(() => setErro('Loja não encontrada ou está pausada.'))
       .finally(() => setLoading(false));
@@ -99,6 +101,7 @@ export default function CatalogoPublico() {
     </div>
   );
 
+  // Verificação segura do plano da loja
   const isPremiumOrPro = loja && loja.plano && (loja.plano === 'pro' || loja.plano === 'premium');
 
   return (
@@ -206,4 +209,4 @@ export default function CatalogoPublico() {
       )}
     </div>
   );
-            }
+}
