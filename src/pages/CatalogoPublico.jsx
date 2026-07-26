@@ -24,7 +24,6 @@ export default function CatalogoPublico() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  // Carregar carrinho do localStorage
   useEffect(() => {
     const cart = localStorage.getItem(`cart_${slug}`);
     if (cart) setCarrinho(JSON.parse(cart));
@@ -100,6 +99,24 @@ export default function CatalogoPublico() {
                 <div className="h-40 bg-gray-100 flex items-center justify-center relative">
                   {produto.fotos?.[0] ? (<img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />) : 
                     (<Package size={48} className="text-texto/20" />)}
+                  
+                  {/* Etiquetas */}
+                  <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                    {produto.etiquetas?.map((etiqueta, idx) => {
+                      let bgClass = 'bg-primaria text-white';
+                      if (etiqueta === 'Mais vendido') bgClass = 'bg-secundaria text-white';
+                      if (etiqueta === 'Promoção') bgClass = 'bg-red-500 text-white';
+                      if (etiqueta === 'Edição limitada') bgClass = 'bg-purple-500 text-white';
+                      if (etiqueta === 'Novidade') bgClass = 'bg-green-500 text-white';
+                      if (etiqueta === 'Lançamento') bgClass = 'bg-blue-500 text-white';
+                      return (
+                        <span key={idx} className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${bgClass}`}>
+                          {etiqueta}
+                        </span>
+                      );
+                    })}
+                  </div>
+
                   <button 
                     onClick={() => adicionarAoCarrinho(produto)}
                     className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow hover:bg-primaria hover:text-white transition"
@@ -124,7 +141,6 @@ export default function CatalogoPublico() {
         )}
       </main>
 
-      {/* Rodapé com Carrinho Múltiplo */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 py-3 px-4 z-10">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-4 w-full sm:w-auto">
