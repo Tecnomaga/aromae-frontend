@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Gradiente do Fundo -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C17B7B" />
+      <stop offset="100%" stop-color="#8C4E4E" />
+    </linearGradient>
+    <!-- Gradiente do Ouro -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C85E" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    <!-- Gradiente do Vidro -->
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.98" />
+      <stop offset="100%" stop-color="#F8F6F2" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <!-- Círculo de Fundo com Gradiente -->
+  <circle cx="256" cy="256" r="256" fill="url(#bgGrad)" />
+  
+  <!-- Círculo Interno de Brilho -->
+  <circle cx="256" cy="256" r="230" fill="#FFFFFF" opacity="0.1" />
+  <circle cx="256" cy="256" r="160" fill="#FFFFFF" opacity="0.05" />
+
+  <!-- Frasco de Perfume (Vidro) -->
+  <rect x="186" y="190" width="140" height="180" rx="30" fill="url(#glassGrad)" />
+  <!-- Frasco: Sombra e Brilho interno -->
+  <rect x="186" y="190" width="140" height="180" rx="30" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-opacity="0.6" />
+  <rect x="196" y="200" width="10" height="150" rx="5" fill="#FFFFFF" opacity="0.4" />
+
+  <!-- Tampa do Frasco (Dourada) -->
+  <rect x="226" y="120" width="60" height="70" rx="10" fill="url(#goldGrad)" />
+  <!-- Tampa: detalhe superior -->
+  <rect x="238" y="105" width="36" height="20" rx="6" fill="url(#goldGrad)" />
+  <!-- Tampa: Sombra e reflexo -->
+  <rect x="226" y="120" width="60" height="70" rx="10" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.4" />
+
+  <!-- Interior do Frasco: A Essência (Pétala / Aromaê) -->
+  <!-- A curva forma sutilmente a letra "A" -->
+  <path d="M 256 320 C 240 260, 210 230, 256 190 C 302 230, 272 260, 256 320 Z" fill="url(#goldGrad)" opacity="0.9" />
+  
+  <!-- Brilho sobre a essência -->
+  <path d="M 256 310 C 245 260, 220 235, 256 200" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-opacity="0.4" stroke-linecap="round" />
+
+  <!-- Haste/Transparência da tampa -->
+  <rect x="240" y="185" width="32" height="10" rx="4" fill="url(#goldGrad)" opacity="0.6" />
+</svg>
