@@ -82,8 +82,9 @@ export default function Landing() {
           Sua vitrine de perfumes <br />
           <span className="text-primaria relative inline-block">
             organizada e profissional
+            {/* Sublinhado corrigido: mais fino, rente ao texto e menos intrusivo */}
             <motion.div 
-              className="absolute bottom-1 left-0 w-full h-2 bg-primaria/20 -z-10 rounded-full"
+              className="absolute bottom-[2px] left-0 w-full h-1.5 bg-primaria/20 -z-10 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ delay: 0.5, duration: 0.6 }}
@@ -298,4 +299,4 @@ export default function Landing() {
       </footer>
     </div>
   );
-                  }
+}
