@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, Sparkle, Users, FileCsv, ShoppingCart, X, CreditCard } from 'phosphor-react';
+import { CheckCircle, Sparkle, Users, FileCsv, X, CreditCard } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -16,9 +16,14 @@ export default function Planos() {
         tipoPlano,
         periodo,
       });
-      window.location.href = response.data.checkoutUrl;
+      if (response.data.checkoutUrl) {
+        window.location.href = response.data.checkoutUrl;
+      } else {
+        toast.error('Erro: URL de pagamento não retornada.');
+      }
     } catch (error) {
-      toast.error('Erro ao gerar link de pagamento.');
+      console.error(error);
+      toast.error('Erro ao gerar link de pagamento. Verifique sua conexão ou se está logado.');
     } finally {
       setLoading(false);
     }
@@ -30,12 +35,7 @@ export default function Planos() {
       nome: 'Básico',
       precoMensal: 19.90,
       precoAnual: 199.00,
-      features: [
-        'Vitrine ilimitada',
-        'Gestão de estoque',
-        'Clientes',
-        'Pedidos via WhatsApp'
-      ],
+      features: ['Vitrine ilimitada', 'Gestão de estoque', 'Clientes', 'Pedidos via WhatsApp'],
       icon: <Sparkle size={24} />,
     },
     {
@@ -43,12 +43,7 @@ export default function Planos() {
       nome: 'Pro',
       precoMensal: 29.90,
       precoAnual: 299.00,
-      features: [
-        'Tudo do Básico',
-        'Relatórios de lucro',
-        'Exportação CSV',
-        '✔️ Checkout Pix (vendas diretas)'
-      ],
+      features: ['Tudo do Básico', 'Relatórios de lucro', 'Exportação CSV', '✔️ Checkout Pix (vendas diretas)'],
       icon: <FileCsv size={24} />,
       destaque: true,
     },
@@ -57,12 +52,7 @@ export default function Planos() {
       nome: 'Premium',
       precoMensal: 49.90,
       precoAnual: 499.00,
-      features: [
-        'Tudo do Pro',
-        'Múltiplos usuários',
-        'Suporte prioritário',
-        '✔️ Checkout Pix + comissão reduzida'
-      ],
+      features: ['Tudo do Pro', 'Múltiplos usuários', 'Suporte prioritário', '✔️ Checkout Pix + comissão reduzida'],
       icon: <Users size={24} />,
     },
   ];
