@@ -4,6 +4,7 @@ import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as Lin
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import PixModal from '../components/PixModal';
+import EnderecoModal from '../components/EnderecoModal';
 
 export default function CatalogoPublico() {
   const { slug } = useParams();
@@ -16,7 +17,8 @@ export default function CatalogoPublico() {
   const [whatsAppModal, setWhatsAppModal] = useState(null);
   const [pixModal, setPixModal] = useState(null);
   const [pixLoading, setPixLoading] = useState(false);
-  const [enderecoCliente, setEnderecoCliente] = useState('');
+  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+  const [enderecoModalAberto, setEnderecoModalAberto] = useState(false);
 
   useEffect(() => {
     api.get(`/catalogo/${slug}`)
@@ -67,29 +69,31 @@ export default function CatalogoPublico() {
     return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
   };
 
-  const handleComprarAgora = async (produto) => {
-    if (!enderecoCliente.trim()) {
-      toast.error('Por favor, informe seu endereço para entrega.');
-      return;
-    }
+  const abrirModalEndereco = (produto) => {
+    setProdutoSelecionado(produto);
+    setEnderecoModalAberto(true);
+  };
 
+  const handleComprarAgora = async (endereco) => {
+    setEnderecoModalAberto(false);
     setPixLoading(true);
     try {
-      const response = await api.post(`/checkout/pix/${produto._id}`, {
+      const response = await api.post(`/checkout/pix/${produtoSelecionado._id}`, {
         revendedoraId: loja._id,
-        endereco: enderecoCliente
+        endereco
       });
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
-        produto: produto
+        produto: produtoSelecionado
       });
     } catch (error) {
       console.error('🔥 Erro ao gerar Pix:', error.response?.data || error.message);
-      const mensagem = error.response?.data?.message || 'Erro ao gerar Pix. Verifique o plano da loja.';
+      const mensagem = error.response?.data?.message || 'Erro ao gerar Pix. Tente novamente.';
       toast.error(mensagem);
     } finally {
       setPixLoading(false);
+      setProdutoSelecionado(null);
     }
   };
 
@@ -154,18 +158,13 @@ export default function CatalogoPublico() {
                   <button onClick={() => setWhatsAppModal(produto)} className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"><WhatsappLogo size={18} weight="fill" /> Pedir</button>
                   
                   {isPremiumOrPro && (
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        placeholder="Seu endereço para entrega"
-                        value={enderecoCliente}
-                        onChange={(e) => setEnderecoCliente(e.target.value)}
-                        className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm mb-2 focus:outline-none focus:border-primaria"
-                      />
-                      <button onClick={() => handleComprarAgora(produto)} disabled={pixLoading} className="w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition">
-                        <CreditCard size={18} /> Comprar (Pix)
-                      </button>
-                    </div>
+                    <button 
+                      onClick={() => abrirModalEndereco(produto)} 
+                      disabled={pixLoading}
+                      className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition"
+                    >
+                      <CreditCard size={18} /> Comprar (Pix)
+                    </button>
                   )}
                 </div>
               </div>
@@ -207,6 +206,12 @@ export default function CatalogoPublico() {
           onClose={() => setPixModal(null)}
         />
       )}
+
+      <EnderecoModal
+        isOpen={enderecoModalAberto}
+        onClose={() => setEnderecoModalAberto(false)}
+        onConfirm={handleComprarAgora}
+      />
     </div>
   );
 }
