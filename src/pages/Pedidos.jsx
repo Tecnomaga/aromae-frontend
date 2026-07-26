@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MagnifyingGlass, ClipboardText, Eye, FileCsv } from 'phosphor-react';
+import { Plus, MagnifyingGlass, ClipboardText, Eye, FileCsv, Trash } from 'phosphor-react';
 import api from '../services/api';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 const statusMap = {
   pendente: { label: 'Pendente', cor: 'bg-yellow-100 text-yellow-700' },
@@ -17,13 +19,22 @@ export default function Pedidos() {
   const [filtroStatus, setFiltroStatus] = useState('todos');
   const [filtroData, setFiltroData] = useState('');
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
-    api.get('/pedidos')
-      .then(({ data }) => setPedidos(data))
-      .catch(() => setPedidos([]))
-      .finally(() => setLoading(false));
+    carregarPedidos();
   }, []);
+
+  const carregarPedidos = async () => {
+    try {
+      const { data } = await api.get('/pedidos');
+      setPedidos(data);
+    } catch {
+      setPedidos([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pedidosFiltrados = pedidos
     .filter((p) => filtroStatus === 'todos' || p.status === filtroStatus)
@@ -36,6 +47,18 @@ export default function Pedidos() {
       const termo = busca.toLowerCase();
       return p.cliente?.nome?.toLowerCase().includes(termo) || p._id.includes(termo);
     });
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await api.delete(`/pedidos/${deleteTarget}`);
+      toast.success('Pedido excluído!');
+      carregarPedidos();
+      setDeleteTarget(null);
+    } catch {
+      toast.error('Erro ao excluir pedido.');
+    }
+  };
 
   if (loading) return <p className="text-center py-10">Carregando pedidos...</p>;
 
@@ -115,11 +138,29 @@ export default function Pedidos() {
                 <Link to={`/pedidos/${pedido._id}`} className="text-primaria hover:underline flex items-center gap-1">
                   <Eye size={18} /> Ver
                 </Link>
+                {/* 🗑️ Botão excluir apenas para cancelados e concluídos */}
+                {(pedido.status === 'cancelado' || pedido.status === 'entregue') && (
+                  <button
+                    onClick={() => setDeleteTarget(pedido._id)}
+                    className="text-red-500 hover:text-red-700 transition"
+                  >
+                    <Trash size={18} />
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Excluir Pedido"
+        message="Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+      />
     </div>
   );
 }
