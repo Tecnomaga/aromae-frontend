@@ -16,6 +16,7 @@ export default function CatalogoPublico() {
   const [whatsAppModal, setWhatsAppModal] = useState(null);
   const [pixModal, setPixModal] = useState(null);
   const [pixLoading, setPixLoading] = useState(false);
+  const [enderecoCliente, setEnderecoCliente] = useState(''); // <-- Campo para endereço
 
   useEffect(() => {
     api.get(`/catalogo/${slug}`)
@@ -66,10 +67,17 @@ export default function CatalogoPublico() {
   };
 
   const handleComprarAgora = async (produto) => {
+    // Se o endereço não foi preenchido, solicita
+    if (!enderecoCliente.trim()) {
+      toast.error('Por favor, informe seu endereço para entrega.');
+      return;
+    }
+
     setPixLoading(true);
     try {
       const response = await api.post(`/checkout/pix/${produto._id}`, {
-        revendedoraId: loja._id
+        revendedoraId: loja._id,
+        endereco: enderecoCliente // Envia o endereço para o backend (opcional)
       });
       setPixModal({
         qrCodeBase64: response.data.qrCodeBase64,
@@ -92,7 +100,8 @@ export default function CatalogoPublico() {
     </div>
   );
 
-  const isPremiumOrPro = loja && (loja.plano === 'pro' || loja.plano === 'premium');
+  // Verificação segura do plano da loja
+  const isPremiumOrPro = loja && loja.plano && (loja.plano === 'pro' || loja.plano === 'premium');
 
   return (
     <div className="min-h-screen bg-fundo font-corpo pb-32">
@@ -144,9 +153,19 @@ export default function CatalogoPublico() {
                   <button onClick={() => setWhatsAppModal(produto)} className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"><WhatsappLogo size={18} weight="fill" /> Pedir</button>
                   
                   {isPremiumOrPro && (
-                    <button onClick={() => handleComprarAgora(produto)} disabled={pixLoading} className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition">
-                      <CreditCard size={18} /> Comprar (Pix)
-                    </button>
+                    <div className="mt-2">
+                      {/* Input para o endereço do cliente */}
+                      <input
+                        type="text"
+                        placeholder="Seu endereço para entrega"
+                        value={enderecoCliente}
+                        onChange={(e) => setEnderecoCliente(e.target.value)}
+                        className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm mb-2 focus:outline-none focus:border-primaria"
+                      />
+                      <button onClick={() => handleComprarAgora(produto)} disabled={pixLoading} className="w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition">
+                        <CreditCard size={18} /> Comprar (Pix)
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
