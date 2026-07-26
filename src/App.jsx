@@ -5,7 +5,8 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
-import Landing from './pages/Landing'; // <--- Importe a Landing Page
+import Landing from './pages/Landing';
+import Bloqueado from './pages/Bloqueado'; // <--- Importe a tela de bloqueio
 
 // Carregamento sob demanda (Code Splitting)
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -20,12 +21,22 @@ const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
+// Função que protege as rotas internas
 function RotasProtegidas() {
   const { user, loading } = useAuth();
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
+  
+  // Se não estiver logado, manda para o Login
   if (!user) return <Navigate to="/login" replace />;
 
+  // SE O USUÁRIO ESTIVER LOGADO, MAS ESTIVER BLOQUEADO (ativo: false)
+  // O sistema o impede de ver o Dashboard e exibe a tela "Bloqueado.jsx"
+  if (!user.ativo) {
+    return <Bloqueado />;
+  }
+
+  // Se estiver logado e ativo, mostra o Layout (Sidebar e Dashboard)
   return <Layout />;
 }
 
@@ -36,15 +47,15 @@ export default function App() {
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
           <Routes>
             {/* Rotas Públicas */}
-            <Route path="/" element={<Landing />} /> {/* <--- A raiz agora é a Landing */}
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/loja/:slug" element={<CatalogoPublico />} />
 
-            {/* Rotas Protegidas (Agora todas dentro de /dashboard) */}
+            {/* Rotas Protegidas (Acessadas apenas se estiver logado e ativo) */}
             <Route element={<RotasProtegidas />}>
-              <Route path="/dashboard" element={<Dashboard />} /> {/* <--- Dashboard mudou de '/' para '/dashboard' */}
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/produtos" element={<Produtos />} />
               <Route path="/produtos/novo" element={<ProdutoForm />} />
               <Route path="/produtos/:id" element={<ProdutoForm />} />
