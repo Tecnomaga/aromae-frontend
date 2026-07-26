@@ -58,60 +58,78 @@ export default function Dashboard() {
     { label: 'Faturamento do mês', valor: `R$ ${faturamentoMes.toFixed(2)}`, icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' }
   ];
 
-  if (loading) return <p className="text-center py-10">Carregando seu panorama...</p>;
+  if (loading) return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin mx-auto mb-4"></div>
+        <p className="text-texto/50 text-sm">Carregando seu império...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h1 className="font-titulo text-3xl text-primaria mb-1">
-        Olá{user?.nome ? `, ${user.nome.split(' ')[0]}` : ''}!
-      </h1>
-      <p className="text-texto/60 mb-6">Aqui está o panorama do seu império perfumado hoje.</p>
+    <div className="max-w-6xl mx-auto animate-fade-in-up">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-titulo text-4xl md:text-5xl text-primaria mb-1">
+            Olá, {user?.nome?.split(' ')[0] || 'Revendedora'}!
+          </h1>
+          <p className="text-texto/50 text-lg">Seu império perfumado em um só lugar</p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {cards.map(({ label, valor, icon: Icon, cor }) => (
-          <div key={label} className="bg-white rounded-2xl shadow-sm p-4">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${cor}`}>
-              <Icon size={20} weight="bold" />
+          <div key={label} className="card-sm hover:shadow-lg transition-all duration-300">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${cor}`}>
+              <Icon size={24} weight="bold" />
             </div>
-            <p className="text-2xl font-bold">{valor}</p>
-            <p className="text-xs text-texto/60">{label}</p>
+            <p className="text-3xl font-bold text-texto">{valor}</p>
+            <p className="text-sm text-texto/50 font-medium">{label}</p>
           </div>
         ))}
       </div>
 
       {estoqueBaixo.length > 0 && (
-        <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-8 flex items-start gap-3">
-          <Warning size={22} className="text-red-500 mt-0.5 shrink-0" />
-          <div>
-            <p className="font-semibold text-red-600 text-sm">
-              {estoqueBaixo.length} produto{estoqueBaixo.length > 1 ? 's' : ''} com estoque baixo
+        <div className="card-sm bg-red-50/80 border-red-200 mb-8 flex items-start gap-4 p-5">
+          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+            <Warning size={20} className="text-red-500" weight="bold" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-red-700 text-sm">
+              {estoqueBaixo.length} produto{estoqueBaixo.length > 1 ? 's' : ''} com estoque crítico
             </p>
-            <p className="text-red-500/80 text-xs mt-0.5">
+            <p className="text-red-500/80 text-xs mt-1">
               {estoqueBaixo.slice(0, 3).map((p) => p.nome).join(', ')}
-              {estoqueBaixo.length > 3 ? '...' : ''}
+              {estoqueBaixo.length > 3 ? ` e mais ${estoqueBaixo.length - 3}...` : ''}
             </p>
-            <Link to="/produtos" className="text-red-600 text-xs font-semibold underline mt-1 inline-block">
-              Ver produtos com estoque baixo
+            <Link to="/produtos" className="text-red-600 text-xs font-semibold underline mt-2 inline-block hover:text-red-700">
+              Ver todos os produtos →
             </Link>
           </div>
         </div>
       )}
 
-      <div className="bg-white rounded-2xl shadow-sm p-5">
-        <h2 className="font-bold text-lg flex items-center gap-2 mb-4">
-          <ChartBar size={22} className="text-primaria" /> Vendas dos últimos 7 dias
-        </h2>
-        <div className="flex items-end justify-between gap-2 h-32">
+      <div className="card-lg">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-bold text-xl flex items-center gap-2 text-texto">
+            <ChartBar size={24} className="text-primaria" /> Vendas dos últimos 7 dias
+          </h2>
+          <span className="text-xs text-texto/40 bg-gray-50 px-3 py-1 rounded-full">
+            Atualizado agora
+          </span>
+        </div>
+        <div className="flex items-end justify-between gap-2 h-40">
           {ultimos7Dias.map(({ dia, totalDia }, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <div className="w-full bg-primaria/10 rounded-t-md flex items-end" style={{ height: '100%' }}>
+            <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+              <div className="w-full bg-gray-50 rounded-lg flex items-end h-full overflow-hidden">
                 <div
-                  className="w-full bg-primaria rounded-t-md transition-all"
-                  style={{ height: `${Math.max(4, (totalDia / maiorValor) * 100)}%` }}
+                  className="w-full bg-gradient-to-t from-primaria to-primaria/60 rounded-t-lg transition-all duration-500 group-hover:opacity-90"
+                  style={{ height: `${Math.max(8, (totalDia / maiorValor) * 100)}%` }}
                   title={`R$ ${totalDia.toFixed(2)}`}
                 />
               </div>
-              <span className="text-[10px] text-texto/50">
+              <span className="text-[10px] text-texto/40 font-medium uppercase tracking-wider">
                 {dia.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}
               </span>
             </div>
@@ -120,12 +138,14 @@ export default function Dashboard() {
       </div>
 
       {produtos.length === 0 && pedidos.length === 0 && (
-        <div className="text-center py-10 mt-6 bg-white rounded-2xl shadow-sm">
-          <Sparkle size={40} className="mx-auto text-secundaria mb-3" />
-          <p className="font-semibold">Sua jornada começa aqui!</p>
-          <p className="text-texto/60 text-sm mt-1">Cadastre seu primeiro produto para ver a vitrine ganhar vida.</p>
-          <Link to="/produtos/novo" className="text-primaria font-semibold underline mt-3 inline-block">
-            Adicionar produto
+        <div className="card-lg text-center py-12 mt-8">
+          <div className="w-20 h-20 rounded-full bg-secundaria/10 flex items-center justify-center mx-auto mb-4">
+            <Sparkle size={40} className="text-secundaria" weight="duotone" />
+          </div>
+          <p className="font-titulo text-2xl text-texto mb-2">Sua jornada começa aqui!</p>
+          <p className="text-texto/50 text-sm mb-6">Cadastre seu primeiro produto para ver sua vitrine ganhar vida.</p>
+          <Link to="/produtos/novo" className="btn-primary inline-flex">
+            Adicionar primeiro produto
           </Link>
         </div>
       )}
