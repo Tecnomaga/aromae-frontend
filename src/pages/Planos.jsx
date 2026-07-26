@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, Sparkle, Users, FileCsv, ShoppingCart, X } from 'phosphor-react';
+import { CheckCircle, Sparkle, Users, FileCsv, ShoppingCart, X, CreditCard } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -30,7 +30,12 @@ export default function Planos() {
       nome: 'Básico',
       precoMensal: 19.90,
       precoAnual: 199.00,
-      features: ['Vitrine ilimitada', 'Gestão de estoque', 'Clientes'],
+      features: [
+        'Vitrine ilimitada',
+        'Gestão de estoque',
+        'Clientes',
+        'Pedidos via WhatsApp'
+      ],
       icon: <Sparkle size={24} />,
     },
     {
@@ -38,7 +43,12 @@ export default function Planos() {
       nome: 'Pro',
       precoMensal: 29.90,
       precoAnual: 299.00,
-      features: ['Tudo do Básico', 'Relatórios de lucro', 'Exportação CSV'],
+      features: [
+        'Tudo do Básico',
+        'Relatórios de lucro',
+        'Exportação CSV',
+        '✔️ Checkout Pix (vendas diretas)'
+      ],
       icon: <FileCsv size={24} />,
       destaque: true,
     },
@@ -47,7 +57,12 @@ export default function Planos() {
       nome: 'Premium',
       precoMensal: 49.90,
       precoAnual: 499.00,
-      features: ['Tudo do Pro', 'Múltiplos usuários', 'Checkout direto'],
+      features: [
+        'Tudo do Pro',
+        'Múltiplos usuários',
+        'Suporte prioritário',
+        '✔️ Checkout Pix + comissão reduzida'
+      ],
       icon: <Users size={24} />,
     },
   ];
@@ -133,9 +148,11 @@ export default function Planos() {
         ))}
       </div>
 
-      <p className="text-center text-xs text-texto/40 mt-8">
-        Sem fidelidade. Cancele quando quiser.
-      </p>
+      <div className="mt-8 p-4 bg-gray-50 rounded-2xl text-center text-sm text-texto/60">
+        <p className="font-semibold text-texto/80">⚡ Taxa de repasse</p>
+        <p>Para vendas realizadas via <strong>Checkout Pix</strong>, a plataforma cobra uma comissão de <strong>5%</strong> sobre o valor da venda (descontada automaticamente). Planos Básico não possuem Checkout Pix.</p>
+        <p className="mt-2 text-xs">Sem fidelidade. Cancele quando quiser.</p>
+      </div>
     </div>
   );
 }
