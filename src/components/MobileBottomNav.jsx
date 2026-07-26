@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { House, Package, ClipboardText, Users, User, Gear } from 'phosphor-react';
+import { House, Package, ClipboardText, Users, User, Gear, CreditCard } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const mainLinks = [
@@ -59,6 +59,13 @@ export default function MobileBottomNav() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
               >
                 <User size={18} className="text-primaria" /> Perfil
+              </NavLink>
+              <NavLink
+                to="/planos"
+                onClick={() => setMenuAberto(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+              >
+                <CreditCard size={18} className="text-primaria" /> Planos
               </NavLink>
               <NavLink
                 to="/configuracoes"
