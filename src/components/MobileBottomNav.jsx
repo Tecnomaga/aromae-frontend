@@ -51,9 +51,9 @@ export default function MobileBottomNav() {
           <span>Conta</span>
         </button>
 
-        {/* Menu flutuante */}
+        {/* Menu flutuante - Ajustado para não ficar "comido" */}
         {menuAberto && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in-up">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-44 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in-up z-[60]">
             <NavLink
               to="/perfil"
               onClick={() => setMenuAberto(false)}
