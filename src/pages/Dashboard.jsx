@@ -91,7 +91,7 @@ export default function Dashboard() {
               {estoqueBaixo.length > 3 ? '...' : ''}
             </p>
             <Link to="/produtos" className="text-red-600 text-xs font-semibold underline mt-1 inline-block">
-              Ver produtos
+              Ver produtos com estoque baixo
             </Link>
           </div>
         </div>
