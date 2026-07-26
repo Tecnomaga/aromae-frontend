@@ -23,13 +23,9 @@ export default function Planos() {
       }
     } catch (error) {
       console.error('Erro detalhado:', error);
-      
-      // CAPTURA O ERRO REAL DO BACKEND
       let mensagemErro = 'Erro desconhecido.';
       if (error.response && error.response.data) {
-        // Se o backend retornou um detalhe, mostramos ele
         if (error.response.data.detalhe) {
-          // Se for um objeto, transforma em string
           const detalhe = typeof error.response.data.detalhe === 'object' 
             ? JSON.stringify(error.response.data.detalhe) 
             : error.response.data.detalhe;
@@ -42,15 +38,12 @@ export default function Planos() {
       } else {
         mensagemErro = error.message;
       }
-      
-      // Exibe o erro real no toast
       toast.error(`Erro: ${mensagemErro}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // ... (restante do componente Planos, sem alterações)
   const planos = [
     {
       id: 'basico',
@@ -65,7 +58,7 @@ export default function Planos() {
       nome: 'Pro',
       precoMensal: 29.90,
       precoAnual: 299.00,
-      features: ['Tudo do Básico', 'Relatórios de lucro', 'Exportação CSV', '✔️ Checkout Pix (vendas diretas)'],
+      features: ['Todos os benefícios do Básico +', 'Relatórios de lucro', 'Exportação CSV', '✔️ Checkout Pix (vendas diretas)'],
       icon: <FileCsv size={24} />,
       destaque: true,
     },
@@ -74,7 +67,7 @@ export default function Planos() {
       nome: 'Premium',
       precoMensal: 49.90,
       precoAnual: 499.00,
-      features: ['Tudo do Pro', 'Múltiplos usuários', 'Suporte prioritário', '✔️ Checkout Pix + comissão reduzida'],
+      features: ['Todos os benefícios do Pro +', 'Múltiplos usuários', 'Suporte prioritário', '✔️ Checkout Pix + comissão reduzida'],
       icon: <Users size={24} />,
     },
   ];
