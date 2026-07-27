@@ -1,5 +1,5 @@
-// O marcador self.__WB_MANIFEST é OBRIGATÓRIO para o plugin injetar os arquivos
-self.__WB_MANIFEST;
+// Pode ficar vazio ou com o código de push, mas o Vite irá sobrescrevê-lo.
+// Para garantir que o PWA funcione, mantenha o código de notificações:
 
 self.addEventListener('push', (event) => {
   const data = event.data.json();
@@ -8,9 +8,7 @@ self.addEventListener('push', (event) => {
     icon: data.icon || '/icon-192.png',
     badge: data.badge || '/icon-192.png',
     vibrate: [200, 100, 200],
-    data: {
-      url: data.url || '/dashboard'
-    }
+    data: { url: data.url || '/dashboard' }
   };
   event.waitUntil(
     self.registration.showNotification(data.title, options)
