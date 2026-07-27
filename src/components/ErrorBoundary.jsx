@@ -7,7 +7,6 @@ export default class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Verifica se o erro é de importação dinâmica (chunk load failed)
     const isChunkError = error.message?.includes('Failed to fetch dynamically imported module') || 
                          error.message?.includes('Loading chunk') ||
                          error.message?.includes('ChunkLoadError');
@@ -24,12 +23,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   handleReload = () => {
-    // Se for erro de chunk, força recarga sem cache
-    if (this.state.isChunkError) {
-      window.location.reload();
-    } else {
-      window.location.reload();
-    }
+    window.location.reload();
   };
 
   render() {
