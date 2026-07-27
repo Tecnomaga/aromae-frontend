@@ -83,21 +83,32 @@ export default function CatalogoPublico() {
     setEnderecoModalAberto(false);
     setPixLoading(true);
     try {
-      // 🔥 Passa os dados do cliente, mas o backend ainda NÃO cria o pedido
       const response = await api.post(`/checkout/pix/${produtoSelecionado._id}`, {
         revendedoraId: loja._id,
         nome: dadosCliente.nome,
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco
       });
-      
-      // ✅ Exibe o QR Code imediatamente
+
+      // Salva os dados do cliente no sessionStorage para serem usados pelo webhook
+      sessionStorage.setItem('pendingPixOrder', JSON.stringify({
+        revendedoraId: loja._id,
+        produtoId: produtoSelecionado._id,
+        nome: dadosCliente.nome,
+        telefone: dadosCliente.telefone,
+        endereco: dadosCliente.endereco,
+        paymentId: response.data.paymentId
+      }));
+
+      // Exibe o QR Code
       setPixModal({
         isOpen: true,
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
+        paymentId: response.data.paymentId,
         produto: produtoSelecionado
       });
+
     } catch (error) {
       console.error('🔥 Erro ao gerar Pix:', error);
       let mensagem = 'Erro ao gerar Pix. Tente novamente.';
