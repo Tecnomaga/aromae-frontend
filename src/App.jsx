@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
-import PushNotificationHandler from './components/PushNotificationHandler'; // <--- ADICIONE ISSO
+import PushNotificationHandler from './components/PushNotificationHandler'; // <--- Importe
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
@@ -81,7 +81,8 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
-          <PushNotificationHandler /> {/* <--- INSIRA AQUI O COMPONENTE */}
+          {/* 🔥 O Handler de Notificações FICA DENTRO do AuthProvider, assim ele reage quando o usuário loga */}
+          <PushNotificationHandler />
           <InstallPrompt />
         </ErrorBoundary>
       </BrowserRouter>
