@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { House, Package, ClipboardText, Users, User, Gear, Coins, Headset, CreditCard } from 'phosphor-react';
+import { House, Package, ClipboardText, Users, User, Gear, Coins, Headset, CreditCard, Tag, Star } from 'phosphor-react';
 
 const links = [
   { to: '/dashboard', icon: House, label: 'Início' },
@@ -10,7 +10,9 @@ const links = [
   { to: '/configuracoes', icon: Gear, label: 'Config.' },
   { to: '/financeiro', icon: Coins, label: 'Financeiro' },
   { to: '/suporte', icon: Headset, label: 'Suporte' },
-  { to: '/assinatura', icon: CreditCard, label: 'Assinatura' }
+  { to: '/assinatura', icon: CreditCard, label: 'Assinatura' },
+  { to: '/gerenciar-cupons', icon: Tag, label: 'Cupons' },
+  { to: '/gerenciar-avaliacoes', icon: Star, label: 'Avaliações' }
 ];
 
 export default function Sidebar() {
