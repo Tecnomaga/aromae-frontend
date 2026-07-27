@@ -15,12 +15,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
-      // Não redireciona forçadamente para login aqui, pois o Cadastro é uma rota pública
-    }
-    // IMPORTANTE: Rejeita a promise para que o erro chegue no catch do frontend
+    // Log detalhado do erro no console
+    console.error('🚨 Erro na requisição:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
     return Promise.reject(error);
   }
 );
