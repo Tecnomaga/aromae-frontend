@@ -24,21 +24,24 @@ export default function GerenciarCupons() {
     try {
       const { data } = await api.get('/cupons');
       setCupons(data);
-    } catch {
-      toast.error('Erro ao carregar cupons');
+    } catch (error) {
+      console.error('Erro ao carregar cupons:', error);
+      toast.error(error.response?.data?.message || 'Erro ao carregar cupons');
     } finally {
       setLoading(false);
     }
   };
 
-  const criarCupom = async () => {
+  const criarCupom = async (e) => {
+    e.preventDefault();
     try {
       await api.post('/cupons', novoCupom);
       toast.success('Cupom criado!');
       setNovoCupom({ codigo: '', desconto: 0, tipo: 'percentual', expiraEm: '', maxUsos: 1 });
       carregarCupons();
-    } catch {
-      toast.error('Erro ao criar cupom');
+    } catch (error) {
+      console.error('Erro ao criar cupom:', error);
+      toast.error(error.response?.data?.message || 'Erro ao criar cupom');
     }
   };
 
@@ -48,8 +51,8 @@ export default function GerenciarCupons() {
       await api.delete(`/cupons/${id}`);
       toast.success('Cupom removido');
       carregarCupons();
-    } catch {
-      toast.error('Erro ao remover');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Erro ao remover cupom');
     }
   };
 
@@ -61,13 +64,14 @@ export default function GerenciarCupons() {
 
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
         <h2 className="font-bold text-lg mb-4">Novo Cupom</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form onSubmit={criarCupom} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input
             type="text"
             placeholder="Código"
             value={novoCupom.codigo}
             onChange={(e) => setNovoCupom({ ...novoCupom, codigo: e.target.value.toUpperCase() })}
             className="input-field"
+            required
           />
           <input
             type="number"
@@ -75,6 +79,8 @@ export default function GerenciarCupons() {
             value={novoCupom.desconto}
             onChange={(e) => setNovoCupom({ ...novoCupom, desconto: Number(e.target.value) })}
             className="input-field"
+            required
+            min="1"
           />
           <select
             value={novoCupom.tipo}
@@ -89,6 +95,7 @@ export default function GerenciarCupons() {
             value={novoCupom.expiraEm}
             onChange={(e) => setNovoCupom({ ...novoCupom, expiraEm: e.target.value })}
             className="input-field"
+            required
           />
           <input
             type="number"
@@ -96,14 +103,15 @@ export default function GerenciarCupons() {
             value={novoCupom.maxUsos}
             onChange={(e) => setNovoCupom({ ...novoCupom, maxUsos: Number(e.target.value) })}
             className="input-field"
+            min="1"
           />
           <button
-            onClick={criarCupom}
+            type="submit"
             className="btn-primary flex items-center justify-center gap-2"
           >
             <Plus size={18} /> Criar
           </button>
-        </div>
+        </form>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
