@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, Clock, XCircle, CreditCard, Warning } from 'phosphor-react';
+import { CheckCircle, Clock, XCircle, CreditCard, Warning, X } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function Assinatura() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/auth/me')
@@ -27,7 +27,6 @@ export default function Assinatura() {
           error: 'Erro ao cancelar. Tente novamente.'
         }
       );
-      // Recarrega os dados do usuário
       const { data } = await api.get('/auth/me');
       setUser(data);
       setShowConfirmCancel(false);
@@ -54,8 +53,15 @@ export default function Assinatura() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 animate-fade-in-up">
-      <h1 className="font-titulo text-3xl text-primaria mb-2">Minha Assinatura</h1>
-      <p className="text-texto/50 text-sm mb-6">Gerencie seu plano e veja os detalhes da sua assinatura.</p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="font-titulo text-3xl text-primaria mb-2">Minha Assinatura</h1>
+          <p className="text-texto/50 text-sm">Gerencie seu plano e veja os detalhes da sua assinatura.</p>
+        </div>
+        <button onClick={() => navigate(-1)} className="text-texto/40 hover:text-texto p-1">
+          <X size={24} />
+        </button>
+      </div>
 
       <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
@@ -110,7 +116,6 @@ export default function Assinatura() {
         )}
       </div>
 
-      {/* Modal de confirmação de cancelamento */}
       {showConfirmCancel && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full animate-pop">
