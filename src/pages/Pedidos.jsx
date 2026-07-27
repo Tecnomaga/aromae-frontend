@@ -4,6 +4,8 @@ import { Plus, MagnifyingGlass, ClipboardText, Eye, FileCsv, Trash } from 'phosp
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
+import { ListSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 const statusMap = {
   pendente: { label: 'Pendente', cor: 'bg-yellow-100 text-yellow-700' },
@@ -60,7 +62,23 @@ export default function Pedidos() {
     }
   };
 
-  if (loading) return <p className="text-center py-10">Carregando pedidos...</p>;
+  if (loading) return (
+    <div className="animate-fade-in-up">
+      <div className="flex justify-between items-center mb-6">
+        <Skeleton className="h-10 w-32" />
+        <div className="flex gap-3">
+          <Skeleton className="h-10 w-36 rounded-lg" />
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+      </div>
+      <div className="flex gap-3 mb-6">
+        <Skeleton className="h-12 flex-1 rounded-xl" />
+        <Skeleton className="h-12 w-40 rounded-xl" />
+        <Skeleton className="h-12 w-32 rounded-xl" />
+      </div>
+      <ListSkeleton rows={5} />
+    </div>
+  );
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -112,13 +130,13 @@ export default function Pedidos() {
       </div>
 
       {pedidosFiltrados.length === 0 ? (
-        <div className="text-center py-10 bg-white rounded-xl shadow-sm">
-          <ClipboardText size={48} className="mx-auto text-texto/20 mb-3" />
-          <p className="text-texto/60">Nenhum pedido encontrado.</p>
-          <Link to="/pedidos/novo" className="text-primaria font-semibold underline mt-2 inline-block">
-            Registrar primeiro pedido
-          </Link>
-        </div>
+        <EmptyState
+          type="pedidos"
+          title="Nenhum pedido encontrado"
+          message="Registre seu primeiro pedido agora."
+          linkTo="/pedidos/novo"
+          linkText="Registrar pedido"
+        />
       ) : (
         <div className="space-y-3">
           {pedidosFiltrados.map((pedido) => (
@@ -138,7 +156,6 @@ export default function Pedidos() {
                 <Link to={`/pedidos/${pedido._id}`} className="text-primaria hover:underline flex items-center gap-1">
                   <Eye size={18} /> Ver
                 </Link>
-                {/* 🗑️ Botão excluir apenas para cancelados e concluídos */}
                 {(pedido.status === 'cancelado' || pedido.status === 'entregue') && (
                   <button
                     onClick={() => setDeleteTarget(pedido._id)}
