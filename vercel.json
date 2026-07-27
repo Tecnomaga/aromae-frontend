@@ -1,8 +1,9 @@
 {
-  "installCommand": "npm ci",
-  "buildCommand": "npm run build",
+  "installCommand": "npm install --include=dev",
+  "buildCommand": "npx vite build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "nodeVersion": "18.x",
   "headers": [
     {
       "source": "/index.html",
