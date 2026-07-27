@@ -1,6 +1,3 @@
-// Pode ficar vazio ou com o código de push, mas o Vite irá sobrescrevê-lo.
-// Para garantir que o PWA funcione, mantenha o código de notificações:
-
 self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
