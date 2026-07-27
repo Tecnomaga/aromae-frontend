@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { House, Package, ClipboardText, Users, User, Gear, CreditCard, Coins, Headset } from 'phosphor-react';
+import { House, Package, ClipboardText, Users, User, Gear, CreditCard, Coins, Headset, Tag, Star } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const mainLinks = [
@@ -51,7 +51,7 @@ export default function MobileBottomNav() {
         </button>
 
         {menuAberto && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-60 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden animate-fade-in-up backdrop-blur-sm">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden animate-fade-in-up backdrop-blur-sm">
             <div className="p-2 space-y-1">
               <NavLink
                 to="/perfil"
@@ -80,6 +80,20 @@ export default function MobileBottomNav() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
               >
                 <CreditCard size={18} className="text-primaria" /> Assinatura
+              </NavLink>
+              <NavLink
+                to="/gerenciar-cupons"
+                onClick={() => setMenuAberto(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+              >
+                <Tag size={18} className="text-primaria" /> Cupons
+              </NavLink>
+              <NavLink
+                to="/gerenciar-avaliacoes"
+                onClick={() => setMenuAberto(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+              >
+                <Star size={18} className="text-secundaria" /> Avaliações
               </NavLink>
               <NavLink
                 to="/configuracoes"
