@@ -1,8 +1,8 @@
-import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
-import ErrorBoundary from './components/ErrorBoundary'; // Já atualizado
+import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
@@ -15,26 +15,8 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import Suporte from './pages/Suporte';
 import Financeiro from './pages/Financeiro';
 import Assinatura from './pages/Assinatura';
-
-// Pré-carregamento de todos os módulos principais para evitar erros de chunk
-const preloadAll = () => {
-  import('./pages/Dashboard');
-  import('./pages/Produtos');
-  import('./pages/ProdutoForm');
-  import('./pages/Pedidos');
-  import('./pages/PedidoForm');
-  import('./pages/Clientes');
-  import('./pages/ClienteForm');
-  import('./pages/Perfil');
-  import('./pages/PerfilEditar');
-  import('./pages/Configuracoes');
-  import('./pages/CatalogoPublico');
-};
-
-// Executa o pré-carregamento assim que o app inicia
-if (typeof window !== 'undefined') {
-  preloadAll();
-}
+import GerenciarCupons from './pages/GerenciarCupons';
+import GerenciarAvaliacoes from './pages/GerenciarAvaliacoes';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
@@ -50,13 +32,6 @@ const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      preloadAll(); // Reforça o pré-carregamento quando loga
-    }
-  }, [user]);
 
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
   if (!user) return <Navigate to="/login" replace />;
@@ -82,6 +57,8 @@ export default function App() {
               <Route path="/suporte" element={<Suporte />} />
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/assinatura" element={<Assinatura />} />
+              <Route path="/gerenciar-cupons" element={<GerenciarCupons />} />
+              <Route path="/gerenciar-avaliacoes" element={<GerenciarAvaliacoes />} />
 
               <Route element={<RotasProtegidas />}>
                 <Route path="/dashboard" element={<Dashboard />} />
