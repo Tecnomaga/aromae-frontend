@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Plus, MagnifyingGlass, Users, Pencil, Trash, Phone, MapPin, FileCsv } from 'phosphor-react';
 import api from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
+import { ListSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([]);
@@ -28,7 +30,19 @@ export default function Clientes() {
     setDeleteTarget(null);
   };
 
-  if (loading) return <p className="text-center py-10">Carregando clientes...</p>;
+  if (loading) return (
+    <div className="animate-fade-in-up">
+      <div className="flex justify-between items-center mb-6">
+        <Skeleton className="h-10 w-32" />
+        <div className="flex gap-3">
+          <Skeleton className="h-10 w-36 rounded-lg" />
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+      </div>
+      <Skeleton className="h-12 w-full rounded-xl mb-6" />
+      <ListSkeleton rows={6} />
+    </div>
+  );
 
   return (
     <div>
@@ -60,19 +74,19 @@ export default function Clientes() {
       </div>
 
       {clientesFiltrados.length === 0 ? (
-        <div className="text-center py-10 bg-white rounded-xl shadow-sm">
-          <Users size={48} className="mx-auto text-texto/20 mb-3" />
-          <p className="text-texto/60">Nenhum cliente cadastrado.</p>
-          <Link to="/clientes/novo" className="text-primaria font-semibold underline mt-2 inline-block">
-            Cadastrar primeira cliente
-          </Link>
-        </div>
+        <EmptyState
+          type="clientes"
+          title="Nenhuma cliente cadastrada"
+          message="Cadastre sua primeira cliente agora."
+          linkTo="/clientes/novo"
+          linkText="Cadastrar cliente"
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {clientesFiltrados.map((cliente) => (
             <div key={cliente._id} className="bg-white rounded-xl shadow-sm p-4">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-primaria/10 flex items-center justify-center text-primaria font-bold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primaria/20 to-secundaria/20 flex items-center justify-center text-primaria font-bold">
                   {cliente.nome.charAt(0).toUpperCase()}
                 </div>
                 <div>
