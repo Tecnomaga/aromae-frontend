@@ -33,7 +33,7 @@ export default function Suporte() {
           </div>
           <div className="border-b border-gray-100 pb-3">
             <p className="font-semibold text-sm">Onde coloco minha chave Pix?</p>
-            <p className="text-xs text-texto/50 mt-1">Acesse "Perfil" > "Editar Perfil" e insira sua chave Pix no campo correspondente. O repasse das vendas será feito automaticamente para lá.</p>
+            <p className="text-xs text-texto/50 mt-1">Acesse "Perfil" &gt; "Editar Perfil" e insira sua chave Pix no campo correspondente. O repasse das vendas será feito automaticamente para lá.</p>
           </div>
           <div className="pb-1">
             <p className="font-semibold text-sm">Como compartilho minha vitrine?</p>
