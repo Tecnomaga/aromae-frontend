@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { cadastroSchema } from '../schemas';
 import { useState } from 'react';
-import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function Cadastro() {
@@ -18,12 +17,15 @@ export default function Cadastro() {
 
   const onSubmit = async (data) => {
     try {
-      // Verifica se o código de indicação é válido (opcional, checa no backend)
       await registrar(data.nome, data.email, data.senha, indicadoPor);
       navigate('/onboarding');
     } catch (err) {
-      setError('root', { message: err.response?.data?.message || 'Erro ao criar conta.' });
+      // Se o backend retornar uma mensagem específica, usamos ela
+      const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
+      setError('root', { message: mensagemErro });
+      toast.error(mensagemErro);
     }
+    // O finally é gerenciado automaticamente pelo react-hook-form quando a promise termina
   };
 
   return (
@@ -62,7 +64,6 @@ export default function Cadastro() {
             {errors.senha && <p className="text-red-500 text-xs mt-1">{errors.senha.message}</p>}
           </div>
 
-          {/* NOVO CAMPO: Código de indicação */}
           <div>
             <input
               type="text" placeholder="Código de indicação (opcional)"
