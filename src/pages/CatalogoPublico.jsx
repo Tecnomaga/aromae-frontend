@@ -83,13 +83,15 @@ export default function CatalogoPublico() {
     setEnderecoModalAberto(false);
     setPixLoading(true);
     try {
+      // 🔥 Passa os dados do cliente, mas o backend ainda NÃO cria o pedido
       const response = await api.post(`/checkout/pix/${produtoSelecionado._id}`, {
         revendedoraId: loja._id,
         nome: dadosCliente.nome,
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco
       });
-      // ✅ Força a abertura do modal com isOpen: true
+      
+      // ✅ Exibe o QR Code imediatamente
       setPixModal({
         isOpen: true,
         qrCodeBase64: response.data.qrCodeBase64,
