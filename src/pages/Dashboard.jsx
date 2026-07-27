@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import { CardSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 function inicioDoDia(data) {
   const d = new Date(data);
@@ -19,7 +21,6 @@ export default function Dashboard() {
   const [mostrarOnboarding, setMostrarOnboarding] = useState(true);
 
   useEffect(() => {
-    // 🛡️ Bloco de segurança: se a API demorar, evitamos crash
     const fetchData = async () => {
       try {
         const [prods, peds, lucroData] = await Promise.all([
@@ -32,7 +33,7 @@ export default function Dashboard() {
         setLucro(lucroData);
         if (prods.length > 0) setMostrarOnboarding(false);
       } catch (error) {
-        console.warn('⚠️ Erro ao carregar dados, mas Dashboard continua funcionando:', error);
+        console.warn('⚠️ Erro ao carregar dados:', error);
       } finally {
         setLoading(false);
       }
@@ -60,15 +61,27 @@ export default function Dashboard() {
   });
   const maiorValor = Math.max(1, ...ultimos7Dias.map((d) => d.totalDia));
 
-  const cards = [
-    { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
-    { label: 'Estoque baixo', valor: estoqueBaixo.length, icon: Warning, cor: estoqueBaixo.length > 0 ? 'text-red-500 bg-red-50' : 'text-sucesso bg-sucesso/10' },
-    { label: 'Pedidos pendentes', valor: pedidosPendentes, icon: ClipboardText, cor: 'text-secundaria bg-secundaria/10' },
-    { label: 'Faturamento do mês', valor: faturamentoMes > 0 ? `R$ ${faturamentoMes.toFixed(2)}` : 'R$ 0,00', icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
-    { label: 'Lucro líquido (mês)', valor: lucro?.lucroLiquido > 0 ? `R$ ${lucro.lucroLiquido.toFixed(2)}` : 'R$ 0,00', icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
-  ];
-
-  if (loading) return <div className="min-h-[60vh] flex items-center justify-center"><div className="text-center"><div className="w-12 h-12 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin mx-auto mb-4"></div><p className="text-texto/50 text-sm">Carregando seu império...</p></div></div>;
+  if (loading) return (
+    <div className="max-w-6xl mx-auto animate-fade-in-up">
+      <div className="mb-8">
+        <Skeleton className="h-10 w-64 mb-2" />
+        <Skeleton className="h-5 w-48" />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="card-sm space-y-3">
+            <Skeleton className="w-12 h-12 rounded-xl" />
+            <Skeleton className="h-8 w-16" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        ))}
+      </div>
+      <div className="card-lg">
+        <Skeleton className="h-6 w-40 mb-4" />
+        <Skeleton className="h-40 w-full rounded-lg" />
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in-up">
@@ -97,7 +110,13 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-        {cards.map(({ label, valor, icon: Icon, cor }) => (
+        {[
+          { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
+          { label: 'Estoque baixo', valor: estoqueBaixo.length, icon: Warning, cor: estoqueBaixo.length > 0 ? 'text-red-500 bg-red-50' : 'text-sucesso bg-sucesso/10' },
+          { label: 'Pedidos pendentes', valor: pedidosPendentes, icon: ClipboardText, cor: 'text-secundaria bg-secundaria/10' },
+          { label: 'Faturamento do mês', valor: faturamentoMes > 0 ? `R$ ${faturamentoMes.toFixed(2)}` : 'R$ 0,00', icon: Sparkle, cor: 'text-sucesso bg-sucesso/10' },
+          { label: 'Lucro líquido (mês)', valor: lucro?.lucroLiquido > 0 ? `R$ ${lucro.lucroLiquido.toFixed(2)}` : 'R$ 0,00', icon: TrendUp, cor: 'text-sucesso bg-sucesso/10' },
+        ].map(({ label, valor, icon: Icon, cor }) => (
           <div key={label} className="card-sm hover:shadow-lg transition-all duration-300">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${cor}`}>
               <Icon size={24} weight="bold" />
@@ -136,11 +155,14 @@ export default function Dashboard() {
       </div>
       
       {produtos.length === 0 && pedidos.length === 0 && (
-        <div className="card-lg text-center py-12 mt-8">
-          <div className="w-20 h-20 rounded-full bg-secundaria/10 flex items-center justify-center mx-auto mb-4"><Sparkle size={40} className="text-secundaria" weight="duotone" /></div>
-          <p className="font-titulo text-2xl text-texto mb-2">Sua jornada começa aqui!</p>
-          <p className="text-texto/50 text-sm mb-6">Cadastre seu primeiro produto para ver sua vitrine ganhar vida.</p>
-          <Link to="/produtos/novo" className="btn-primary inline-flex">Adicionar primeiro produto</Link>
+        <div className="mt-8">
+          <EmptyState
+            type="produtos"
+            title="Sua jornada começa aqui!"
+            message="Cadastre seu primeiro perfume para ver sua vitrine ganhar vida."
+            linkTo="/produtos/novo"
+            linkText="Adicionar primeiro produto"
+          />
         </div>
       )}
     </div>
