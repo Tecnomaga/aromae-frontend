@@ -7,10 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      strategies: 'injectManifest',
+      srcDir: 'public',
+      filename: 'sw.js',
       manifest: {
-        name: 'Aromaê - Vitrine de Perfumes',          // Nome completo
-        short_name: 'Aromaê',                         // Nome curto que aparece embaixo do ícone
+        name: 'Aromaê - Sua Vitrine de Perfumes',
+        short_name: 'Aromaê',
         description: 'Monte sua loja virtual de perfumes',
         theme_color: '#C17B7B',
         background_color: '#FDFBF7',
