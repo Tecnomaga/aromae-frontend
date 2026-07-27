@@ -7,9 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      strategies: 'injectManifest',
-      srcDir: 'public',
-      filename: 'sw.js',
+      strategies: 'generateSW', // <--- MUDANÇA AQUI (gera SW automaticamente)
       manifest: {
         name: 'Aromaê - Sua Vitrine de Perfumes',
         short_name: 'Aromaê',
