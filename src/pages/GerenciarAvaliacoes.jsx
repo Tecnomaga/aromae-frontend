@@ -31,12 +31,19 @@ export default function GerenciarAvaliacoes() {
                   <span className="font-bold text-texto">{av.clienteNome}</span>
                   <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={16} weight={i < av.nota ? 'fill' : 'regular'} className={i < av.nota ? 'text-secundaria' : 'text-gray-300'} />
+                      <Star
+                        key={i}
+                        size={16}
+                        weight={i < av.nota ? 'fill' : 'regular'}
+                        className={i < av.nota ? 'text-secundaria' : 'text-gray-300'}
+                      />
                     ))}
                   </div>
                 </div>
                 <p className="text-sm text-texto/70">{av.comentario || 'Sem comentário.'}</p>
-                <p className="text-xs text-texto/40 mt-2">{new Date(av.criadoEm).toLocaleDateString('pt-BR')} • {av.produto?.nome || 'Produto removido'}</p>
+                <p className="text-xs text-texto/40 mt-2">
+                  {new Date(av.criadoEm).toLocaleDateString('pt-BR')} • {av.produto?.nome || 'Produto removido'}
+                </p>
               </div>
             </div>
           ))
