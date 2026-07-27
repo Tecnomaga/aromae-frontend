@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
+// Schema de Login
 export const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
   senha: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres')
 });
 
+// Schema de Cadastro (com confirmação de senha)
 export const cadastroSchema = z.object({
   nome: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
   email: z.string().email('E-mail inválido'),
@@ -15,12 +17,14 @@ export const cadastroSchema = z.object({
   path: ["senhaConfirmacao"], // Aponta o erro para o campo de confirmação
 });
 
+// Schema de Cliente
 export const clienteSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório'),
   telefone: z.string().min(10, 'Telefone inválido (mínimo 10 dígitos)'),
   cidade: z.string().optional()
 });
 
+// Schema de Pedido
 export const pedidoSchema = z.object({
   cliente: z.string().min(1, 'Cliente é obrigatório'),
   itens: z.array(
@@ -33,6 +37,7 @@ export const pedidoSchema = z.object({
   status: z.string()
 });
 
+// Schema de Produto
 export const produtoSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório'),
   marca: z.string().min(1, 'Marca é obrigatória'),
@@ -42,6 +47,7 @@ export const produtoSchema = z.object({
   ativo: z.boolean()
 });
 
+// Schema de Onboarding
 export const onboardingSchema = z.object({
   nomeLoja: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
   slug: z.string().min(3, 'Link deve ter pelo menos 3 caracteres'),
