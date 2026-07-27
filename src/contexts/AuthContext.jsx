@@ -37,9 +37,10 @@ export function AuthProvider({ children }) {
       const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
       localStorage.setItem('token', data.token);
       setUser(data.revendedora);
-      return data;
+      // Retorna os dados para o frontend saber que deu certo
+      return data; 
     } catch (error) {
-      // Propaga o erro para o frontend (Cadastro.jsx) poder tratá-lo
+      // Propaga o erro para o Cadastro tratar
       throw error;
     }
   }
