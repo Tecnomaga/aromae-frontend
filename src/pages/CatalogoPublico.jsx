@@ -172,8 +172,9 @@ export default function CatalogoPublico() {
                     {produto.fotos?.[0] ? (
                       <img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package size={48} className="text-texto/20" />
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primaria/5 to-secundaria/10 gap-1">
+                        <span className="text-4xl">🌸</span>
+                        <span className="text-xs text-texto/30 font-medium">Sem foto</span>
                       </div>
                     )}
                   </button>
@@ -276,4 +277,4 @@ export default function CatalogoPublico() {
       />
     </div>
   );
-}
+        }
