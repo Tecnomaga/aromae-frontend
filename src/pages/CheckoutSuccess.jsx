@@ -16,11 +16,13 @@ export default function CheckoutSuccess() {
     };
   }, []);
 
-  // Se não houver dados, usa fallback
+  // Usa os dados salvos ou fallback
   const produtoNome = orderData?.produtoNome || 'seu perfume';
   const revendedoraWhatsApp = orderData?.revendedoraWhatsApp || '';
 
-  const mensagemWhatsApp = `Olá! Acabei de finalizar a compra do *${produtoNome}* pelo site Aromaê. Pode me confirmar os detalhes de entrega?`;
+  const mensagemWhatsApp = revendedoraWhatsApp 
+    ? `Olá! Acabei de finalizar a compra do *${produtoNome}* pelo site Aromaê. Pode me confirmar os detalhes de entrega?`
+    : '';
 
   return (
     <div className="min-h-screen bg-fundo flex items-center justify-center p-4">
@@ -30,7 +32,7 @@ export default function CheckoutSuccess() {
         </div>
         <h1 className="font-titulo text-3xl text-primaria mb-2">Pagamento confirmado! 🎉</h1>
         <p className="text-texto/70 text-lg mb-4">
-          Seu pedido foi registrado com sucesso. A revendedora será notificada e em breve entrará em contato.
+          Seu pedido de <strong>{produtoNome}</strong> foi registrado com sucesso. A revendedora será notificada e em breve entrará em contato.
         </p>
         <div className="bg-fundo p-4 rounded-xl text-left text-sm text-texto/70 mb-6">
           <p className="font-semibold text-texto mb-2">O que fazer agora:</p>
@@ -41,14 +43,16 @@ export default function CheckoutSuccess() {
           </ul>
         </div>
         <div className="space-y-3">
-          <a
-            href={`https://wa.me/${revendedoraWhatsApp}?text=${encodeURIComponent(mensagemWhatsApp)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full bg-green-500 text-white py-3 rounded-xl font-semibold hover:bg-green-600 transition flex items-center justify-center gap-2"
-          >
-            <WhatsappLogo size={20} weight="fill" /> Falar com a revendedora
-          </a>
+          {revendedoraWhatsApp && (
+            <a
+              href={`https://wa.me/${revendedoraWhatsApp.replace(/\D/g, '')}?text=${encodeURIComponent(mensagemWhatsApp)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full bg-green-500 text-white py-3 rounded-xl font-semibold hover:bg-green-600 transition flex items-center justify-center gap-2"
+            >
+              <WhatsappLogo size={20} weight="fill" /> Falar com a revendedora
+            </a>
+          )}
           <Link
             to="/"
             className="block w-full bg-gray-100 text-texto py-3 rounded-xl font-semibold hover:bg-gray-200 transition"
