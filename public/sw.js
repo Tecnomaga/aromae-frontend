@@ -1,4 +1,6 @@
-// Este arquivo deve ficar na pasta public/ do seu Frontend!
+// O marcador self.__WB_MANIFEST é OBRIGATÓRIO para o plugin injetar os arquivos
+self.__WB_MANIFEST;
+
 self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
