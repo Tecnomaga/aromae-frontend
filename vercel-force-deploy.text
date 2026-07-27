@@ -1,4 +1,0 @@
-# Força o Vercel a ignorar qualquer cache e reconhecer o último deploy
-# Este arquivo não afeta a lógica do site, apenas dispara um novo build.
-Data: 2026-07-27 18:00
-Forçando deploy para o commit 6af0c48 (correção da confirmação de senha)
