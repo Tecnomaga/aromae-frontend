@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verifica se existe um token salvo (localStorage ou sessionStorage)
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       api.get('/auth/me')
@@ -39,16 +38,16 @@ export function AuthProvider({ children }) {
 
   async function registrar(nome, email, senha, indicadoPor = '') {
     try {
+      console.log('📤 Enviando requisição de registro...');
       const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
+      console.log('✅ Registro bem-sucedido, token recebido:', data.token);
       
-      // 🔥 Garante que o token seja salvo e o usuário seja setado ANTES de retornar
       localStorage.setItem('token', data.token);
       setUser(data.revendedora);
       
-      // Retorna os dados para o Cadastro.jsx saber que deu certo
       return data; 
     } catch (error) {
-      // Propaga o erro para o Cadastro tratar
+      console.error('❌ Erro no registro:', error.response?.data || error.message);
       throw error;
     }
   }
