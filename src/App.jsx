@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
-import PushNotificationHandler from './components/PushNotificationHandler'; // <--- Importe
+import PushNotificationHandler from './components/PushNotificationHandler';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
@@ -20,6 +20,7 @@ import GerenciarCupons from './pages/GerenciarCupons';
 import GerenciarAvaliacoes from './pages/GerenciarAvaliacoes';
 import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword'; // NOVO
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
@@ -62,6 +63,7 @@ export default function App() {
               <Route path="/gerenciar-avaliacoes" element={<GerenciarAvaliacoes />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/recuperar-senha" element={<ForgotPassword />} />
+              <Route path="/redefinir-senha" element={<ResetPassword />} /> {/* NOVA ROTA */}
 
               <Route element={<RotasProtegidas />}>
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -81,7 +83,6 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
-          {/* 🔥 O Handler de Notificações FICA DENTRO do AuthProvider, assim ele reage quando o usuário loga */}
           <PushNotificationHandler />
           <InstallPrompt />
         </ErrorBoundary>
