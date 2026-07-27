@@ -94,6 +94,8 @@ export default function CatalogoPublico() {
       sessionStorage.setItem('pendingPixOrder', JSON.stringify({
         revendedoraId: loja._id,
         produtoId: produtoSelecionado._id,
+        produtoNome: produtoSelecionado.nome,
+        revendedoraWhatsApp: loja?.telefone,
         nome: dadosCliente.nome,
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco,
@@ -263,6 +265,8 @@ export default function CatalogoPublico() {
         isOpen={enderecoModalAberto}
         onClose={() => setEnderecoModalAberto(false)}
         onConfirm={handleComprarAgora}
+        valorOriginal={produtoSelecionado?.preco}
+        revendedoraId={loja?._id}
       />
 
       <DetalhesProdutoModal
