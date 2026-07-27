@@ -7,43 +7,67 @@ export default function PushNotificationHandler() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('🔕 Usuário não logado, não ativando notificações.');
+      return;
+    }
 
     const registerPush = async () => {
-      // 1. Verifica se o navegador suporta e se o usuário já permitiu
-      if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+      console.log('🔔 Tentando ativar notificações para:', user.email);
 
-      if (Notification.permission === 'denied') return;
+      if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+        console.warn('🔕 Navegador não suporta notificações.');
+        return;
+      }
 
-      // 2. Registra o Service Worker
+      // Verifica a chave pública no ambiente
+      const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+      if (!publicKey) {
+        console.warn('🔕 ERRO: VITE_VAPID_PUBLIC_KEY não está definida no Vercel!');
+        toast.error('Notificações desativadas: chave pública não encontrada.');
+        return;
+      }
+      console.log('✅ Chave pública encontrada!');
+
+      if (Notification.permission === 'denied') {
+        console.warn('🔕 Usuário bloqueou notificações.');
+        return;
+      }
+
       try {
+        // Registra o Service Worker (garante que o sw.js esteja no ar)
         const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('✅ Service Worker registrado!');
 
-        // 3. Pede permissão se ainda não foi concedida
         if (Notification.permission === 'default') {
+          console.log('🔔 Solicitando permissão...');
           const permission = await Notification.requestPermission();
-          if (permission !== 'granted') return;
+          if (permission !== 'granted') {
+            console.warn('🔕 Permissão negada.');
+            return;
+          }
         }
 
-        // 4. Pega a assinatura e envia para o backend
+        // Converte a chave pública para o formato Uint8Array
+        const applicationServerKey = urlBase64ToUint8Array(publicKey);
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY)
+          applicationServerKey: applicationServerKey
         });
 
+        console.log('✅ Assinatura push gerada!', subscription);
         await api.post('/notifications/subscribe', { subscription });
-        console.log('✅ Notificações Push ativadas!');
+        console.log('✅ Notificações ativadas com sucesso!');
 
       } catch (error) {
-        console.error('Erro ao ativar notificações:', error);
+        console.error('🔥 Erro ao ativar notificações:', error);
+        toast.error('Erro ao ativar notificações. Verifique o console.');
       }
     };
 
     registerPush();
-
   }, [user]);
 
-  // Função auxiliar para converter a chave pública
   const urlBase64ToUint8Array = (base64String) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
