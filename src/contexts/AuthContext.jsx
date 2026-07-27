@@ -11,16 +11,13 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       api.get('/auth/me')
-        .then(({ data }) => {
-          setUser(data);
-          setLoading(false);
-        })
+        .then(({ data }) => setUser(data))
         .catch(() => {
           localStorage.removeItem('token');
           sessionStorage.removeItem('token');
           setUser(null);
-          setLoading(false);
-        });
+        })
+        .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
@@ -38,16 +35,11 @@ export function AuthProvider({ children }) {
 
   async function registrar(nome, email, senha, indicadoPor = '') {
     try {
-      console.log('📤 Enviando requisição de registro...');
       const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
-      console.log('✅ Registro bem-sucedido, token recebido:', data.token);
-      
       localStorage.setItem('token', data.token);
       setUser(data.revendedora);
-      
-      return data; 
+      return data;
     } catch (error) {
-      console.error('❌ Erro no registro:', error.response?.data || error.message);
       throw error;
     }
   }
