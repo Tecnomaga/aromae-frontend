@@ -8,7 +8,11 @@ export const loginSchema = z.object({
 export const cadastroSchema = z.object({
   nome: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
   email: z.string().email('E-mail inválido'),
-  senha: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres')
+  senha: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  senhaConfirmacao: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres')
+}).refine((data) => data.senha === data.senhaConfirmacao, {
+  message: "As senhas não coincidem",
+  path: ["senhaConfirmacao"], // Aponta o erro para o campo de confirmação
 });
 
 export const clienteSchema = z.object({
@@ -40,5 +44,6 @@ export const produtoSchema = z.object({
 
 export const onboardingSchema = z.object({
   nomeLoja: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
-  slug: z.string().min(3, 'Link deve ter pelo menos 3 caracteres')
+  slug: z.string().min(3, 'Link deve ter pelo menos 3 caracteres'),
+  telefone: z.string().min(10, 'Telefone inválido (mínimo 10 dígitos)')
 });
