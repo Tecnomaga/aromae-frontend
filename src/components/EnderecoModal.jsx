@@ -3,12 +3,12 @@ import { X, Tag, CheckCircle } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOriginal }) {
+export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOriginal, revendedoraId }) {
   const [form, setForm] = useState({ nome: '', telefone: '', endereco: '' });
   const [cupomCodigo, setCupomCodigo] = useState('');
   const [cupom, setCupom] = useState(null);
   const [loadingCupom, setLoadingCupom] = useState(false);
-  const [total, setTotal] = useState(valorOriginal);
+  const [total, setTotal] = useState(valorOriginal || 0);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,13 +16,19 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
   };
 
   const handleAplicarCupom = async () => {
-    if (!cupomCodigo.trim()) return toast.error('Digite um código de cupom');
+    if (!cupomCodigo.trim()) {
+      toast.error('Digite um código de cupom');
+      return;
+    }
     setLoadingCupom(true);
     try {
-      const response = await api.post('/cupons/validar', { codigo: cupomCodigo, revendedoraId: 'loja_id_aqui' });
+      const response = await api.post('/cupons/validar', {
+        codigo: cupomCodigo,
+        revendedoraId: revendedoraId
+      });
       setCupom(response.data);
-      const desconto = response.data.tipo === 'percentual' 
-        ? valorOriginal * (response.data.desconto / 100) 
+      const desconto = response.data.tipo === 'percentual'
+        ? valorOriginal * (response.data.desconto / 100)
         : response.data.desconto;
       setTotal(Math.max(0, valorOriginal - desconto));
       toast.success('Cupom aplicado!');
@@ -36,12 +42,15 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
   };
 
   const handleConfirm = () => {
-    // Validações básicas
     if (!form.nome.trim() || !form.telefone.trim() || !form.endereco.trim()) {
-      return toast.error('Preencha todos os campos obrigatórios');
+      toast.error('Preencha todos os campos obrigatórios');
+      return;
     }
-    // Passa os dados, o cupom e o novo total para o pai
-    onConfirm({ ...form, cupom: cupomCodigo, total });
+    onConfirm({
+      ...form,
+      cupom: cupomCodigo,
+      total
+    });
   };
 
   if (!isOpen) return null;
@@ -56,21 +65,41 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
           </button>
         </div>
         <div className="p-6 space-y-4">
-          {/* Campos existentes... */}
           <div>
             <label className="block text-sm font-semibold text-texto/60 mb-1">Seu nome *</label>
-            <input type="text" name="nome" value={form.nome} onChange={handleChange} placeholder="Ex: Maria Silva" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria" />
+            <input
+              type="text"
+              name="nome"
+              value={form.nome}
+              onChange={handleChange}
+              placeholder="Ex: Maria Silva"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria"
+            />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-texto/60 mb-1">Telefone *</label>
-            <input type="tel" name="telefone" value={form.telefone} onChange={handleChange} placeholder="(11) 99999-9999" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria" />
+            <label className="block text-sm font-semibold text-texto/60 mb-1">Telefone (com DDD) *</label>
+            <input
+              type="tel"
+              name="telefone"
+              value={form.telefone}
+              onChange={handleChange}
+              placeholder="(11) 99999-9999"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria"
+            />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-texto/60 mb-1">Endereço *</label>
-            <input type="text" name="endereco" value={form.endereco} onChange={handleChange} placeholder="Rua, número, bairro, cidade e CEP" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria" />
+            <label className="block text-sm font-semibold text-texto/60 mb-1">Endereço para entrega *</label>
+            <input
+              type="text"
+              name="endereco"
+              value={form.endereco}
+              onChange={handleChange}
+              placeholder="Rua, número, bairro, cidade e CEP"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria"
+            />
           </div>
 
-          {/* 👨‍💻 NOVO CAMPO: CUPOM */}
+          {/* Campo de Cupom */}
           <div className="border-t border-gray-100 pt-4 mt-2">
             <label className="block text-sm font-semibold text-texto/60 mb-2">Cupom de desconto</label>
             <div className="flex gap-2">
@@ -106,12 +135,17 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
             </div>
           </div>
         </div>
-
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-semibold text-texto/70 hover:text-texto transition">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-texto/70 hover:text-texto transition"
+          >
             Cancelar
           </button>
-          <button onClick={handleConfirm} className="px-6 py-2 rounded-xl bg-primaria text-white font-semibold text-sm hover:bg-primaria/90 transition shadow-sm">
+          <button
+            onClick={handleConfirm}
+            className="px-6 py-2 rounded-xl bg-primaria text-white font-semibold text-sm hover:bg-primaria/90 transition shadow-sm"
+          >
             Confirmar e pagar
           </button>
         </div>
