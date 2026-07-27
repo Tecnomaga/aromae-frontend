@@ -8,15 +8,20 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    // Verifica se existe um token salvo (localStorage ou sessionStorage)
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       api.get('/auth/me')
-        .then(({ data }) => setUser(data))
+        .then(({ data }) => {
+          setUser(data);
+          setLoading(false);
+        })
         .catch(() => {
           localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
           setUser(null);
-        })
-        .finally(() => setLoading(false));
+          setLoading(false);
+        });
     } else {
       setLoading(false);
     }
@@ -35,9 +40,12 @@ export function AuthProvider({ children }) {
   async function registrar(nome, email, senha, indicadoPor = '') {
     try {
       const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
+      
+      // 🔥 Garante que o token seja salvo e o usuário seja setado ANTES de retornar
       localStorage.setItem('token', data.token);
       setUser(data.revendedora);
-      // Retorna os dados para o frontend saber que deu certo
+      
+      // Retorna os dados para o Cadastro.jsx saber que deu certo
       return data; 
     } catch (error) {
       // Propaga o erro para o Cadastro tratar
