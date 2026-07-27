@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
+import PushNotificationHandler from './components/PushNotificationHandler'; // <--- ADICIONE ISSO
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import Onboarding from './pages/Onboarding';
@@ -20,7 +21,6 @@ import GerenciarAvaliacoes from './pages/GerenciarAvaliacoes';
 import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
 
-// Carregamento sob demanda (lazy)
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
@@ -34,7 +34,6 @@ const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
-
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (!user.ativo) return <Bloqueado />;
@@ -48,7 +47,6 @@ export default function App() {
         <ErrorBoundary>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
             <Routes>
-              {/* Rotas Públicas */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
@@ -65,7 +63,6 @@ export default function App() {
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/recuperar-senha" element={<ForgotPassword />} />
 
-              {/* Rotas Protegidas (precisa estar logado) */}
               <Route element={<RotasProtegidas />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/produtos" element={<Produtos />} />
@@ -81,10 +78,10 @@ export default function App() {
                 <Route path="/perfil/editar" element={<PerfilEditar />} />
               </Route>
 
-              {/* Fallback para rotas não encontradas */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
+          <PushNotificationHandler /> {/* <--- INSIRA AQUI O COMPONENTE */}
           <InstallPrompt />
         </ErrorBoundary>
       </BrowserRouter>
