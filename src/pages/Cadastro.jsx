@@ -17,20 +17,8 @@ export default function Cadastro() {
 
   const onSubmit = async (data) => {
     try {
-      const resultado = await registrar(data.nome, data.email, data.senha, indicadoPor);
-      console.log('✅ Cadastro OK, token:', resultado.token);
-      
-      // 🔥 FORÇA A NAVEGAÇÃO DE DUAS FORMAS
-      // 1. React Router (suave)
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 100);
-
-      // 2. Redirecionamento bruto (força a saída da tela)
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 300);
-
+      await registrar(data.nome, data.email, data.senha, indicadoPor);
+      navigate('/dashboard');
     } catch (err) {
       console.error('🚨 Erro no cadastro:', err);
       const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
