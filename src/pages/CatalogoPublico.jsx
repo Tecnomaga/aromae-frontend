@@ -89,10 +89,9 @@ export default function CatalogoPublico() {
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco
       });
-      
-      // A MAGIA ESTÁ AQUI: O MODAL VAI ABRIR FORÇADAMENTE COM OS DADOS CORRETOS
+      // ✅ Força a abertura do modal com isOpen: true
       setPixModal({
-        isOpen: true, 
+        isOpen: true,
         qrCodeBase64: response.data.qrCodeBase64,
         qrCodeText: response.data.qrCode,
         produto: produtoSelecionado
