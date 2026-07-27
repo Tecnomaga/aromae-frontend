@@ -17,7 +17,10 @@ import Financeiro from './pages/Financeiro';
 import Assinatura from './pages/Assinatura';
 import GerenciarCupons from './pages/GerenciarCupons';
 import GerenciarAvaliacoes from './pages/GerenciarAvaliacoes';
+import Configuracoes from './pages/Configuracoes';
+import ForgotPassword from './pages/ForgotPassword';
 
+// Carregamento sob demanda (lazy)
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
@@ -27,7 +30,6 @@ const Clientes = lazy(() => import('./pages/Clientes'));
 const ClienteForm = lazy(() => import('./pages/ClienteForm'));
 const Perfil = lazy(() => import('./pages/Perfil'));
 const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
-const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
@@ -46,6 +48,7 @@ export default function App() {
         <ErrorBoundary>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
             <Routes>
+              {/* Rotas Públicas */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastro" element={<Cadastro />} />
@@ -59,7 +62,10 @@ export default function App() {
               <Route path="/assinatura" element={<Assinatura />} />
               <Route path="/gerenciar-cupons" element={<GerenciarCupons />} />
               <Route path="/gerenciar-avaliacoes" element={<GerenciarAvaliacoes />} />
+              <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/recuperar-senha" element={<ForgotPassword />} />
 
+              {/* Rotas Protegidas (precisa estar logado) */}
               <Route element={<RotasProtegidas />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/produtos" element={<Produtos />} />
@@ -73,9 +79,9 @@ export default function App() {
                 <Route path="/clientes/:id" element={<ClienteForm />} />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/perfil/editar" element={<PerfilEditar />} />
-                <Route path="/configuracoes" element={<Configuracoes />} />
               </Route>
 
+              {/* Fallback para rotas não encontradas */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
