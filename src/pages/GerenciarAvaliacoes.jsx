@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Star } from 'phosphor-react';
+import { useNavigate } from 'react-router-dom';
+import { Star, X } from 'phosphor-react';
 import api from '../services/api';
 
 export default function GerenciarAvaliacoes() {
+  const navigate = useNavigate();
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +19,12 @@ export default function GerenciarAvaliacoes() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 animate-fade-in-up">
-      <h1 className="font-titulo text-3xl text-primaria mb-6">Avaliações dos Produtos</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-titulo text-3xl text-primaria mb-6">Avaliações dos Produtos</h1>
+        <button onClick={() => navigate(-1)} className="text-texto/40 hover:text-texto p-1">
+          <X size={24} />
+        </button>
+      </div>
       <div className="space-y-4">
         {avaliacoes.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-8 text-center text-texto/40">
