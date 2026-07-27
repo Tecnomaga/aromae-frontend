@@ -1,3 +1,7 @@
+// Necessário para o vite-plugin-pwa injetar o pre-cache
+self.__WB_MANIFEST;
+
+// Listener para notificações push
 self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
