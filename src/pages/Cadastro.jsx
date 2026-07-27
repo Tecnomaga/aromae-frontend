@@ -17,10 +17,15 @@ export default function Cadastro() {
 
   const onSubmit = async (data) => {
     try {
+      // 1. Tenta registrar
       await registrar(data.nome, data.email, data.senha, indicadoPor);
+      
+      // 2. Pequeno delay para garantir que o AuthContext atualizou o estado
+      // O AuthContext já salvou o token e setou o user. Agora vamos navegar.
       setTimeout(() => {
-        navigate('/onboarding');
-      }, 100);
+        navigate('/dashboard'); // <--- Mudei de '/onboarding' para '/dashboard' conforme seu pedido
+      }, 200); // 200ms é suficiente para o React processar a atualização do estado
+
     } catch (err) {
       const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
       setError('root', { message: mensagemErro });
@@ -61,6 +66,7 @@ export default function Cadastro() {
             {isSubmitting ? 'Criando conta...' : 'Criar conta'}
           </button>
         </form>
+
         <p className="text-center text-sm mt-6">Já tem uma loja? <Link to="/login" className="text-primaria font-semibold">Entrar</Link></p>
       </div>
     </div>
