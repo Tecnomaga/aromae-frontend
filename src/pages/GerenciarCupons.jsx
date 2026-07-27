@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash, Check, X } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function GerenciarCupons() {
+  const navigate = useNavigate();
   const [cupons, setCupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [novoCupom, setNovoCupom] = useState({
@@ -60,13 +61,16 @@ export default function GerenciarCupons() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 animate-fade-in-up">
-      <h1 className="font-titulo text-3xl text-primaria mb-6">Gerenciar Cupons</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-titulo text-3xl text-primaria">Gerenciar Cupons</h1>
+        <button onClick={() => navigate(-1)} className="text-texto/40 hover:text-texto p-1">
+          <X size={24} />
+        </button>
+      </div>
 
-      {/* Formulário de criação */}
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
         <h2 className="font-bold text-lg mb-4">Novo Cupom</h2>
         <form onSubmit={criarCupom} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-texto/70">Código do cupom *</label>
             <input
@@ -138,7 +142,6 @@ export default function GerenciarCupons() {
         </form>
       </div>
 
-      {/* Lista de cupons */}
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
@@ -185,9 +188,7 @@ export default function GerenciarCupons() {
           </table>
         </div>
         {cupons.length === 0 && (
-          <div className="p-8 text-center text-texto/40">
-            Nenhum cupom cadastrado ainda.
-          </div>
+          <div className="p-8 text-center text-texto/40">Nenhum cupom cadastrado ainda.</div>
         )}
       </div>
     </div>
