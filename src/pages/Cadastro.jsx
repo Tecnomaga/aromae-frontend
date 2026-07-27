@@ -18,8 +18,6 @@ export default function Cadastro() {
   const onSubmit = async (data) => {
     try {
       await registrar(data.nome, data.email, data.senha, indicadoPor);
-      // Se chegou aqui, o token foi salvo e o usuário setado. Força a navegação.
-      // Pequeno delay para garantir que o contexto atualizou antes de navegar.
       setTimeout(() => {
         navigate('/onboarding');
       }, 100);
@@ -28,7 +26,6 @@ export default function Cadastro() {
       setError('root', { message: mensagemErro });
       toast.error(mensagemErro);
     }
-    // O estado isSubmitting é desativado automaticamente pelo react-hook-form
   };
 
   return (
@@ -41,53 +38,30 @@ export default function Cadastro() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <input
-              type="text" placeholder="Nome completo"
-              {...register('nome')}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
+            <input type="text" placeholder="Nome completo" {...register('nome')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             {errors.nome && <p className="text-red-500 text-xs mt-1">{errors.nome.message}</p>}
           </div>
-
           <div>
-            <input
-              type="email" placeholder="E-mail"
-              {...register('email')}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
+            <input type="email" placeholder="E-mail" {...register('email')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
           </div>
-
           <div>
-            <input
-              type="password" placeholder="Senha (mínimo 6 caracteres)"
-              {...register('senha')}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
+            <input type="password" placeholder="Senha (mínimo 6 caracteres)" {...register('senha')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             {errors.senha && <p className="text-red-500 text-xs mt-1">{errors.senha.message}</p>}
           </div>
-
           <div>
-            <input
-              type="text" placeholder="Código de indicação (opcional)"
-              value={indicadoPor}
-              onChange={(e) => setIndicadoPor(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            />
+            <input type="password" placeholder="Confirmar senha" {...register('senhaConfirmacao')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+            {errors.senhaConfirmacao && <p className="text-red-500 text-xs mt-1">{errors.senhaConfirmacao.message}</p>}
+          </div>
+          <div>
+            <input type="text" placeholder="Código de indicação (opcional)" value={indicadoPor} onChange={(e) => setIndicadoPor(e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             <p className="text-xs text-texto/40 mt-1">Se alguém te indicou, coloque o e-mail dela aqui.</p>
           </div>
-
-          <button
-            type="submit" disabled={isSubmitting}
-            className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50"
-          >
+          <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50">
             {isSubmitting ? 'Criando conta...' : 'Criar conta'}
           </button>
         </form>
-
-        <p className="text-center text-sm mt-6">
-          Já tem uma loja? <Link to="/login" className="text-primaria font-semibold">Entrar</Link>
-        </p>
+        <p className="text-center text-sm mt-6">Já tem uma loja? <Link to="/login" className="text-primaria font-semibold">Entrar</Link></p>
       </div>
     </div>
   );
