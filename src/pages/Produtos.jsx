@@ -4,6 +4,8 @@ import { Plus, MagnifyingGlass, Funnel, Package, Warning, Pencil, Trash, ArrowDo
 import api from '../services/api';
 import StockModal from '../components/StockModal';
 import ConfirmModal from '../components/ConfirmModal';
+import { CardSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 export default function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -49,10 +51,20 @@ export default function Produtos() {
   const handleVerHistorico = (produto) => setEstoqueModal({ ...produto, acao: 'historico' });
 
   if (loading) return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin mx-auto mb-4"></div>
-        <p className="text-texto/50 text-sm">Carregando sua vitrine...</p>
+    <div className="max-w-6xl mx-auto animate-fade-in-up">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <Skeleton className="h-10 w-48 mb-1" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-10 w-36 rounded-xl" />
+      </div>
+      <div className="flex gap-4 mb-8">
+        <Skeleton className="h-12 flex-1 rounded-xl" />
+        <Skeleton className="h-12 w-40 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, i) => <CardSkeleton key={i} />)}
       </div>
     </div>
   );
@@ -64,10 +76,7 @@ export default function Produtos() {
           <h1 className="font-titulo text-4xl text-primaria mb-1">Seus Produtos</h1>
           <p className="text-texto/50 text-sm">Gerencie seu catálogo de perfumes</p>
         </div>
-        <Link
-          to="/produtos/novo"
-          className="btn-primary flex items-center gap-2"
-        >
+        <Link to="/produtos/novo" className="btn-primary flex items-center gap-2">
           <Plus size={20} weight="bold" /> Novo Produto
         </Link>
       </div>
@@ -99,16 +108,13 @@ export default function Produtos() {
       </div>
 
       {produtosFiltrados.length === 0 ? (
-        <div className="card-lg text-center py-16">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-            <Package size={40} className="text-gray-300" />
-          </div>
-          <p className="font-semibold text-texto/70 text-lg">Nenhum produto encontrado</p>
-          <p className="text-texto/40 text-sm mt-1">Comece adicionando seu primeiro perfume</p>
-          <Link to="/produtos/novo" className="btn-primary inline-flex mt-6">
-            Adicionar primeiro produto
-          </Link>
-        </div>
+        <EmptyState
+          type="produtos"
+          title="Nenhum produto encontrado"
+          message="Comece adicionando seu primeiro perfume."
+          linkTo="/produtos/novo"
+          linkText="Adicionar produto"
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {produtosFiltrados.map((produto) => (
@@ -121,8 +127,9 @@ export default function Produtos() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
-                  <div className="img-placeholder h-full">
-                    <Package size={48} className="opacity-50" />
+                  <div className="img-placeholder h-full bg-gradient-to-br from-primaria/5 to-secundaria/10 flex flex-col items-center justify-center gap-2">
+                    <span className="text-4xl">🌸</span>
+                    <span className="text-xs text-texto/30 font-semibold">Sem foto</span>
                   </div>
                 )}
                 <div className="absolute top-3 right-3">
