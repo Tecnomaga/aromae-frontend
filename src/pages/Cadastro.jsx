@@ -17,20 +17,25 @@ export default function Cadastro() {
 
   const onSubmit = async (data) => {
     try {
-      // 1. Tenta registrar
       await registrar(data.nome, data.email, data.senha, indicadoPor);
       
-      // 2. Pequeno delay para garantir que o AuthContext atualizou o estado
-      // O AuthContext já salvou o token e setou o user. Agora vamos navegar.
+      // Se chegou aqui, o registro foi bem-sucedido. Força redirecionamento.
+      console.log('🔄 Redirecionando para /dashboard...');
+      
+      // Pequeno delay para garantir que o contexto atualizou e o token foi salvo
       setTimeout(() => {
-        navigate('/dashboard'); // <--- Mudei de '/onboarding' para '/dashboard' conforme seu pedido
-      }, 200); // 200ms é suficiente para o React processar a atualização do estado
+        navigate('/dashboard');
+      }, 300);
 
     } catch (err) {
+      // Captura qualquer erro e exibe uma mensagem clara
+      console.error('🔥 Erro capturado no onSubmit:', err);
       const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
       setError('root', { message: mensagemErro });
       toast.error(mensagemErro);
-    }
+    } 
+    // O finally NÃO é necessário porque o react-hook-form libera automaticamente o isSubmitting
+    // quando a Promise é resolvida ou rejeitada. Mas garanta que o catch sempre retorne algo.
   };
 
   return (
