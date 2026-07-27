@@ -18,14 +18,17 @@ export default function Cadastro() {
   const onSubmit = async (data) => {
     try {
       await registrar(data.nome, data.email, data.senha, indicadoPor);
-      navigate('/onboarding');
+      // Se chegou aqui, o token foi salvo e o usuário setado. Força a navegação.
+      // Pequeno delay para garantir que o contexto atualizou antes de navegar.
+      setTimeout(() => {
+        navigate('/onboarding');
+      }, 100);
     } catch (err) {
-      // Se o backend retornar uma mensagem específica, usamos ela
       const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
       setError('root', { message: mensagemErro });
       toast.error(mensagemErro);
     }
-    // O finally é gerenciado automaticamente pelo react-hook-form quando a promise termina
+    // O estado isSubmitting é desativado automaticamente pelo react-hook-form
   };
 
   return (
