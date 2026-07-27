@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { TrendUp, Clock, CheckCircle, Coin, Percent, CurrencyDollar } from 'phosphor-react';
+import { useNavigate } from 'react-router-dom';
+import { TrendUp, Clock, CheckCircle, Coin, Percent, CurrencyDollar, X } from 'phosphor-react';
 import api from '../services/api';
 
 export default function Financeiro() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [dados, setDados] = useState({ totalBruto: 0, totalLiquido: 0, comissaoTotal: 0, historico: [] });
@@ -26,9 +28,16 @@ export default function Financeiro() {
   const { totalBruto, totalLiquido, comissaoTotal, historico } = dados;
 
   return (
-    <div className="max-w-3xl mx-auto animate-fade-in-up">
-      <h1 className="font-titulo text-3xl text-primaria mb-2">Minha Conta</h1>
-      <p className="text-texto/50 text-sm mb-6">Resumo financeiro dos últimos 30 dias.</p>
+    <div className="max-w-3xl mx-auto p-4 animate-fade-in-up">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="font-titulo text-3xl text-primaria mb-2">Minha Conta</h1>
+          <p className="text-texto/50 text-sm">Resumo financeiro dos últimos 30 dias.</p>
+        </div>
+        <button onClick={() => navigate(-1)} className="text-texto/40 hover:text-texto p-1">
+          <X size={24} />
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between">
