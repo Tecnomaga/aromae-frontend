@@ -1,20 +1,24 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { SignIn } from 'phosphor-react';
+import { SignIn, Eye, EyeSlash } from 'phosphor-react';
 import { loginSchema } from '../schemas';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(loginSchema)
   });
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.senha);
+      await login(data.email, data.senha, rememberMe);
       navigate('/dashboard');
     } catch (err) {
       setError('root', { message: 'E-mail ou senha inválidos.' });
@@ -30,14 +34,58 @@ export default function Login() {
         {errors.root && <p className="text-red-500 text-sm mb-4">{errors.root.message}</p>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <input type="email" placeholder="E-mail" {...register('email')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
-          <input type="password" placeholder="Senha" {...register('senha')} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
-          <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition flex items-center justify-center gap-2 disabled:opacity-50">
+          <div>
+            <input
+              type="email" placeholder="E-mail"
+              {...register('email')}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          </div>
+
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Senha"
+              {...register('senha')}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-texto/40 hover:text-texto"
+            >
+              {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+            </button>
+            {errors.senha && <p className="text-red-500 text-xs mt-1">{errors.senha.message}</p>}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-texto/60 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-primaria rounded focus:ring-primaria"
+              />
+              Lembrar de mim
+            </label>
+            <Link to="/recuperar-senha" className="text-sm text-primaria hover:underline">
+              Esqueci minha senha
+            </Link>
+          </div>
+
+          <button
+            type="submit" disabled={isSubmitting}
+            className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition flex items-center justify-center gap-2 disabled:opacity-50"
+          >
             <SignIn size={20} /> {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-6">Não tem uma loja? <Link to="/cadastro" className="text-primaria font-semibold">Criar agora</Link></p>
+        <p className="text-center text-sm mt-6">
+          Não tem uma loja? <Link to="/cadastro" className="text-primaria font-semibold">Criar agora</Link>
+        </p>
       </div>
     </div>
   );
