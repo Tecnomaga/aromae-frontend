@@ -86,6 +86,8 @@ export default function Onboarding() {
 
       const { data: usuario } = await api.get('/auth/me');
       atualizarUsuario(usuario);
+      
+      // Redireciona para o Dashboard
       navigate('/dashboard');
     } catch (err) {
       toast.error('Não foi possível salvar agora. Confira sua conexão.');
@@ -154,7 +156,6 @@ export default function Onboarding() {
                 <p className="text-xs text-texto/50 mt-1">Sua vitrine: aromae.app/loja/{watch('slug') || 'sua-loja'}</p>
               </div>
 
-              {/* ✅ CAMPO WHATSAPP NO ONBOARDING */}
               <div>
                 <label className="block text-sm font-semibold mb-1">WhatsApp (com DDD) *</label>
                 <input type="tel" {...register('telefone')} onChange={(e) => { e.target.value = formatTelefone(e); }} placeholder="(11) 99999-9999" className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
