@@ -22,9 +22,13 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  async function login(email, senha) {
+  async function login(email, senha, rememberMe = false) {
     const { data } = await api.post('/auth/login', { email, senha });
-    localStorage.setItem('token', data.token);
+    if (rememberMe) {
+      localStorage.setItem('token', data.token);
+    } else {
+      sessionStorage.setItem('token', data.token);
+    }
     setUser(data.revendedora);
   }
 
@@ -40,6 +44,7 @@ export function AuthProvider({ children }) {
 
   function logout() {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     setUser(null);
     window.location.href = '/';
   }
