@@ -33,9 +33,15 @@ export function AuthProvider({ children }) {
   }
 
   async function registrar(nome, email, senha, indicadoPor = '') {
-    const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
-    localStorage.setItem('token', data.token);
-    setUser(data.revendedora);
+    try {
+      const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
+      localStorage.setItem('token', data.token);
+      setUser(data.revendedora);
+      return data;
+    } catch (error) {
+      // Propaga o erro para o frontend (Cadastro.jsx) poder tratá-lo
+      throw error;
+    }
   }
 
   function atualizarUsuario(dadosParciais) {
