@@ -33,13 +33,13 @@ export default function Clientes() {
   if (loading) return (
     <div className="animate-fade-in-up">
       <div className="flex justify-between items-center mb-6">
-        <Skeleton className="h-10 w-32" />
+        <div className="h-10 w-32 bg-gray-200 rounded animate-shimmer" />
         <div className="flex gap-3">
-          <Skeleton className="h-10 w-36 rounded-lg" />
-          <Skeleton className="h-10 w-32 rounded-lg" />
+          <div className="h-10 w-36 bg-gray-200 rounded-lg animate-shimmer" />
+          <div className="h-10 w-32 bg-gray-200 rounded-lg animate-shimmer" />
         </div>
       </div>
-      <Skeleton className="h-12 w-full rounded-xl mb-6" />
+      <div className="h-12 w-full bg-gray-200 rounded-xl animate-shimmer mb-6" />
       <ListSkeleton rows={6} />
     </div>
   );
