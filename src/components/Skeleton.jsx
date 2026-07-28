@@ -4,7 +4,6 @@ export default function Skeleton({ className = '' }) {
   );
 }
 
-// Variações pré-definidas
 export function CardSkeleton() {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
