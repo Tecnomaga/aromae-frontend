@@ -30,12 +30,12 @@ export default function MobileBottomNav() {
           to={to}
           end={to === '/dashboard'}
           className={({ isActive }) =>
-            `flex flex-col items-center text-xs font-semibold transition-colors duration-200 ${
+            `flex flex-col items-center text-[10px] font-semibold transition-colors duration-200 ${
               isActive ? 'text-primaria' : 'text-texto/50 hover:text-texto'
             }`
           }
         >
-          <Icon size={24} />
+          <Icon size={22} />
           <span className="mt-0.5">{label}</span>
         </NavLink>
       ))}
@@ -43,11 +43,11 @@ export default function MobileBottomNav() {
       <div className="relative">
         <button
           onClick={() => setMenuAberto(!menuAberto)}
-          className={`flex flex-col items-center text-xs font-semibold transition-colors duration-200 ${
+          className={`flex flex-col items-center text-[10px] font-semibold transition-colors duration-200 ${
             menuAberto ? 'text-primaria' : 'text-texto/50 hover:text-texto'
           }`}
         >
-          <User size={24} />
+          <User size={22} />
           <span className="mt-0.5">Conta</span>
         </button>
 
@@ -58,62 +58,62 @@ export default function MobileBottomNav() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden backdrop-blur-sm"
+              className="absolute bottom-full right-0 mb-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden backdrop-blur-sm max-h-80 overflow-y-auto"
             >
               <div className="p-2 space-y-1">
                 <NavLink
                   to="/perfil"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <User size={18} className="text-primaria" /> Perfil
                 </NavLink>
                 <NavLink
                   to="/planos"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <CreditCard size={18} className="text-primaria" /> Planos
                 </NavLink>
                 <NavLink
                   to="/financeiro"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <Coins size={18} className="text-sucesso" /> Financeiro
                 </NavLink>
                 <NavLink
                   to="/assinatura"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <CreditCard size={18} className="text-primaria" /> Assinatura
                 </NavLink>
                 <NavLink
                   to="/gerenciar-cupons"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <Tag size={18} className="text-primaria" /> Cupons
                 </NavLink>
                 <NavLink
                   to="/gerenciar-avaliacoes"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <Star size={18} className="text-secundaria" /> Avaliações
                 </NavLink>
                 <NavLink
                   to="/configuracoes"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <Gear size={18} className="text-primaria" /> Configurações
                 </NavLink>
                 <NavLink
                   to="/suporte"
                   onClick={() => setMenuAberto(false)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
                 >
                   <Headset size={18} className="text-primaria" /> Suporte
                 </NavLink>
@@ -121,7 +121,7 @@ export default function MobileBottomNav() {
               <div className="border-t border-gray-100/50 p-2">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-xl text-sm font-semibold text-red-500 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 rounded-xl text-sm font-semibold text-red-500 transition-colors"
                 >
                   <User size={18} /> Sair
                 </button>
