@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { cadastroSchema } from '../schemas';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 
 export default function Cadastro() {
   const { registrar } = useAuth();
@@ -17,16 +16,33 @@ export default function Cadastro() {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    // Redireciona imediatamente, sem esperar a resposta do servidor
-    window.location.href = '/onboarding';
-    
-    // Tenta fazer o cadastro em segundo plano
+    setError('root', { message: '' }); // limpa erro anterior
+
+    // Dispara o cadastro com um timeout de 15 segundos
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('TIMEOUT')), 15000)
+    );
+
     try {
-      await registrar(data.nome, data.email, data.senha, indicadoPor);
-      // Se chegar aqui, deu certo, mas o usuário já foi redirecionado
+      await Promise.race([
+        registrar(data.nome, data.email, data.senha, indicadoPor),
+        timeoutPromise,
+      ]);
+      // Sucesso: redireciona imediatamente
+      window.location.href = '/onboarding';
     } catch (err) {
-      // Se falhar, mostra erro no console, mas a navegação já ocorreu
-      console.error('Erro no cadastro em segundo plano:', err);
+      setLoading(false);
+      if (err.message === 'TIMEOUT') {
+        // O servidor demorou demais, mas a conta provavelmente foi criada.
+        // Redireciona mesmo assim, pois o teste anterior mostrou que a conta é criada.
+        window.alert('O servidor está lento, mas sua conta provavelmente foi criada. Você será redirecionado para continuar.');
+        window.location.href = '/onboarding';
+      } else {
+        // Exibe o erro real em um alerta sonoro
+        const mensagem = err.response?.data?.message || err.message || 'Erro desconhecido';
+        window.alert('Erro ao criar conta: ' + mensagem);
+        setError('root', { message: mensagem });
+      }
     }
   };
 
