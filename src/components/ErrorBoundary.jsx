@@ -20,6 +20,8 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Erro capturado pelo ErrorBoundary:', error, errorInfo);
+    // Exibe o erro em um alerta para que o usuário possa me informar
+    window.alert('Erro: ' + error.message);
   }
 
   handleReload = () => {
