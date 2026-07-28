@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard, MagnifyingGlass, SortAscending } from 'phosphor-react';
+import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard, MagnifyingGlass } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import PixModal from '../components/PixModal';
@@ -146,7 +146,9 @@ export default function CatalogoPublico() {
         revendedoraId: loja._id,
         nome: dadosCliente.nome,
         telefone: dadosCliente.telefone,
-        endereco: dadosCliente.endereco
+        endereco: dadosCliente.endereco,
+        cupom: dadosCliente.cupom || '',
+        total: dadosCliente.total || produtoSelecionado.preco  // envia o total com desconto
       });
 
       sessionStorage.setItem('pendingPixOrder', JSON.stringify({
@@ -214,7 +216,6 @@ export default function CatalogoPublico() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Ordenação */}
             <select
               value={ordenacao}
               onChange={(e) => {
