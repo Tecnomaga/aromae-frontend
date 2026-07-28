@@ -148,7 +148,7 @@ export default function CatalogoPublico() {
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco,
         cupom: dadosCliente.cupom || '',
-        total: dadosCliente.total || produtoSelecionado.preco
+        total: dadosCliente.total || Number(produtoSelecionado.preco)
       });
 
       sessionStorage.setItem('pendingPixOrder', JSON.stringify({
@@ -181,7 +181,6 @@ export default function CatalogoPublico() {
       toast.error(mensagem);
     } finally {
       setPixLoading(false);
-      setProdutoSelecionado(null);
     }
   };
 
@@ -283,7 +282,7 @@ export default function CatalogoPublico() {
                     </button>
                     <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
                     <p className="text-primaria font-bold text-lg mt-2">
-                      R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
+                      R$ {Number(produto.preco).toFixed(2)}
                     </p>
                     <button 
                       onClick={() => {
@@ -360,7 +359,7 @@ export default function CatalogoPublico() {
         isOpen={enderecoModalAberto}
         onClose={() => setEnderecoModalAberto(false)}
         onConfirm={handleComprarAgora}
-        valorOriginal={produtoSelecionado?.preco}
+        valorOriginal={Number(produtoSelecionado?.preco) || 0}
         revendedoraId={loja?._id}
       />
 
