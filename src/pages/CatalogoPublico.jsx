@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard, MagnifyingGlass } from 'phosphor-react';
+import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard, MagnifyingGlass, SortAscending } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import PixModal from '../components/PixModal';
@@ -27,11 +27,12 @@ export default function CatalogoPublico() {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [enderecoModalAberto, setEnderecoModalAberto] = useState(false);
   const [detalhesModalAberto, setDetalhesModalAberto] = useState(false);
+  const [ordenacao, setOrdenacao] = useState('recentes');
 
   const sentinelRef = useRef(null);
   const observerRef = useRef(null);
 
-  const carregarProdutos = useCallback(async (pageNum = 1, reset = false, termoBusca = busca) => {
+  const carregarProdutos = useCallback(async (pageNum = 1, reset = false, termoBusca = busca, ord = ordenacao) => {
     if (reset) {
       setLoading(true);
       setProdutos([]);
@@ -41,7 +42,7 @@ export default function CatalogoPublico() {
     }
 
     try {
-      const params = { slug };
+      const params = { ordenacao: ord };
       if (termoBusca) params.busca = termoBusca;
       if (pageNum && LIMIT) {
         params.page = pageNum;
@@ -63,7 +64,7 @@ export default function CatalogoPublico() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [slug, busca]);
+  }, [slug, busca, ordenacao]);
 
   useEffect(() => {
     carregarProdutos(1, true);
@@ -85,13 +86,9 @@ export default function CatalogoPublico() {
     return () => observer.disconnect();
   }, [hasMore, loading, loadingMore, page, carregarProdutos]);
 
-  const handleBuscaChange = (e) => {
-    setBusca(e.target.value);
-  };
-
   const handleBuscaSubmit = (e) => {
     e.preventDefault();
-    carregarProdutos(1, true, busca);
+    carregarProdutos(1, true, busca, ordenacao);
   };
 
   useEffect(() => {
@@ -216,16 +213,30 @@ export default function CatalogoPublico() {
               {loja?.ativo ? 'Loja aberta' : 'Em pausa'}
             </div>
           </div>
-          <button onClick={compartilhar} className="text-texto/70 hover:text-primaria"><ShareIcon size={24} /></button>
+          <div className="flex items-center gap-2">
+            {/* Ordenação */}
+            <select
+              value={ordenacao}
+              onChange={(e) => {
+                setOrdenacao(e.target.value);
+                carregarProdutos(1, true, busca, e.target.value);
+              }}
+              className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white"
+            >
+              <option value="recentes">Mais recentes</option>
+              <option value="menor_preco">Menor preço</option>
+              <option value="maior_preco">Maior preço</option>
+            </select>
+            <button onClick={compartilhar} className="text-texto/70 hover:text-primaria"><ShareIcon size={24} /></button>
+          </div>
         </div>
-        {/* Barra de busca no catálogo */}
         <form onSubmit={handleBuscaSubmit} className="px-4 pb-3">
           <div className="relative">
             <MagnifyingGlass size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-texto/30" />
             <input
               type="text"
               value={busca}
-              onChange={handleBuscaChange}
+              onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar perfume ou marca..."
               className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria bg-white"
             />
@@ -299,7 +310,6 @@ export default function CatalogoPublico() {
               ))}
             </div>
 
-            {/* Sentinel scroll infinito */}
             {hasMore && <div ref={sentinelRef} className="h-4" />}
             {loadingMore && (
               <div className="flex justify-center py-4">
@@ -360,4 +370,4 @@ export default function CatalogoPublico() {
       />
     </div>
   );
-                  }
+}
