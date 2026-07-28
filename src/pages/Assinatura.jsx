@@ -45,13 +45,14 @@ export default function Assinatura() {
     trial: 'Teste Grátis'
   }[user.plano] || 'Não definido';
 
-  // Cálculo dos dias restantes
-  const diasRestantes = user.assinaturaExpira 
-    ? Math.ceil((new Date(user.assinaturaExpira) - new Date()) / (1000 * 60 * 60 * 24))
+  // Dias restantes: usa trialExpira para trial, assinaturaExpira para outros
+  const dataExpiracao = user.plano === 'trial' ? user.trialExpira : user.assinaturaExpira;
+  const diasRestantes = dataExpiracao 
+    ? Math.ceil((new Date(dataExpiracao) - new Date()) / (1000 * 60 * 60 * 24))
     : 0;
 
-  // Verifica se expirou (com base na data e no plano)
-  const expirado = user.assinaturaExpira && new Date() > new Date(user.assinaturaExpira);
+  // Verifica se expirou (baseado na data e no plano)
+  const expirado = dataExpiracao && new Date() > new Date(dataExpiracao);
 
   return (
     <div className="max-w-2xl mx-auto p-4 animate-fade-in-up">
@@ -66,17 +67,14 @@ export default function Assinatura() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
-        {/* Plano atual */}
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
           <span className="text-texto/60 text-sm">Plano atual</span>
           <span className="font-bold text-lg text-primaria">{planoNome}</span>
         </div>
 
-        {/* Status */}
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
           <span className="text-texto/60 text-sm">Status</span>
           <span className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${
-            // Lógica corrigida para exibir corretamente o status do trial
             user.plano === 'trial' && !expirado ? 'bg-blue-100 text-blue-700' : 
             user.assinaturaAtiva ? 'bg-sucesso/20 text-sucesso' : 'bg-red-100 text-red-500'
           }`}>
@@ -88,12 +86,11 @@ export default function Assinatura() {
           </span>
         </div>
 
-        {/* Data de expiração */}
         <div className="flex justify-between items-center border-b border-gray-100 pb-4">
           <span className="text-texto/60 text-sm">Data de expiração</span>
           <span className="font-medium flex items-center gap-2">
-            {user.assinaturaExpira ? new Date(user.assinaturaExpira).toLocaleDateString('pt-BR') : '--/--/----'}
-            {user.assinaturaExpira && !expirado && (
+            {dataExpiracao ? new Date(dataExpiracao).toLocaleDateString('pt-BR') : '--/--/----'}
+            {dataExpiracao && !expirado && (
               <span className="text-xs bg-primaria/10 text-primaria px-2 py-0.5 rounded-full">
                 {diasRestantes} dias
               </span>
@@ -103,7 +100,6 @@ export default function Assinatura() {
         </div>
       </div>
 
-      {/* Botões de ação */}
       <div className="mt-6 flex flex-col sm:flex-row gap-4">
         {(!user.assinaturaAtiva || expirado) && (
           <Link to="/planos" className="btn-primary flex items-center justify-center gap-2 flex-1">
@@ -127,7 +123,6 @@ export default function Assinatura() {
         )}
       </div>
 
-      {/* Modal de confirmação de cancelamento */}
       {showConfirmCancel && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full animate-pop">
