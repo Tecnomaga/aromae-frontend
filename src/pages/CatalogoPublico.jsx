@@ -28,11 +28,12 @@ export default function CatalogoPublico() {
   const [enderecoModalAberto, setEnderecoModalAberto] = useState(false);
   const [detalhesModalAberto, setDetalhesModalAberto] = useState(false);
   const [ordenacao, setOrdenacao] = useState('recentes');
+  const [termoBusca, setTermoBusca] = useState(''); // estado separado para a busca submetida
 
   const sentinelRef = useRef(null);
   const observerRef = useRef(null);
 
-  const carregarProdutos = useCallback(async (pageNum = 1, reset = false, termoBusca = busca, ord = ordenacao) => {
+  const carregarProdutos = useCallback(async (pageNum = 1, reset = false, termo = termoBusca, ord = ordenacao) => {
     if (reset) {
       setLoading(true);
       setProdutos([]);
@@ -43,7 +44,7 @@ export default function CatalogoPublico() {
 
     try {
       const params = { ordenacao: ord };
-      if (termoBusca) params.busca = termoBusca;
+      if (termo) params.busca = termo;
       if (pageNum && LIMIT) {
         params.page = pageNum;
         params.limit = LIMIT;
@@ -64,12 +65,14 @@ export default function CatalogoPublico() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [slug, busca, ordenacao]);
+  }, [slug, termoBusca, ordenacao]);
 
+  // Carrega produtos iniciais e ao mudar ordenação
   useEffect(() => {
     carregarProdutos(1, true);
   }, [carregarProdutos]);
 
+  // Scroll infinito
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
     if (!hasMore || loading || loadingMore) return;
@@ -88,7 +91,7 @@ export default function CatalogoPublico() {
 
   const handleBuscaSubmit = (e) => {
     e.preventDefault();
-    carregarProdutos(1, true, busca, ordenacao);
+    setTermoBusca(busca); // aplica o termo digitado
   };
 
   useEffect(() => {
@@ -219,7 +222,6 @@ export default function CatalogoPublico() {
               value={ordenacao}
               onChange={(e) => {
                 setOrdenacao(e.target.value);
-                carregarProdutos(1, true, busca, e.target.value);
               }}
               className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white"
             >
