@@ -4,7 +4,7 @@ import { Plus, MagnifyingGlass, Funnel, Package, Warning, Pencil, Trash, ArrowDo
 import api from '../services/api';
 import StockModal from '../components/StockModal';
 import ConfirmModal from '../components/ConfirmModal';
-import { CardSkeleton } from '../components/Skeleton';
+import Skeleton, { CardSkeleton } from '../components/Skeleton'; // <-- importação correta
 import EmptyState from '../components/EmptyState';
 
 export default function Produtos() {
