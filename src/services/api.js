@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://aromae-api.onrender.com/api',
-  timeout: 15000 // 15 segundos
+  timeout: 15000
 });
 
 api.interceptors.request.use((config) => {
@@ -22,6 +22,17 @@ api.interceptors.response.use(
       data: error.response?.data,
       message: error.message,
     });
+
+    // Tratamento de erro 401 (não autorizado) – token expirado
+    if (error.response?.status === 401) {
+      // Se não for a rota de login, limpa token e redireciona
+      if (!error.config.url.includes('/auth/login')) {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    }
+
     return Promise.reject(error);
   }
 );
