@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CaretDown, CaretUp, Question, Headset, FileText, ShieldCheck, X } from 'phosphor-react';
+import { CaretDown, CaretUp, Question, FileText, ShieldCheck, X } from 'phosphor-react';
 
 const faq = [
   {
@@ -29,7 +29,6 @@ export default function Configuracoes() {
   const navigate = useNavigate();
   const [aberto, setAberto] = useState(null);
   const toggleFaq = (index) => setAberto(aberto === index ? null : index);
-  const contatoSuporte = '5513996984764';
 
   return (
     <div className="max-w-2xl mx-auto p-4 animate-fade-in-up">
@@ -60,21 +59,6 @@ export default function Configuracoes() {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-        <h2 className="font-bold text-lg flex items-center gap-2 mb-4">
-          <Headset size={24} className="text-primaria" /> Suporte
-        </h2>
-        <p className="text-sm text-texto/70 mb-3">
-          Precisa de ajuda? Fale diretamente com nossa equipe pelo WhatsApp.
-        </p>
-        <a
-          href={`https://wa.me/${contatoSuporte}`} target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition"
-        >
-          <Headset size={18} /> Chamar suporte
-        </a>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm p-6">
