@@ -3,31 +3,34 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 export default function PushNotificationHandler() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      console.log('🔕 Usuário não logado, não ativando notificações.');
-      return;
-    }
+    if (!user) return;
 
     const registerPush = async () => {
-      console.log('🔔 Tentando ativar notificações para:', user.email);
-
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
         console.warn('🔕 Navegador não suporta notificações.');
         return;
       }
 
-      // Verifica a chave pública no ambiente
       const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
       if (!publicKey) {
-        console.warn('🔕 ERRO: VITE_VAPID_PUBLIC_KEY não está definida no Vercel!');
-        toast.error('Notificações desativadas: chave pública não encontrada.');
+        console.warn('🔕 VITE_VAPID_PUBLIC_KEY não definida.');
         return;
       }
-      console.log('✅ Chave pública encontrada!');
 
       if (Notification.permission === 'denied') {
         console.warn('🔕 Usuário bloqueou notificações.');
@@ -35,12 +38,11 @@ export default function PushNotificationHandler() {
       }
 
       try {
-        // Registra o Service Worker (garante que o sw.js esteja no ar)
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('✅ Service Worker registrado!');
+        // Aguarda o service worker do PWA ficar pronto
+        const registration = await navigator.serviceWorker.ready;
+        console.log('✅ Service Worker pronto!');
 
         if (Notification.permission === 'default') {
-          console.log('🔔 Solicitando permissão...');
           const permission = await Notification.requestPermission();
           if (permission !== 'granted') {
             console.warn('🔕 Permissão negada.');
@@ -48,16 +50,14 @@ export default function PushNotificationHandler() {
           }
         }
 
-        // Converte a chave pública para o formato Uint8Array
-        const applicationServerKey = urlBase64ToUint8Array(publicKey);
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: applicationServerKey
+          applicationServerKey: urlBase64ToUint8Array(publicKey)
         });
 
-        console.log('✅ Assinatura push gerada!', subscription);
+        console.log('✅ Assinatura push gerada!');
         await api.post('/notifications/subscribe', { subscription });
-        console.log('✅ Notificações ativadas com sucesso!');
+        console.log('✅ Notificações ativadas!');
 
       } catch (error) {
         console.error('🔥 Erro ao ativar notificações:', error);
@@ -67,17 +67,6 @@ export default function PushNotificationHandler() {
 
     registerPush();
   }, [user]);
-
-  const urlBase64ToUint8Array = (base64String) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  };
 
   return null;
 }
