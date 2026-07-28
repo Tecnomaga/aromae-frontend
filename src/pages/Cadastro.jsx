@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { cadastroSchema } from '../schemas';
 import { useState } from 'react';
@@ -8,22 +8,26 @@ import toast from 'react-hot-toast';
 
 export default function Cadastro() {
   const { registrar } = useAuth();
-  const navigate = useNavigate();
   const [indicadoPor, setIndicadoPor] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, setError, formState: { errors } } = useForm({
     resolver: zodResolver(cadastroSchema)
   });
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       await registrar(data.nome, data.email, data.senha, indicadoPor);
-      navigate('/dashboard');
+      toast.success('Conta criada! Redirecionando...');
+      window.location.href = '/dashboard';
     } catch (err) {
-      console.error('🚨 Erro no cadastro:', err);
+      console.error('Erro no cadastro:', err);
       const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
       setError('root', { message: mensagemErro });
       toast.error(mensagemErro);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,8 +60,8 @@ export default function Cadastro() {
             <input type="text" placeholder="Código de indicação (opcional)" value={indicadoPor} onChange={(e) => setIndicadoPor(e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             <p className="text-xs text-texto/40 mt-1">Se alguém te indicou, coloque o e-mail dela aqui.</p>
           </div>
-          <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50">
-            {isSubmitting ? 'Criando conta...' : 'Criar conta'}
+          <button type="submit" disabled={loading} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50">
+            {loading ? 'Criando conta...' : 'Criar conta'}
           </button>
         </form>
 
