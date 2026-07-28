@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  baseURL: 'https://aromae-api.onrender.com/api'
 });
 
 api.interceptors.request.use((config) => {
@@ -15,8 +15,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log detalhado do erro no console
-    console.error('🚨 Erro na requisição:', {
+    console.error('Erro na requisição:', {
       url: error.config?.url,
       status: error.response?.status,
       data: error.response?.data,
