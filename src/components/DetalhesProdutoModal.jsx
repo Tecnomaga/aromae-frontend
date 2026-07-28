@@ -31,11 +31,17 @@ export default function DetalhesProdutoModal({ produto, isOpen, onClose }) {
           </div>
           <div>
             <p className="text-sm text-texto/50">Descrição</p>
-            <p className="text-sm text-texto/70 whitespace-pre-wrap">{produto.descricao || 'Sem descrição cadastrada.'}</p>
+            <p className="text-sm text-texto/70 whitespace-pre-wrap">
+              {produto.descricao && produto.descricao.trim() !== '' 
+                ? produto.descricao 
+                : 'Nenhuma descrição disponível.'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-texto/50">Preço</p>
-            <p className="text-2xl font-bold text-primaria">R$ {produto.preco?.toFixed(2) || '0.00'}</p>
+            <p className="text-2xl font-bold text-primaria">
+              R$ {produto.preco ? Number(produto.preco).toFixed(2) : '0.00'}
+            </p>
           </div>
         </div>
       </div>
