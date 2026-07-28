@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import api from '../services/api';
 import { 
   Storefront, 
   Package, 
@@ -15,7 +17,6 @@ import {
   CreditCard
 } from 'phosphor-react';
 
-// Variantes de animação
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 50, damping: 15 } }
@@ -34,16 +35,19 @@ const scaleOnHover = {
 };
 
 export default function Landing() {
+  // Aquece o servidor silenciosamente assim que a landing page carrega
+  useEffect(() => {
+    api.get('/health').catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen bg-fundo font-corpo overflow-x-hidden relative">
       
-      {/* Fundo de Blur decorativo */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute -top-20 -left-20 w-96 h-96 bg-primaria/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-1/2 right-0 w-96 h-96 bg-secundaria/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <motion.h1 
@@ -61,7 +65,6 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <motion.section 
         initial="hidden" 
         animate="visible" 
@@ -113,7 +116,6 @@ export default function Landing() {
         </motion.div>
       </motion.section>
 
-      {/* Benefits Section */}
       <motion.section 
         initial="hidden"
         whileInView="visible"
@@ -150,7 +152,6 @@ export default function Landing() {
         </div>
       </motion.section>
 
-      {/* Testimonials */}
       <section className="bg-gradient-to-b from-white/50 to-transparent py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <motion.h3 
@@ -191,7 +192,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing */}
       <motion.section 
         id="planos" 
         initial={{ opacity: 0 }} 
@@ -204,7 +204,6 @@ export default function Landing() {
         <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-primaria/60 text-sm mb-12">Sem fidelidade. Cancele quando quiser.</motion.p>
         
         <div className="flex flex-col md:flex-row gap-8 justify-center">
-          {/* Básico */}
           <motion.div 
             whileHover="hover"
             variants={scaleOnHover}
@@ -224,7 +223,6 @@ export default function Landing() {
             </Link>
           </motion.div>
 
-          {/* Pro (Destaque) */}
           <motion.div 
             whileHover={{ scale: 1.05, transition: { type: 'spring', stiffness: 200 } }}
             className="bg-white p-8 rounded-3xl shadow-xl border-2 border-primaria relative flex-1 max-w-sm"
@@ -244,7 +242,6 @@ export default function Landing() {
             </Link>
           </motion.div>
 
-          {/* Premium */}
           <motion.div 
             whileHover="hover"
             variants={scaleOnHover}
@@ -266,7 +263,6 @@ export default function Landing() {
         </div>
       </motion.section>
 
-      {/* FAQ */}
       <section className="bg-gradient-to-b from-transparent to-white/50 py-20 md:py-28">
         <div className="max-w-3xl mx-auto px-4">
           <motion.h3 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="font-titulo text-4xl text-center text-primaria mb-10">Perguntas frequentes</motion.h3>
@@ -307,7 +303,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-white/80 backdrop-blur-md border-t border-gray-100/80 py-10">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm text-texto/60 gap-4">
           <p>&copy; {new Date().getFullYear()} Aromaê. Todos os direitos reservados.</p>
@@ -322,4 +317,4 @@ export default function Landing() {
       </footer>
     </div>
   );
-                                                        }
+}
