@@ -20,13 +20,12 @@ export default function Cadastro() {
     try {
       await registrar(data.nome, data.email, data.senha, indicadoPor);
       toast.success('Conta criada! Redirecionando...');
-      window.location.href = '/dashboard';
+      window.location.href = '/onboarding';
     } catch (err) {
       console.error('Erro no cadastro:', err);
-      const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Verifique sua conexão.';
+      const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Tente novamente.';
       setError('root', { message: mensagemErro });
       toast.error(mensagemErro);
-    } finally {
       setLoading(false);
     }
   };
