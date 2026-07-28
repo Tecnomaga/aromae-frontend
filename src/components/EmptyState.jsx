@@ -20,7 +20,7 @@ export default function EmptyState({ type = 'default', title, message, linkTo, l
       <p className="text-texto/50 mb-6 max-w-xs mx-auto">{message || 'Comece agora mesmo!'}</p>
       {linkTo && (
         <Link to={linkTo} className="btn-primary inline-flex">
-          {linkText || 'Começar'}
+          {linkText || 'Comecar'}
         </Link>
       )}
     </div>
