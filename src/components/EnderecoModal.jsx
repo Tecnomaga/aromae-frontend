@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Tag, CheckCircle } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -8,12 +8,16 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
   const [cupomCodigo, setCupomCodigo] = useState('');
   const [cupom, setCupom] = useState(null);
   const [loadingCupom, setLoadingCupom] = useState(false);
-  const [total, setTotal] = useState(valorOriginal || 0);
+  const [total, setTotal] = useState(0);
 
-  // Atualiza o total sempre que o valorOriginal mudar (ao abrir o modal)
-  useState(() => {
-    setTotal(valorOriginal || 0);
-  }, [valorOriginal]);
+  // Sincroniza o total com o valorOriginal sempre que o modal abrir ou a prop mudar
+  useEffect(() => {
+    if (isOpen && valorOriginal) {
+      setTotal(Number(valorOriginal));
+      setCupom(null);
+      setCupomCodigo('');
+    }
+  }, [isOpen, valorOriginal]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,14 +41,14 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
       });
       setCupom(response.data);
       const desconto = response.data.tipo === 'percentual'
-        ? valorOriginal * (response.data.desconto / 100)
+        ? Number(valorOriginal) * (response.data.desconto / 100)
         : response.data.desconto;
-      setTotal(Math.max(0, valorOriginal - desconto));
+      setTotal(Math.max(0, Number(valorOriginal) - desconto));
       toast.success('Cupom aplicado!');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Cupom inválido');
       setCupom(null);
-      setTotal(valorOriginal);
+      setTotal(Number(valorOriginal));
     } finally {
       setLoadingCupom(false);
     }
