@@ -204,6 +204,7 @@ export default function Landing() {
         <motion.p initial={{ y: 20 }} whileInView={{ y: 0 }} className="text-center text-primaria/60 text-sm mb-12">Sem fidelidade. Cancele quando quiser.</motion.p>
         
         <div className="flex flex-col md:flex-row gap-8 justify-center">
+          {/* Básico */}
           <motion.div 
             whileHover="hover"
             variants={scaleOnHover}
@@ -223,6 +224,7 @@ export default function Landing() {
             </Link>
           </motion.div>
 
+          {/* Pro (Destaque) */}
           <motion.div 
             whileHover={{ scale: 1.05, transition: { type: 'spring', stiffness: 200 } }}
             className="bg-white p-8 rounded-3xl shadow-xl border-2 border-primaria relative flex-1 max-w-sm"
@@ -232,7 +234,7 @@ export default function Landing() {
             <p className="text-4xl font-bold text-primaria mt-4">R$ 29,90</p>
             <p className="text-sm text-texto/50">por mês</p>
             <ul className="mt-8 space-y-3 text-sm text-texto/70">
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Tudo do Básico</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Todos os recursos do plano Básico</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Relatórios de lucro</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Exportação CSV</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Checkout Pix (vendas diretas)</li>
@@ -242,6 +244,7 @@ export default function Landing() {
             </Link>
           </motion.div>
 
+          {/* Premium */}
           <motion.div 
             whileHover="hover"
             variants={scaleOnHover}
@@ -251,7 +254,7 @@ export default function Landing() {
             <p className="text-4xl font-bold text-primaria mt-4">R$ 49,90</p>
             <p className="text-sm text-texto/50">por mês</p>
             <ul className="mt-8 space-y-3 text-sm text-texto/70">
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Tudo do Pro</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Todos os recursos do plano Pro</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Múltiplos usuários</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Suporte prioritário</li>
               <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Checkout Pix + comissão reduzida</li>
