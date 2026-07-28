@@ -24,7 +24,7 @@ export default function ProdutoForm() {
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(produtoSchema),
-    defaultValues: { nome: '', marca: '', preco: 0, estoque: 0, descricao: '', ativo: true }
+    defaultValues: { nome: '', marca: '', preco: 0, estoque: 0, descricao: '', ativo: true, precoCusto: 0 }
   });
 
   useEffect(() => {
@@ -37,7 +37,8 @@ export default function ProdutoForm() {
             preco: data.preco,
             estoque: data.estoque,
             descricao: data.descricao,
-            ativo: data.ativo
+            ativo: data.ativo,
+            precoCusto: data.precoCusto || 0
           });
           setFotos(data.fotos || []);
           setPreviewFotos(data.fotos || []);
@@ -99,7 +100,7 @@ export default function ProdutoForm() {
       formData.append('estoque', Number(data.estoque));
       formData.append('descricao', data.descricao);
       formData.append('ativo', data.ativo);
-      // Envia etiquetas como string JSON
+      formData.append('precoCusto', Number(data.precoCusto) || 0);
       formData.append('etiquetas', JSON.stringify(etiquetasSelecionadas));
 
       fotos.forEach((foto) => {
@@ -144,11 +145,15 @@ export default function ProdutoForm() {
           {errors.marca && <p className="text-red-500 text-xs mt-1">{errors.marca.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-semibold mb-1">Preço (R$) *</label>
             <input type="number" {...register('preco', { valueAsNumber: true })} step="0.01" min="0" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
             {errors.preco && <p className="text-red-500 text-xs mt-1">{errors.preco.message}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-1">Custo (R$)</label>
+            <input type="number" {...register('precoCusto', { valueAsNumber: true })} step="0.01" min="0" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
           </div>
           <div>
             <label className="block text-sm font-semibold mb-1">Estoque (un.) *</label>
