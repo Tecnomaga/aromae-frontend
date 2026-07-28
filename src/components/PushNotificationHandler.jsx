@@ -38,7 +38,6 @@ export default function PushNotificationHandler() {
       }
 
       try {
-        // Aguarda o service worker do PWA ficar pronto
         const registration = await navigator.serviceWorker.ready;
         console.log('✅ Service Worker pronto!');
 
