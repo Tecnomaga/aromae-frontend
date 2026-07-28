@@ -75,22 +75,19 @@ export default function Onboarding() {
       formData.append('telefone', data.telefone);
       if (fotoPerfil) formData.append('foto', fotoPerfil);
 
-      await toast.promise(
-        api.put('/auth/loja', formData),
-        {
-          loading: 'Salvando sua loja...',
-          success: 'Vitrine criada com sucesso!',
-          error: 'Erro ao criar a loja.'
-        }
-      );
-
-      const { data: usuario } = await api.get('/auth/me');
-      atualizarUsuario(usuario);
+      const response = await api.put('/auth/loja', formData);
       
-      // Redireciona para o Dashboard
-      navigate('/dashboard');
+      // Atualiza o usuário no contexto
+      atualizarUsuario(response.data);
+      
+      toast.success('Vitrine criada com sucesso!');
+
+      // Redireciona de forma confiável
+      window.location.href = '/dashboard';
     } catch (err) {
-      toast.error('Não foi possível salvar agora. Confira sua conexão.');
+      console.error('Erro ao salvar loja:', err);
+      const mensagem = err.response?.data?.message || 'Erro ao criar a loja. Verifique sua conexão.';
+      toast.error(mensagem);
     }
   };
 
