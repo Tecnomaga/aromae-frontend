@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload } from 'phosphor-react';
+import { ArrowLeft, Upload, LockKey } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -10,13 +10,20 @@ export default function PerfilEditar() {
     nome: '', 
     nomeLoja: '', 
     slug: '', 
-    telefone: '', // <-- Campo WhatsApp
+    telefone: '',
     chavePix: '', 
     fotoPerfil: null 
   });
   const [previewFoto, setPreviewFoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
+
+  // Campos de alteração de senha
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [alterandoSenha, setAlterandoSenha] = useState(false);
+  const [erroSenha, setErroSenha] = useState('');
 
   useEffect(() => {
     api.get('/auth/me')
@@ -47,7 +54,7 @@ export default function PerfilEditar() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitPerfil = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErro('');
@@ -56,7 +63,7 @@ export default function PerfilEditar() {
       formData.append('nome', form.nome);
       formData.append('nomeLoja', form.nomeLoja);
       formData.append('slug', form.slug);
-      formData.append('telefone', form.telefone); // <-- Envia o WhatsApp
+      formData.append('telefone', form.telefone);
       formData.append('chavePix', form.chavePix);
       if (form.fotoPerfil instanceof File) formData.append('foto', form.fotoPerfil);
       await api.put('/auth/perfil', formData);
@@ -69,6 +76,38 @@ export default function PerfilEditar() {
     }
   };
 
+  const handleAlterarSenha = async (e) => {
+    e.preventDefault();
+    setErroSenha('');
+
+    if (!senhaAtual || !novaSenha || !confirmarSenha) {
+      setErroSenha('Preencha todos os campos de senha.');
+      return;
+    }
+    if (novaSenha.length < 6) {
+      setErroSenha('A nova senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    if (novaSenha !== confirmarSenha) {
+      setErroSenha('As senhas não coincidem.');
+      return;
+    }
+
+    setAlterandoSenha(true);
+    try {
+      await api.put('/auth/alterar-senha', { senhaAtual, novaSenha });
+      toast.success('Senha alterada com sucesso!');
+      setSenhaAtual('');
+      setNovaSenha('');
+      setConfirmarSenha('');
+    } catch (err) {
+      const mensagem = err.response?.data?.message || 'Erro ao alterar senha.';
+      setErroSenha(mensagem);
+    } finally {
+      setAlterandoSenha(false);
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto">
       <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-texto/60 hover:text-texto mb-4">
@@ -78,7 +117,8 @@ export default function PerfilEditar() {
 
       {erro && <p className="text-red-500 mb-4">{erro}</p>}
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+      {/* Formulário de perfil */}
+      <form onSubmit={handleSubmitPerfil} className="bg-white p-6 rounded-2xl shadow-sm space-y-4 mb-6">
         <div className="text-center">
           <div className="w-24 h-24 mx-auto rounded-full bg-primaria/10 flex items-center justify-center overflow-hidden mb-2">
             {previewFoto ? (
@@ -109,7 +149,6 @@ export default function PerfilEditar() {
           <p className="text-xs text-texto/50 mt-1">Link: aromae.app/loja/{form.slug}</p>
         </div>
 
-        {/* ✅ CAMPO WHATSAPP ADICIONADO */}
         <div>
           <label className="block text-sm font-semibold mb-1">WhatsApp (com DDD)</label>
           <input 
@@ -123,7 +162,6 @@ export default function PerfilEditar() {
           <p className="text-xs text-texto/50 mt-1">Esse número será usado no botão "Pedir" da sua vitrine.</p>
         </div>
 
-        {/* ✅ CAMPO CHAVE PIX */}
         <div>
           <label className="block text-sm font-semibold mb-1">Chave Pix para recebimento</label>
           <input type="text" name="chavePix" value={form.chavePix} onChange={handleChange} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
@@ -134,6 +172,44 @@ export default function PerfilEditar() {
           {loading ? 'Salvando...' : 'Salvar alterações'}
         </button>
       </form>
+
+      {/* Seção de alteração de senha */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <h2 className="font-bold text-lg flex items-center gap-2 mb-4">
+          <LockKey size={20} className="text-primaria" /> Alterar senha
+        </h2>
+        {erroSenha && <p className="text-red-500 text-sm mb-3">{erroSenha}</p>}
+        <form onSubmit={handleAlterarSenha} className="space-y-3">
+          <input
+            type="password"
+            placeholder="Senha atual"
+            value={senhaAtual}
+            onChange={(e) => setSenhaAtual(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
+          />
+          <input
+            type="password"
+            placeholder="Nova senha (mín. 6 caracteres)"
+            value={novaSenha}
+            onChange={(e) => setNovaSenha(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
+          />
+          <input
+            type="password"
+            placeholder="Confirmar nova senha"
+            value={confirmarSenha}
+            onChange={(e) => setConfirmarSenha(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
+          />
+          <button
+            type="submit"
+            disabled={alterandoSenha}
+            className="w-full bg-primaria text-white py-2 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50"
+          >
+            {alterandoSenha ? 'Alterando...' : 'Alterar senha'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
