@@ -44,8 +44,8 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm text-center">
-          <h1 className="font-titulo text-2xl text-red-500 mb-4">Link inválido</h1>
-          <p className="text-texto/70 mb-6">Token de recuperação não encontrado. Solicite novamente.</p>
+          <h1 className="font-titulo text-2xl text-red-500 mb-4">Link invalido</h1>
+          <p className="text-texto/70 mb-6">Token de recuperacao nao encontrado. Solicite novamente.</p>
           <Link to="/recuperar-senha" className="text-primaria font-semibold hover:underline">
             Solicitar novo link
           </Link>
@@ -90,4 +90,4 @@ export default function ResetPassword() {
       </div>
     </div>
   );
-              }
+}
