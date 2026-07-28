@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
@@ -8,10 +8,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       strategies: 'generateSW',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        runtimeCaching: []
-      },
       manifest: {
         name: 'Aromaê - Sua Vitrine de Perfumes',
         short_name: 'Aromaê',
@@ -29,4 +25,4 @@ export default defineConfig({
     })
   ],
   server: { port: 3000 }
-})
+});
