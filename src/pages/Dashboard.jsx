@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket } from 'phosphor-react';
+import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket, Share as ShareIcon } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import Skeleton, { CardSkeleton } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
+import toast from 'react-hot-toast';
 
 function inicioDoDia(data) {
   const d = new Date(data);
@@ -19,7 +20,6 @@ export default function Dashboard() {
   const [lucro, setLucro] = useState({ faturamentoBruto: 0, custoTotal: 0, lucroLiquido: 0 });
   const [loading, setLoading] = useState(true);
   
-  // Verifica se as dicas foram fechadas anteriormente
   const dicasFechadas = localStorage.getItem('dicas_fechadas') === 'true';
   const [mostrarOnboarding, setMostrarOnboarding] = useState(!dicasFechadas && true);
 
@@ -34,7 +34,6 @@ export default function Dashboard() {
         setProdutos(prods);
         setPedidos(peds);
         setLucro(lucroData);
-        // Se já tem produtos, esconde as dicas automaticamente
         if (prods.length > 0) {
           setMostrarOnboarding(false);
           localStorage.setItem('dicas_fechadas', 'true');
@@ -52,6 +51,22 @@ export default function Dashboard() {
     setMostrarOnboarding(false);
     localStorage.setItem('dicas_fechadas', 'true');
   };
+
+  const compartilharVitrine = () => {
+    const url = `${window.location.origin}/loja/${user?.slug}`;
+    if (navigator.share) {
+      navigator.share({ title: user?.nomeLoja, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      toast.success('Link copiado!');
+    }
+  };
+
+  // Dias restantes (trial ou assinatura)
+  const dataExpiracao = user?.plano === 'trial' ? user?.trialExpira : user?.assinaturaExpira;
+  const diasRestantes = dataExpiracao 
+    ? Math.ceil((new Date(dataExpiracao) - new Date()) / (1000 * 60 * 60 * 24))
+    : null;
 
   const produtosAtivos = produtos.filter((p) => p.ativo).length;
   const estoqueBaixo = produtos.filter((p) => p.estoque <= 5);
@@ -105,6 +120,36 @@ export default function Dashboard() {
         <Link to="/planos" className="btn-primary text-sm px-4 py-2">Ver planos</Link>
       </div>
 
+      {/* Alerta de dias restantes */}
+      {diasRestantes !== null && diasRestantes <= 7 && (
+        <div className={`card-sm mb-8 flex items-center gap-4 ${diasRestantes <= 3 ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+          <span className="text-2xl">⏳</span>
+          <div className="flex-1">
+            <p className="font-semibold">
+              {user.plano === 'trial' 
+                ? `Teste grátis: ${diasRestantes} dia(s) restante(s)`
+                : `Assinatura: ${diasRestantes} dia(s) restante(s)`}
+            </p>
+            {diasRestantes <= 3 && (
+              <Link to="/planos" className="text-primaria text-sm font-semibold underline">Renovar agora</Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Atalho compartilhar vitrine */}
+      {user?.slug && (
+        <div className="card-sm mb-8 flex items-center justify-between">
+          <div>
+            <p className="font-semibold">Sua vitrine está no ar!</p>
+            <p className="text-sm text-texto/50">/loja/{user.slug}</p>
+          </div>
+          <button onClick={compartilharVitrine} className="btn-secondary text-sm flex items-center gap-2">
+            <ShareIcon size={18} /> Compartilhar
+          </button>
+        </div>
+      )}
+
       {mostrarOnboarding && (
         <div className="card-lg bg-gradient-to-br from-primaria/5 to-secundaria/5 border-2 border-primaria/30 mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 text-primaria/10 text-9xl -mr-6 -mt-6 select-none"><Rocket size={128} weight="duotone" /></div>
@@ -121,7 +166,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Cards de métricas */}
+      {/* Métricas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {[
           { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
