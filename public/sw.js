@@ -1,4 +1,4 @@
-// Necessário para o vite-plugin-pwa injetar o pre-cache
+// Esta linha é OBRIGATÓRIA para o vite-plugin-pwa injetar o pre-cache
 self.__WB_MANIFEST;
 
 // Listener para notificações push
