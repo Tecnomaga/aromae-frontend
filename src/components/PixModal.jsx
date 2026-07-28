@@ -1,12 +1,19 @@
-import { X, Copy } from 'phosphor-react';
+import { useState } from 'react';
+import { X, Copy, CheckCircle } from 'phosphor-react';
 import toast from 'react-hot-toast';
 
 export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose }) {
+  const [pago, setPago] = useState(false);
+
   if (!isOpen || !qrCodeBase64) return null;
 
   const copiarPix = () => {
     navigator.clipboard.writeText(qrCodeText);
     toast.success('Código Pix copiado!');
+  };
+
+  const confirmarPagamento = () => {
+    setPago(true);
   };
 
   return (
@@ -15,22 +22,42 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose }) 
         <button onClick={onClose} className="absolute top-4 right-4 text-texto/40 hover:text-texto">
           <X size={24} />
         </button>
-        <h2 className="font-titulo text-2xl text-primaria mb-4">Pagamento via Pix</h2>
-        <p className="text-sm text-texto/50 mb-6">
-          Escaneie o QR Code ou copie o código abaixo. <strong>Após pagar, aguarde a confirmação pela loja.</strong>
-        </p>
-        
-        <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block">
-          <img src={`data:image/png;base64,${qrCodeBase64}`} alt="QR Code Pix" className="w-48 h-48" />
-        </div>
 
-        <div className="mt-4 flex gap-2 justify-center">
-          <button onClick={copiarPix} className="bg-primaria text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-primaria/90 active:scale-95 transition-all">
-            <Copy size={18} /> Copiar código
-          </button>
-        </div>
-        
-        <p className="text-xs text-texto/40 mt-6">O pagamento é processado pelo Mercado Pago. Em caso de dúvidas, entre em contato com a loja.</p>
+        {pago ? (
+          <div className="py-8">
+            <CheckCircle size={64} className="mx-auto text-sucesso mb-4" weight="fill" />
+            <h3 className="font-titulo text-xl text-primaria mb-2">Pagamento enviado!</h3>
+            <p className="text-texto/50 mb-4">A loja será notificada automaticamente assim que o pagamento for confirmado.</p>
+            <button
+              onClick={onClose}
+              className="bg-primaria text-white px-6 py-2 rounded-xl font-semibold hover:bg-primaria/90 transition"
+            >
+              Fechar
+            </button>
+          </div>
+        ) : (
+          <>
+            <h2 className="font-titulo text-2xl text-primaria mb-4">Pagamento via Pix</h2>
+            <p className="text-sm text-texto/50 mb-6">
+              Escaneie o QR Code ou copie o código. Depois clique em "Já paguei".
+            </p>
+            
+            <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block">
+              <img src={`data:image/png;base64,${qrCodeBase64}`} alt="QR Code Pix" className="w-48 h-48" />
+            </div>
+
+            <div className="mt-4 flex flex-col gap-3 justify-center items-center">
+              <button onClick={copiarPix} className="bg-primaria text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-primaria/90 active:scale-95 transition-all">
+                <Copy size={18} /> Copiar código
+              </button>
+              <button onClick={confirmarPagamento} className="bg-sucesso text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-sucesso/90 transition">
+                Já realizei o pagamento
+              </button>
+            </div>
+            
+            <p className="text-xs text-texto/40 mt-6">O pagamento é processado pelo Mercado Pago.</p>
+          </>
+        )}
       </div>
     </div>
   );
