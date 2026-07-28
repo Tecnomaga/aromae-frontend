@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard } from 'phosphor-react';
+import { ArrowLeft, Share as ShareIcon, WhatsappLogo, InstagramLogo, Link as LinkIcon, Package, Storefront, Plus, ShoppingCart, CreditCard, MagnifyingGlass } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import PixModal from '../components/PixModal';
 import EnderecoModal from '../components/EnderecoModal';
 import DetalhesProdutoModal from '../components/DetalhesProdutoModal';
+
+const LIMIT = 12;
 
 export default function CatalogoPublico() {
   const { slug } = useParams();
@@ -13,6 +15,10 @@ export default function CatalogoPublico() {
   const [loja, setLoja] = useState(null);
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [busca, setBusca] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [erro, setErro] = useState('');
   const [carrinho, setCarrinho] = useState([]);
   const [whatsAppModal, setWhatsAppModal] = useState(null);
@@ -22,15 +28,71 @@ export default function CatalogoPublico() {
   const [enderecoModalAberto, setEnderecoModalAberto] = useState(false);
   const [detalhesModalAberto, setDetalhesModalAberto] = useState(false);
 
-  useEffect(() => {
-    api.get(`/catalogo/${slug}`)
-      .then(({ data }) => {
+  const sentinelRef = useRef(null);
+  const observerRef = useRef(null);
+
+  const carregarProdutos = useCallback(async (pageNum = 1, reset = false, termoBusca = busca) => {
+    if (reset) {
+      setLoading(true);
+      setProdutos([]);
+      setPage(1);
+    } else {
+      setLoadingMore(true);
+    }
+
+    try {
+      const params = { slug };
+      if (termoBusca) params.busca = termoBusca;
+      if (pageNum && LIMIT) {
+        params.page = pageNum;
+        params.limit = LIMIT;
+      }
+
+      const { data } = await api.get(`/catalogo/${slug}`, { params });
+      if (reset) {
         setLoja(data.loja);
         setProdutos(data.produtos);
-      })
-      .catch(() => setErro('Loja não encontrada ou está pausada.'))
-      .finally(() => setLoading(false));
-  }, [slug]);
+      } else {
+        setProdutos(prev => [...prev, ...data.produtos]);
+      }
+      setHasMore(data.produtos.length === LIMIT);
+      setPage(pageNum);
+    } catch {
+      if (reset) setErro('Loja não encontrada ou está pausada.');
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [slug, busca]);
+
+  useEffect(() => {
+    carregarProdutos(1, true);
+  }, [carregarProdutos]);
+
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+    if (!hasMore || loading || loadingMore) return;
+
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        carregarProdutos(page + 1, false);
+      }
+    }, { threshold: 0.1 });
+
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
+    observerRef.current = observer;
+
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, page, carregarProdutos]);
+
+  const handleBuscaChange = (e) => {
+    setBusca(e.target.value);
+  };
+
+  const handleBuscaSubmit = (e) => {
+    e.preventDefault();
+    carregarProdutos(1, true, busca);
+  };
 
   useEffect(() => {
     const cart = localStorage.getItem(`cart_${slug}`);
@@ -90,7 +152,6 @@ export default function CatalogoPublico() {
         endereco: dadosCliente.endereco
       });
 
-      // Salva os dados do cliente no sessionStorage para serem usados pelo webhook
       sessionStorage.setItem('pendingPixOrder', JSON.stringify({
         revendedoraId: loja._id,
         produtoId: produtoSelecionado._id,
@@ -102,7 +163,6 @@ export default function CatalogoPublico() {
         paymentId: response.data.paymentId
       }));
 
-      // Exibe o QR Code
       setPixModal({
         isOpen: true,
         qrCodeBase64: response.data.qrCodeBase64,
@@ -158,72 +218,95 @@ export default function CatalogoPublico() {
           </div>
           <button onClick={compartilhar} className="text-texto/70 hover:text-primaria"><ShareIcon size={24} /></button>
         </div>
+        {/* Barra de busca no catálogo */}
+        <form onSubmit={handleBuscaSubmit} className="px-4 pb-3">
+          <div className="relative">
+            <MagnifyingGlass size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-texto/30" />
+            <input
+              type="text"
+              value={busca}
+              onChange={handleBuscaChange}
+              placeholder="Buscar perfume ou marca..."
+              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria bg-white"
+            />
+          </div>
+        </form>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-24">
+      <main className="max-w-4xl mx-auto px-4 py-6">
         {produtos.length === 0 ? (
-          <div className="text-center py-20"><Package size={64} className="mx-auto text-texto/20 mb-4" /><p className="text-texto/60 text-lg">Esta loja ainda não tem produtos.</p></div>
+          <div className="text-center py-20"><Package size={64} className="mx-auto text-texto/20 mb-4" /><p className="text-texto/60 text-lg">Nenhum produto encontrado.</p></div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {produtos.map((produto) => (
-              <div key={produto._id} className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col relative group">
-                <div className="h-40 bg-gray-100 flex items-center justify-center relative">
-                  <button onClick={() => abrirDetalhes(produto)} className="w-full h-full">
-                    {produto.fotos?.[0] ? (
-                      <img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primaria/5 to-secundaria/10 gap-1">
-                        <span className="text-4xl">🌸</span>
-                        <span className="text-xs text-texto/30 font-medium">Sem foto</span>
-                      </div>
-                    )}
-                  </button>
-                  <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-                    {produto.etiquetas?.map((etiqueta, idx) => {
-                      let bgClass = 'bg-primaria text-white';
-                      if (etiqueta === 'Mais vendido') bgClass = 'bg-secundaria text-white';
-                      if (etiqueta === 'Promoção') bgClass = 'bg-red-500 text-white';
-                      if (etiqueta === 'Edição limitada') bgClass = 'bg-purple-500 text-white';
-                      if (etiqueta === 'Novidade') bgClass = 'bg-green-500 text-white';
-                      if (etiqueta === 'Lançamento') bgClass = 'bg-blue-500 text-white';
-                      return (<span key={idx} className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${bgClass}`}>{etiqueta}</span>);
-                    })}
-                  </div>
-                  <button onClick={() => adicionarAoCarrinho(produto)} className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow hover:bg-primaria hover:text-white transition"><Plus size={18} /></button>
-                </div>
-                <div className="p-3 flex-1 flex flex-col">
-                  <button onClick={() => abrirDetalhes(produto)} className="text-left hover:underline">
-                    <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
-                  </button>
-                  <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
-                  <p className="text-primaria font-bold text-lg mt-2">
-                    R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
-                  </p>
-                  <button 
-                    onClick={() => {
-                      const url = gerarMensagemWhatsApp(produto);
-                      if (url !== '#') {
-                        window.open(url, '_blank');
-                      }
-                    }} 
-                    className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"
-                  >
-                    <WhatsappLogo size={18} weight="fill" /> Pedir
-                  </button>
-                  
-                  {isPremiumOrPro && (
-                    <button 
-                      onClick={() => abrirModalEndereco(produto)} 
-                      disabled={pixLoading}
-                      className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition"
-                    >
-                      <CreditCard size={18} /> Comprar (Pix)
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {produtos.map((produto) => (
+                <div key={produto._id} className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col relative group">
+                  <div className="h-40 bg-gray-100 flex items-center justify-center relative">
+                    <button onClick={() => abrirDetalhes(produto)} className="w-full h-full">
+                      {produto.fotos?.[0] ? (
+                        <img src={produto.fotos[0]} alt={produto.nome} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primaria/5 to-secundaria/10 gap-1">
+                          <span className="text-4xl">🌸</span>
+                          <span className="text-xs text-texto/30 font-medium">Sem foto</span>
+                        </div>
+                      )}
                     </button>
-                  )}
+                    <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                      {produto.etiquetas?.map((etiqueta, idx) => {
+                        let bgClass = 'bg-primaria text-white';
+                        if (etiqueta === 'Mais vendido') bgClass = 'bg-secundaria text-white';
+                        if (etiqueta === 'Promoção') bgClass = 'bg-red-500 text-white';
+                        if (etiqueta === 'Edição limitada') bgClass = 'bg-purple-500 text-white';
+                        if (etiqueta === 'Novidade') bgClass = 'bg-green-500 text-white';
+                        if (etiqueta === 'Lançamento') bgClass = 'bg-blue-500 text-white';
+                        return (<span key={idx} className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${bgClass}`}>{etiqueta}</span>);
+                      })}
+                    </div>
+                    <button onClick={() => adicionarAoCarrinho(produto)} className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow hover:bg-primaria hover:text-white transition"><Plus size={18} /></button>
+                  </div>
+                  <div className="p-3 flex-1 flex flex-col">
+                    <button onClick={() => abrirDetalhes(produto)} className="text-left hover:underline">
+                      <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
+                    </button>
+                    <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
+                    <p className="text-primaria font-bold text-lg mt-2">
+                      R$ {produto.preco ? produto.preco.toFixed(2) : '0.00'}
+                    </p>
+                    <button 
+                      onClick={() => {
+                        const url = gerarMensagemWhatsApp(produto);
+                        if (url !== '#') {
+                          window.open(url, '_blank');
+                        }
+                      }} 
+                      className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"
+                    >
+                      <WhatsappLogo size={18} weight="fill" /> Pedir
+                    </button>
+                    
+                    {isPremiumOrPro && (
+                      <button 
+                        onClick={() => abrirModalEndereco(produto)} 
+                        disabled={pixLoading}
+                        className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition"
+                      >
+                        <CreditCard size={18} /> Comprar (Pix)
+                      </button>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Sentinel scroll infinito */}
+            {hasMore && <div ref={sentinelRef} className="h-4" />}
+            {loadingMore && (
+              <div className="flex justify-center py-4">
+                <div className="w-8 h-8 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin" />
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
 
@@ -277,4 +360,4 @@ export default function CatalogoPublico() {
       />
     </div>
   );
-        }
+                  }
