@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import Skeleton, { CardSkeleton } from '../components/Skeleton'; // <-- importação corrigida
+import Skeleton, { CardSkeleton } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 
 function inicioDoDia(data) {
@@ -18,7 +18,10 @@ export default function Dashboard() {
   const [pedidos, setPedidos] = useState([]);
   const [lucro, setLucro] = useState({ faturamentoBruto: 0, custoTotal: 0, lucroLiquido: 0 });
   const [loading, setLoading] = useState(true);
-  const [mostrarOnboarding, setMostrarOnboarding] = useState(true);
+  
+  // Verifica se as dicas foram fechadas anteriormente
+  const dicasFechadas = localStorage.getItem('dicas_fechadas') === 'true';
+  const [mostrarOnboarding, setMostrarOnboarding] = useState(!dicasFechadas && true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +34,11 @@ export default function Dashboard() {
         setProdutos(prods);
         setPedidos(peds);
         setLucro(lucroData);
-        if (prods.length > 0) setMostrarOnboarding(false);
+        // Se já tem produtos, esconde as dicas automaticamente
+        if (prods.length > 0) {
+          setMostrarOnboarding(false);
+          localStorage.setItem('dicas_fechadas', 'true');
+        }
       } catch (error) {
         console.warn('⚠️ Erro ao carregar dados:', error);
       } finally {
@@ -40,6 +47,11 @@ export default function Dashboard() {
     };
     fetchData();
   }, []);
+
+  const handleFecharDicas = () => {
+    setMostrarOnboarding(false);
+    localStorage.setItem('dicas_fechadas', 'true');
+  };
 
   const produtosAtivos = produtos.filter((p) => p.ativo).length;
   const estoqueBaixo = produtos.filter((p) => p.estoque <= 5);
@@ -104,11 +116,12 @@ export default function Dashboard() {
               <li className="flex items-center gap-2">2️⃣ <span>Compartilhe sua vitrine no WhatsApp em <Link to="/perfil" className="text-primaria underline">Meu Perfil</Link>.</span></li>
               <li className="flex items-center gap-2">3️⃣ <span>Cadastre sua chave Pix em <Link to="/perfil/editar" className="text-primaria underline">Editar Perfil</Link> para receber os pagamentos.</span></li>
             </ul>
-            <button onClick={() => setMostrarOnboarding(false)} className="mt-4 text-xs text-texto/40 underline">Fechar dicas</button>
+            <button onClick={handleFecharDicas} className="mt-4 text-xs text-texto/40 underline">Fechar dicas</button>
           </div>
         </div>
       )}
 
+      {/* Cards de métricas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {[
           { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
