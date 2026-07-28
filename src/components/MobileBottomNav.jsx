@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { House, Package, ClipboardText, Users, User, Gear, CreditCard, Coins, Headset, Tag, Star } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -50,76 +51,84 @@ export default function MobileBottomNav() {
           <span className="mt-0.5">Conta</span>
         </button>
 
-        {menuAberto && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden animate-fade-in-up backdrop-blur-sm">
-            <div className="p-2 space-y-1">
-              <NavLink
-                to="/perfil"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <User size={18} className="text-primaria" /> Perfil
-              </NavLink>
-              <NavLink
-                to="/planos"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <CreditCard size={18} className="text-primaria" /> Planos
-              </NavLink>
-              <NavLink
-                to="/financeiro"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <Coins size={18} className="text-sucesso" /> Financeiro
-              </NavLink>
-              <NavLink
-                to="/assinatura"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <CreditCard size={18} className="text-primaria" /> Assinatura
-              </NavLink>
-              <NavLink
-                to="/gerenciar-cupons"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <Tag size={18} className="text-primaria" /> Cupons
-              </NavLink>
-              <NavLink
-                to="/gerenciar-avaliacoes"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <Star size={18} className="text-secundaria" /> Avaliações
-              </NavLink>
-              <NavLink
-                to="/configuracoes"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <Gear size={18} className="text-primaria" /> Configurações
-              </NavLink>
-              <NavLink
-                to="/suporte"
-                onClick={() => setMenuAberto(false)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
-              >
-                <Headset size={18} className="text-primaria" /> Suporte
-              </NavLink>
-            </div>
-            <div className="border-t border-gray-100/50 p-2">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-xl text-sm font-semibold text-red-500 transition-colors"
-              >
-                <User size={18} /> Sair
-              </button>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {menuAberto && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden backdrop-blur-sm"
+            >
+              <div className="p-2 space-y-1">
+                <NavLink
+                  to="/perfil"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <User size={18} className="text-primaria" /> Perfil
+                </NavLink>
+                <NavLink
+                  to="/planos"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <CreditCard size={18} className="text-primaria" /> Planos
+                </NavLink>
+                <NavLink
+                  to="/financeiro"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <Coins size={18} className="text-sucesso" /> Financeiro
+                </NavLink>
+                <NavLink
+                  to="/assinatura"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <CreditCard size={18} className="text-primaria" /> Assinatura
+                </NavLink>
+                <NavLink
+                  to="/gerenciar-cupons"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <Tag size={18} className="text-primaria" /> Cupons
+                </NavLink>
+                <NavLink
+                  to="/gerenciar-avaliacoes"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <Star size={18} className="text-secundaria" /> Avaliações
+                </NavLink>
+                <NavLink
+                  to="/configuracoes"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <Gear size={18} className="text-primaria" /> Configurações
+                </NavLink>
+                <NavLink
+                  to="/suporte"
+                  onClick={() => setMenuAberto(false)}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl text-sm font-semibold text-texto transition-colors"
+                >
+                  <Headset size={18} className="text-primaria" /> Suporte
+                </NavLink>
+              </div>
+              <div className="border-t border-gray-100/50 p-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-xl text-sm font-semibold text-red-500 transition-colors"
+                >
+                  <User size={18} /> Sair
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );
