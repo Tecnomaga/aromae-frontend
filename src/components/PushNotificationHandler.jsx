@@ -22,18 +22,18 @@ export default function PushNotificationHandler() {
 
     const registerPush = async () => {
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-        console.warn('🔕 Navegador não suporta notificações.');
+        window.alert('Push desativado: navegador não suporta notificações.');
         return;
       }
 
       const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
       if (!publicKey) {
-        console.warn('🔕 VITE_VAPID_PUBLIC_KEY não definida.');
+        window.alert('Push desativado: chave VAPID não configurada no frontend.');
         return;
       }
 
       if (Notification.permission === 'denied') {
-        console.warn('🔕 Usuário bloqueou notificações.');
+        window.alert('Push bloqueado pelo usuário. Permita notificações no navegador.');
         return;
       }
 
@@ -44,7 +44,7 @@ export default function PushNotificationHandler() {
         if (Notification.permission === 'default') {
           const permission = await Notification.requestPermission();
           if (permission !== 'granted') {
-            console.warn('🔕 Permissão negada.');
+            window.alert('Permissão de notificação negada.');
             return;
           }
         }
@@ -55,11 +55,21 @@ export default function PushNotificationHandler() {
         });
 
         console.log('✅ Assinatura push gerada!');
-        await api.post('/notifications/subscribe', { subscription });
+        const response = await api.post('/notifications/subscribe', { subscription });
         console.log('✅ Notificações ativadas!');
+        toast.success('Notificações ativadas com sucesso!');
 
       } catch (error) {
         console.error('🔥 Erro ao ativar notificações:', error);
+        let mensagem = 'Erro desconhecido.';
+        if (error.response) {
+          mensagem = `Erro do servidor: ${error.response.status} - ${JSON.stringify(error.response.data)}`;
+        } else if (error.request) {
+          mensagem = 'Sem resposta do servidor. Verifique sua conexão.';
+        } else {
+          mensagem = error.message;
+        }
+        window.alert('Erro ao ativar notificações: ' + mensagem);
         toast.error('Erro ao ativar notificações. Verifique o console.');
       }
     };
