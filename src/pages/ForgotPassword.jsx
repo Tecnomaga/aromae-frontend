@@ -1,26 +1,8 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'phosphor-react';
-import api from '../services/api';
-import toast from 'react-hot-toast';
+import { ArrowLeft, WhatsappLogo } from 'phosphor-react';
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      // Esta rota precisa ser implementada no backend (envio de e-mail com link de redefinição)
-      await api.post('/auth/forgot-password', { email });
-      toast.success('Se o e-mail existir, enviaremos instruções de recuperação.');
-    } catch (err) {
-      toast.error('Erro ao solicitar recuperação. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const numeroSuporte = '5513996984764';
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -28,25 +10,18 @@ export default function ForgotPassword() {
         <Link to="/login" className="inline-flex items-center gap-1 text-texto/60 hover:text-texto mb-4">
           <ArrowLeft size={20} /> Voltar para login
         </Link>
-        <h1 className="font-titulo text-2xl text-primaria mb-2">Recuperar senha</h1>
-        <p className="text-texto/70 mb-6">Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-            required
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50"
-          >
-            {loading ? 'Enviando...' : 'Enviar instruções'}
-          </button>
-        </form>
+        <h1 className="font-titulo text-2xl text-primaria mb-2">Esqueceu a senha?</h1>
+        <p className="text-texto/70 mb-6">
+          Entre em contato com nosso suporte para recuperar o acesso à sua conta.
+        </p>
+        <a
+          href={`https://wa.me/${numeroSuporte}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition flex items-center justify-center gap-2"
+        >
+          <WhatsappLogo size={20} weight="fill" /> Chamar suporte
+        </a>
       </div>
     </div>
   );
