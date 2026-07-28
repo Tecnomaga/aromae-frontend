@@ -148,7 +148,7 @@ export default function CatalogoPublico() {
         telefone: dadosCliente.telefone,
         endereco: dadosCliente.endereco,
         cupom: dadosCliente.cupom || '',
-        total: dadosCliente.total || produtoSelecionado.preco  // envia o total com desconto
+        total: dadosCliente.total || produtoSelecionado.preco
       });
 
       sessionStorage.setItem('pendingPixOrder', JSON.stringify({
