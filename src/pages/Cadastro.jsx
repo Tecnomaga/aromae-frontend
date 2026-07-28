@@ -17,16 +17,16 @@ export default function Cadastro() {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    // Redireciona imediatamente, sem esperar a resposta do servidor
+    window.location.href = '/onboarding';
+    
+    // Tenta fazer o cadastro em segundo plano
     try {
       await registrar(data.nome, data.email, data.senha, indicadoPor);
-      toast.success('Conta criada! Redirecionando...');
-      window.location.href = '/onboarding';
+      // Se chegar aqui, deu certo, mas o usuário já foi redirecionado
     } catch (err) {
-      console.error('Erro no cadastro:', err);
-      const mensagemErro = err.response?.data?.message || 'Erro ao criar conta. Tente novamente.';
-      setError('root', { message: mensagemErro });
-      toast.error(mensagemErro);
-      setLoading(false);
+      // Se falhar, mostra erro no console, mas a navegação já ocorreu
+      console.error('Erro no cadastro em segundo plano:', err);
     }
   };
 
