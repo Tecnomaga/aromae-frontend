@@ -22,28 +22,23 @@ export default class ErrorBoundary extends React.Component {
     console.error('Erro capturado pelo ErrorBoundary:', error, errorInfo);
     window.alert('Erro: ' + error.message);
 
-    // Se for erro de carregamento de chunk, limpa cache e recarrega automaticamente
+    // Se for erro de chunk, limpa tudo e recarrega com cache busting
     if (this.state.isChunkError) {
-      this.handleChunkError();
+      // Remove service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => registration.unregister());
+        });
+      }
+      // Recarrega ignorando completamente o cache
+      setTimeout(() => {
+        window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
+      }, 500);
     }
   }
 
-  handleChunkError = () => {
-    // Limpa caches do service worker e força recarga limpa
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => registration.unregister());
-      }).finally(() => {
-        // Recarrega a página ignorando o cache
-        window.location.reload(true);
-      });
-    } else {
-      window.location.reload(true);
-    }
-  };
-
   handleReload = () => {
-    window.location.reload(true);
+    window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
   };
 
   render() {
@@ -52,18 +47,18 @@ export default class ErrorBoundary extends React.Component {
         <div className="min-h-screen flex flex-col items-center justify-center bg-fundo p-4 text-center">
           <div className="bg-white p-8 rounded-2xl shadow-sm max-w-md w-full">
             <h1 className="font-titulo text-2xl text-red-500 mb-4">
-              {this.state.isChunkError ? 'Atualização necessária' : 'Algo deu errado'}
+              {this.state.isChunkError ? 'Atualização automática' : 'Algo deu errado'}
             </h1>
             <p className="text-texto/70 mb-4">
               {this.state.isChunkError 
-                ? 'Uma nova versão do aplicativo está disponível. A página será recarregada automaticamente.' 
+                ? 'Uma nova versão do aplicativo foi detectada. A página será recarregada automaticamente.' 
                 : 'Ocorreu um erro inesperado. Tente recarregar a página.'}
             </p>
             <button 
               onClick={this.handleReload} 
               className="bg-primaria text-white px-6 py-2 rounded-lg font-semibold hover:bg-primaria/90 transition"
             >
-              Recarregar página
+              Recarregar agora
             </button>
           </div>
         </div>
