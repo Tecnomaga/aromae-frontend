@@ -10,6 +10,11 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
   const [loadingCupom, setLoadingCupom] = useState(false);
   const [total, setTotal] = useState(valorOriginal || 0);
 
+  // Atualiza o total sempre que o valorOriginal mudar (ao abrir o modal)
+  useState(() => {
+    setTotal(valorOriginal || 0);
+  }, [valorOriginal]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -18,6 +23,10 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
   const handleAplicarCupom = async () => {
     if (!cupomCodigo.trim()) {
       toast.error('Digite um código de cupom');
+      return;
+    }
+    if (!revendedoraId) {
+      toast.error('Erro interno: ID da loja não informado.');
       return;
     }
     setLoadingCupom(true);
@@ -99,7 +108,6 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
             />
           </div>
 
-          {/* Campo de Cupom */}
           <div className="border-t border-gray-100 pt-4 mt-2">
             <label className="block text-sm font-semibold text-texto/60 mb-2">Cupom de desconto</label>
             <div className="flex gap-2">
@@ -131,7 +139,9 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
             )}
             <div className="mt-3 flex justify-between text-sm font-semibold">
               <span className="text-texto/60">Total</span>
-              <span className="text-primaria text-lg">R$ {total.toFixed(2)}</span>
+              <span className="text-primaria text-lg">
+                R$ {typeof total === 'number' ? total.toFixed(2) : '0.00'}
+              </span>
             </div>
           </div>
         </div>
