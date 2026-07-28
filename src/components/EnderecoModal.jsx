@@ -10,10 +10,11 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
   const [loadingCupom, setLoadingCupom] = useState(false);
   const [total, setTotal] = useState(0);
 
-  // Sincroniza o total com o valorOriginal sempre que o modal abrir ou a prop mudar
+  // Sempre que o modal abrir, define o total a partir do valor original
   useEffect(() => {
-    if (isOpen && valorOriginal) {
-      setTotal(Number(valorOriginal));
+    if (isOpen) {
+      const valor = Number(valorOriginal) || 0;
+      setTotal(valor);
       setCupom(null);
       setCupomCodigo('');
     }
@@ -40,15 +41,16 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
         revendedoraId: revendedoraId
       });
       setCupom(response.data);
+      const base = Number(valorOriginal) || 0;
       const desconto = response.data.tipo === 'percentual'
-        ? Number(valorOriginal) * (response.data.desconto / 100)
+        ? base * (response.data.desconto / 100)
         : response.data.desconto;
-      setTotal(Math.max(0, Number(valorOriginal) - desconto));
+      setTotal(Math.max(0, base - desconto));
       toast.success('Cupom aplicado!');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Cupom inválido');
       setCupom(null);
-      setTotal(Number(valorOriginal));
+      setTotal(Number(valorOriginal) || 0);
     } finally {
       setLoadingCupom(false);
     }
@@ -144,7 +146,7 @@ export default function EnderecoModal({ isOpen, onClose, onConfirm, valorOrigina
             <div className="mt-3 flex justify-between text-sm font-semibold">
               <span className="text-texto/60">Total</span>
               <span className="text-primaria text-lg">
-                R$ {typeof total === 'number' ? total.toFixed(2) : '0.00'}
+                R$ {total.toFixed(2)}
               </span>
             </div>
           </div>
