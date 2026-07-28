@@ -28,7 +28,8 @@ function gerarSlug(texto) {
 const onboardingSchema = z.object({
   nomeLoja: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
   slug: z.string().min(3, 'Link deve ter pelo menos 3 caracteres'),
-  telefone: z.string().min(10, 'Telefone inválido (mínimo 10 dígitos)')
+  telefone: z.string().min(10, 'Telefone inválido (mínimo 10 dígitos)'),
+  chavePix: z.string().optional() // Novo campo opcional
 });
 
 export default function Onboarding() {
@@ -40,7 +41,7 @@ export default function Onboarding() {
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(onboardingSchema),
-    defaultValues: { nomeLoja: '', slug: '', telefone: '' }
+    defaultValues: { nomeLoja: '', slug: '', telefone: '', chavePix: '' }
   });
 
   const nomeLoja = watch('nomeLoja');
@@ -73,6 +74,7 @@ export default function Onboarding() {
       formData.append('nomeLoja', data.nomeLoja);
       formData.append('slug', data.slug);
       formData.append('telefone', data.telefone);
+      if (data.chavePix) formData.append('chavePix', data.chavePix);
       if (fotoPerfil) formData.append('foto', fotoPerfil);
 
       const response = await api.put('/auth/loja', formData);
@@ -82,8 +84,10 @@ export default function Onboarding() {
       
       toast.success('Vitrine criada com sucesso!');
 
-      // Redireciona de forma confiável
-      window.location.href = '/dashboard';
+      // Pequeno delay para garantir que o contexto foi atualizado
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 300);
     } catch (err) {
       console.error('Erro ao salvar loja:', err);
       const mensagem = err.response?.data?.message || 'Erro ao criar a loja. Verifique sua conexão.';
@@ -160,6 +164,13 @@ export default function Onboarding() {
                 <p className="text-xs text-texto/50 mt-1">Esse número será usado no botão "Pedir via WhatsApp" da sua vitrine.</p>
               </div>
 
+              {/* Campo chave Pix */}
+              <div>
+                <label className="block text-sm font-semibold mb-1">Chave Pix para receber vendas (opcional)</label>
+                <input type="text" {...register('chavePix')} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+                <p className="text-xs text-texto/50 mt-1">Você poderá alterar depois no perfil. Recomendamos cadastrar para receber pagamentos via Pix.</p>
+              </div>
+
               <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50 flex items-center justify-center gap-2">
                 <CheckCircle size={20} /> {isSubmitting ? 'Salvando...' : 'Concluir e entrar na loja'}
               </button>
@@ -169,4 +180,4 @@ export default function Onboarding() {
       </div>
     </div>
   );
-}
+                  }
