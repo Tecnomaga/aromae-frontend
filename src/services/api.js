@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://aromae-api.onrender.com/api'
+  baseURL: 'https://aromae-api.onrender.com/api',
+  timeout: 15000 // 15 segundos
 });
 
 api.interceptors.request.use((config) => {
