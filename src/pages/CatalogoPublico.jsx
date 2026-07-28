@@ -352,6 +352,8 @@ export default function CatalogoPublico() {
           qrCodeBase64={pixModal.qrCodeBase64}
           qrCodeText={pixModal.qrCodeText}
           onClose={() => setPixModal(null)}
+          paymentId={pixModal.paymentId}
+          lojaWhatsapp={loja?.telefone}
         />
       )}
 
