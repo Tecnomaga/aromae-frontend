@@ -20,31 +20,33 @@ export default function PushNotificationHandler() {
   useEffect(() => {
     if (!user) return;
 
+    // Evita spam: registra apenas uma vez por sessão (ou após login)
+    const jaRegistrado = localStorage.getItem('push_registrado');
+    if (jaRegistrado === 'true') return;
+
     const registerPush = async () => {
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-        window.alert('Push desativado: navegador não suporta notificações.');
+        console.warn('Push desativado: navegador não suporta.');
         return;
       }
 
       const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
       if (!publicKey) {
-        window.alert('Push desativado: chave VAPID não configurada no frontend.');
+        console.warn('Push desativado: chave VAPID não configurada no frontend.');
         return;
       }
 
       if (Notification.permission === 'denied') {
-        window.alert('Push bloqueado pelo usuário. Permita notificações no navegador.');
+        console.warn('Push bloqueado pelo usuário.');
         return;
       }
 
       try {
         const registration = await navigator.serviceWorker.ready;
-        console.log('✅ Service Worker pronto!');
 
         if (Notification.permission === 'default') {
           const permission = await Notification.requestPermission();
           if (permission !== 'granted') {
-            window.alert('Permissão de notificação negada.');
             return;
           }
         }
@@ -54,23 +56,13 @@ export default function PushNotificationHandler() {
           applicationServerKey: urlBase64ToUint8Array(publicKey)
         });
 
-        console.log('✅ Assinatura push gerada!');
-        const response = await api.post('/notifications/subscribe', { subscription });
-        console.log('✅ Notificações ativadas!');
+        await api.post('/notifications/subscribe', { subscription });
+        localStorage.setItem('push_registrado', 'true');
         toast.success('Notificações ativadas com sucesso!');
-
+        console.log('✅ Notificações push ativadas.');
       } catch (error) {
-        console.error('🔥 Erro ao ativar notificações:', error);
-        let mensagem = 'Erro desconhecido.';
-        if (error.response) {
-          mensagem = `Erro do servidor: ${error.response.status} - ${JSON.stringify(error.response.data)}`;
-        } else if (error.request) {
-          mensagem = 'Sem resposta do servidor. Verifique sua conexão.';
-        } else {
-          mensagem = error.message;
-        }
-        window.alert('Erro ao ativar notificações: ' + mensagem);
-        toast.error('Erro ao ativar notificações. Verifique o console.');
+        console.error('Erro ao ativar notificações:', error);
+        // Não exibe toast para não irritar, mas loga o erro
       }
     };
 
