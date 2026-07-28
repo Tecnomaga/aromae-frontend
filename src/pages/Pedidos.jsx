@@ -65,16 +65,16 @@ export default function Pedidos() {
   if (loading) return (
     <div className="animate-fade-in-up">
       <div className="flex justify-between items-center mb-6">
-        <Skeleton className="h-10 w-32" />
+        <div className="h-10 w-32 bg-gray-200 rounded animate-shimmer" />
         <div className="flex gap-3">
-          <Skeleton className="h-10 w-36 rounded-lg" />
-          <Skeleton className="h-10 w-32 rounded-lg" />
+          <div className="h-10 w-36 bg-gray-200 rounded-lg animate-shimmer" />
+          <div className="h-10 w-32 bg-gray-200 rounded-lg animate-shimmer" />
         </div>
       </div>
       <div className="flex gap-3 mb-6">
-        <Skeleton className="h-12 flex-1 rounded-xl" />
-        <Skeleton className="h-12 w-40 rounded-xl" />
-        <Skeleton className="h-12 w-32 rounded-xl" />
+        <div className="h-12 flex-1 bg-gray-200 rounded-xl animate-shimmer" />
+        <div className="h-12 w-40 bg-gray-200 rounded-xl animate-shimmer" />
+        <div className="h-12 w-32 bg-gray-200 rounded-xl animate-shimmer" />
       </div>
       <ListSkeleton rows={5} />
     </div>
