@@ -21,6 +21,8 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
     try {
       const { data } = await api.get(`/checkout/status/${paymentId}`);
       if (data.status === 'approved') {
+        // Chama a rota de confirmação para processar o repasse
+        await api.post(`/checkout/confirmar/${paymentId}`);
         setPedidoDetalhes(data.pedido);
         setPago(true);
         toast.success('Pagamento confirmado!');
