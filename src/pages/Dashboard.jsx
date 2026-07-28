@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import { CardSkeleton } from '../components/Skeleton';
+import Skeleton, { CardSkeleton } from '../components/Skeleton'; // <-- importação corrigida
 import EmptyState from '../components/EmptyState';
 
 function inicioDoDia(data) {
