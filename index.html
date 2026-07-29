@@ -14,14 +14,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
     <title>Aromaê</title>
-    <script>
-      // Limpa token antigo se a página estiver sendo carregada com erro
-      if (window.location.href.includes('?')) {
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-        window.location.href = '/login';
-      }
-    </script>
   </head>
   <body class="bg-fundo text-texto font-corpo">
     <div id="root"></div>
