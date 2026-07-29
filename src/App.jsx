@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
@@ -21,16 +21,17 @@ import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
 import AdminRepasses from './pages/AdminRepasses';
 
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Produtos = lazy(() => import('./pages/Produtos'));
-const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
-const Pedidos = lazy(() => import('./pages/Pedidos'));
-const PedidoForm = lazy(() => import('./pages/PedidoForm'));
-const Clientes = lazy(() => import('./pages/Clientes'));
-const ClienteForm = lazy(() => import('./pages/ClienteForm'));
-const Perfil = lazy(() => import('./pages/Perfil'));
-const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
-const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
+// Importação DIRETA (sem lazy loading) - resolve erro 404
+import Dashboard from './pages/Dashboard';
+import Produtos from './pages/Produtos';
+import Pedidos from './pages/Pedidos';
+import Clientes from './pages/Clientes';
+import ProdutoForm from './pages/ProdutoForm';
+import PedidoForm from './pages/PedidoForm';
+import ClienteForm from './pages/ClienteForm';
+import Perfil from './pages/Perfil';
+import PerfilEditar from './pages/PerfilEditar';
+import CatalogoPublico from './pages/CatalogoPublico';
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
@@ -45,7 +46,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <ErrorBoundary>
-          <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando módulo...</div>}>
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
