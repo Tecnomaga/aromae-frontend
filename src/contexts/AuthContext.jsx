@@ -13,8 +13,7 @@ export function AuthProvider({ children }) {
       api.get('/auth/me')
         .then(({ data }) => setUser(data))
         .catch(() => {
-          localStorage.removeItem('token');
-          sessionStorage.removeItem('token');
+          // NÃO limpa o token aqui - deixa o interceptor decidir
           setUser(null);
         })
         .finally(() => setLoading(false));
