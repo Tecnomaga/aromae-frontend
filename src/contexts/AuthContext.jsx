@@ -4,52 +4,45 @@ import api from '../services/api';
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (token) {
-      api.get('/auth/me')
-        .then(({ data }) => setUser(data))
-        .catch(() => {
-          localStorage.removeItem('token');
-          sessionStorage.removeItem('token');
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  async function login(email, senha, rememberMe = false) {
+  const login = async (email, senha, rememberMe) => {
     const { data } = await api.post('/auth/login', { email, senha });
-    if (rememberMe) {
-      localStorage.setItem('token', data.token);
-    } else {
-      sessionStorage.setItem('token', data.token);
-    }
-    setUser(data.revendedora);
-  }
+    const loggedUser = data.revendedora;
+    const token = data.token;
 
-  async function registrar(nome, email, senha, indicadoPor = '') {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(loggedUser));
+    setUser(loggedUser);
+  };
+
+  const registrar = async (nome, email, senha, indicadoPor) => {
     const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
-    localStorage.setItem('token', data.token);
-    setUser(data.revendedora);
+    const newUser = data.revendedora;
+    const token = data.token;
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(newUser));
+    setUser(newUser);
     return data;
-  }
+  };
 
-  function atualizarUsuario(dadosParciais) {
-    setUser((atual) => ({ ...atual, ...dadosParciais }));
-  }
+  const atualizarUsuario = (dados) => {
+    const updated = { ...user, ...dados };
+    localStorage.setItem('user', JSON.stringify(updated));
+    setUser(updated);
+  };
 
-  function logout() {
+  const logout = () => {
     localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     window.location.href = '/';
-  }
+  };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, registrar, logout, atualizarUsuario }}>
