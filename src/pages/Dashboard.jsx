@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket, Share as ShareIcon } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import Skeleton from '../components/Skeleton';
-import EmptyState from '../components/EmptyState';
 import toast from 'react-hot-toast';
 
 function inicioDoDia(data) {
@@ -19,22 +17,23 @@ export default function Dashboard() {
   const [pedidos, setPedidos] = useState([]);
   const [lucro, setLucro] = useState({ faturamentoBruto: 0, custoTotal: 0, lucroLiquido: 0 });
   const [loading, setLoading] = useState(true);
-  
-  const dicasFechadas = localStorage.getItem('dicas_fechadas') === 'true';
-  const [mostrarOnboarding, setMostrarOnboarding] = useState(!dicasFechadas);
+  const [mostrarOnboarding, setMostrarOnboarding] = useState(true);
 
   useEffect(() => {
+    const dicasFechadas = localStorage.getItem('dicas_fechadas') === 'true';
+    setMostrarOnboarding(!dicasFechadas);
+
     const fetchData = async () => {
       try {
-        const [prods, peds, lucroData] = await Promise.all([
-          api.get('/produtos').catch(() => ({ data: [] })),
-          api.get('/pedidos').catch(() => ({ data: [] })),
-          api.get('/relatorios/lucro-mensal').catch(() => ({ data: {} })),
-        ]);
-        setProdutos(prods.data || []);
-        setPedidos(peds.data || []);
-        setLucro(lucroData.data || {});
-        if ((prods.data || []).length > 0) {
+        const prods = await api.get('/produtos').then(r => r.data).catch(() => []);
+        const peds = await api.get('/pedidos').then(r => r.data).catch(() => []);
+        const lucroData = await api.get('/relatorios/lucro-mensal').then(r => r.data).catch(() => ({}));
+
+        setProdutos(prods);
+        setPedidos(peds);
+        setLucro(lucroData);
+
+        if (prods.length > 0) {
           setMostrarOnboarding(false);
           localStorage.setItem('dicas_fechadas', 'true');
         }
@@ -62,11 +61,6 @@ export default function Dashboard() {
     }
   };
 
-  const dataExpiracao = user?.plano === 'trial' ? user?.trialExpira : user?.assinaturaExpira;
-  const diasRestantes = dataExpiracao 
-    ? Math.ceil((new Date(dataExpiracao) - new Date()) / (1000 * 60 * 60 * 24))
-    : null;
-
   const produtosAtivos = produtos.filter((p) => p.ativo).length;
   const estoqueBaixo = produtos.filter((p) => p.estoque <= 5);
   const pedidosPendentes = pedidos.filter((p) => p.status === 'pendente').length;
@@ -87,27 +81,14 @@ export default function Dashboard() {
   });
   const maiorValor = Math.max(1, ...ultimos7Dias.map((d) => d.totalDia));
 
-  if (loading) return (
-    <div className="max-w-6xl mx-auto animate-fade-in-up">
-      <div className="mb-8">
-        <Skeleton className="h-10 w-64 mb-2" />
-        <Skeleton className="h-5 w-48" />
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto p-8 text-center">
+        <div className="w-12 h-12 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin mx-auto mb-4"></div>
+        <p className="text-texto/50 text-sm">Carregando seu império...</p>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="card-sm space-y-3">
-            <Skeleton className="w-12 h-12 rounded-xl" />
-            <Skeleton className="h-8 w-16" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        ))}
-      </div>
-      <div className="card-lg">
-        <Skeleton className="h-6 w-40 mb-4" />
-        <Skeleton className="h-40 w-full rounded-lg" />
-      </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in-up">
@@ -118,34 +99,6 @@ export default function Dashboard() {
         </div>
         <Link to="/planos" className="btn-primary text-sm px-4 py-2">Ver planos</Link>
       </div>
-
-      {diasRestantes !== null && diasRestantes <= 7 && (
-        <div className={`card-sm mb-8 flex items-center gap-4 ${diasRestantes <= 3 ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
-          <span className="text-2xl">⏳</span>
-          <div className="flex-1">
-            <p className="font-semibold">
-              {user.plano === 'trial' 
-                ? `Teste grátis: ${diasRestantes} dia(s) restante(s)`
-                : `Assinatura: ${diasRestantes} dia(s) restante(s)`}
-            </p>
-            {diasRestantes <= 3 && (
-              <Link to="/planos" className="text-primaria text-sm font-semibold underline">Renovar agora</Link>
-            )}
-          </div>
-        </div>
-      )}
-
-      {user?.slug && (
-        <div className="card-sm mb-8 flex items-center justify-between">
-          <div>
-            <p className="font-semibold">Sua vitrine está no ar!</p>
-            <p className="text-sm text-texto/50">/loja/{user.slug}</p>
-          </div>
-          <button onClick={compartilharVitrine} className="btn-secondary text-sm flex items-center gap-2">
-            <ShareIcon size={18} /> Compartilhar
-          </button>
-        </div>
-      )}
 
       {mostrarOnboarding && (
         <div className="card-lg bg-gradient-to-br from-primaria/5 to-secundaria/5 border-2 border-primaria/30 mb-8 relative overflow-hidden">
@@ -160,6 +113,18 @@ export default function Dashboard() {
             </ul>
             <button onClick={handleFecharDicas} className="mt-4 text-xs text-texto/40 underline">Fechar dicas</button>
           </div>
+        </div>
+      )}
+
+      {user?.slug && (
+        <div className="card-sm mb-8 flex items-center justify-between">
+          <div>
+            <p className="font-semibold">Sua vitrine está no ar!</p>
+            <p className="text-sm text-texto/50">/loja/{user.slug}</p>
+          </div>
+          <button onClick={compartilharVitrine} className="btn-secondary text-sm flex items-center gap-2">
+            <ShareIcon size={18} /> Compartilhar
+          </button>
         </div>
       )}
 
@@ -207,10 +172,15 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-      
+
       {produtos.length === 0 && pedidos.length === 0 && (
-        <div className="mt-8">
-          <EmptyState type="produtos" title="Sua jornada começa aqui!" message="Cadastre seu primeiro perfume para ver sua vitrine ganhar vida." linkTo="/produtos/novo" linkText="Adicionar primeiro produto" />
+        <div className="mt-8 bg-white rounded-2xl shadow-sm p-12 text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-primaria/10 to-secundaria/10 flex items-center justify-center mb-6">
+            <Package size={40} className="text-primaria/60" weight="duotone" />
+          </div>
+          <h3 className="font-titulo text-xl text-texto mb-2">Sua jornada começa aqui!</h3>
+          <p className="text-texto/50 mb-6">Cadastre seu primeiro perfume para ver sua vitrine ganhar vida.</p>
+          <Link to="/produtos/novo" className="btn-primary inline-flex">Adicionar primeiro produto</Link>
         </div>
       )}
     </div>
