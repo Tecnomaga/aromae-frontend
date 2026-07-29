@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://aromae-api.onrender.com/api',
-  timeout: 15000
+  timeout: 30000 // 30 segundos para tolerar hibernação
 });
 
 api.interceptors.request.use((config) => {
@@ -13,23 +13,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// NÃO FAZ NADA no interceptor de resposta - deixa o AuthContext decidir
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('Erro na requisição:', {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-
-    // Só redireciona se NÃO for a rota /auth/me (evita loop)
-    if (error.response?.status === 401 && !error.config.url.includes('/auth/me')) {
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
-      window.location.href = '/login';
-    }
-
+    console.error('Erro na requisição:', error.config?.url, error.response?.status || error.message);
     return Promise.reject(error);
   }
 );
