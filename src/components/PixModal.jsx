@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Copy, CheckCircle, Spinner, WhatsappLogo } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -21,7 +21,7 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
     try {
       const { data } = await api.get(`/checkout/status/${paymentId}`);
       if (data.status === 'approved') {
-        // Chama a rota de confirmação para processar o repasse
+        // Chama a confirmação para processar repasse, estoque etc.
         await api.post(`/checkout/confirmar/${paymentId}`);
         setPedidoDetalhes(data.pedido);
         setPago(true);
@@ -36,6 +36,21 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
     }
   };
 
+  // Ao fechar o modal (X ou clicando fora), verifica automaticamente o pagamento
+  const handleClose = async () => {
+    if (paymentId) {
+      try {
+        const { data } = await api.get(`/checkout/status/${paymentId}`);
+        if (data.status === 'approved') {
+          await api.post(`/checkout/confirmar/${paymentId}`);
+        }
+      } catch (error) {
+        console.error('Erro ao verificar pagamento no fechamento:', error);
+      }
+    }
+    onClose();
+  };
+
   const mensagemWhatsApp = lojaWhatsapp && pedidoDetalhes
     ? `Olá! Acabei de fazer um pedido no valor de R$ ${pedidoDetalhes.total.toFixed(2)} e gostaria de confirmar a entrega.`
     : '';
@@ -43,7 +58,7 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 relative text-center animate-pop">
-        <button onClick={onClose} className="absolute top-4 right-4 text-texto/40 hover:text-texto">
+        <button onClick={handleClose} className="absolute top-4 right-4 text-texto/40 hover:text-texto">
           <X size={24} />
         </button>
 
