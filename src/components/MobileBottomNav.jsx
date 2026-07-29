@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { House, Package, ClipboardText, Users, User, Gear, CreditCard, Coins, Headset, Tag } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,13 +14,28 @@ const mainLinks = [
 export default function MobileBottomNav() {
   const [menuAberto, setMenuAberto] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
-    navigate('/');
     setMenuAberto(false);
   };
+
+  // Fecha o menu ao navegar para qualquer página
+  const handleNavClick = (to) => {
+    setMenuAberto(false);
+    if (to === '/logout') {
+      handleLogout();
+    } else {
+      navigate(to);
+    }
+  };
+
+  // Fecha o menu se a rota mudar (usuário tocou em um link)
+  useEffect(() => {
+    setMenuAberto(false);
+  }, [location.pathname]);
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-gray-100/50 flex justify-around py-2 z-50 shadow-lg">
@@ -43,6 +58,7 @@ export default function MobileBottomNav() {
       <div className="relative">
         <button
           onClick={() => setMenuAberto(!menuAberto)}
+          onBlur={() => setTimeout(() => setMenuAberto(false), 200)}
           className={`flex flex-col items-center text-xs font-semibold transition-colors duration-200 ${
             menuAberto ? 'text-primaria' : 'text-texto/50 hover:text-texto'
           }`}
