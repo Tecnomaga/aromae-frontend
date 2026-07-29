@@ -8,12 +8,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       strategies: 'generateSW',
-      workbox: {
-        globPatterns: ['**/*.{png,jpg,jpeg,gif,svg,ico,woff,woff2}'],
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true
-      },
       manifest: {
         name: 'Aromaê - Sua Vitrine de Perfumes',
         short_name: 'Aromaê',
@@ -30,15 +24,5 @@ export default defineConfig({
       }
     })
   ],
-  server: { port: 3000 },
-  build: {
-    rollupOptions: {
-      output: {
-        // Remove hashes dos nomes dos arquivos
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
-      }
-    }
-  }
+  server: { port: 3000 }
 });
