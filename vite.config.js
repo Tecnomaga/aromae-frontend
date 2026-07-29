@@ -9,10 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       strategies: 'generateSW',
       workbox: {
-        globPatterns: ['**/*.{png,jpg,jpeg,gif,svg,ico,woff,woff2}'],
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        runtimeCaching: []
       },
       manifest: {
         name: 'Aromaê - Sua Vitrine de Perfumes',
