@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Package, Warning, ClipboardText, Sparkle, ChartBar, TrendUp, Rocket, Share as ShareIcon } from 'phosphor-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import Skeleton, { CardSkeleton } from '../components/Skeleton';
+import Skeleton from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import toast from 'react-hot-toast';
 
@@ -21,25 +21,25 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   
   const dicasFechadas = localStorage.getItem('dicas_fechadas') === 'true';
-  const [mostrarOnboarding, setMostrarOnboarding] = useState(!dicasFechadas && true);
+  const [mostrarOnboarding, setMostrarOnboarding] = useState(!dicasFechadas);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [prods, peds, lucroData] = await Promise.all([
-          api.get('/produtos').then(({ data }) => data).catch(() => []),
-          api.get('/pedidos').then(({ data }) => data).catch(() => []),
-          api.get('/relatorios/lucro-mensal').then(({ data }) => data).catch(() => ({})),
+          api.get('/produtos').catch(() => ({ data: [] })),
+          api.get('/pedidos').catch(() => ({ data: [] })),
+          api.get('/relatorios/lucro-mensal').catch(() => ({ data: {} })),
         ]);
-        setProdutos(prods);
-        setPedidos(peds);
-        setLucro(lucroData);
-        if (prods.length > 0) {
+        setProdutos(prods.data || []);
+        setPedidos(peds.data || []);
+        setLucro(lucroData.data || {});
+        if ((prods.data || []).length > 0) {
           setMostrarOnboarding(false);
           localStorage.setItem('dicas_fechadas', 'true');
         }
       } catch (error) {
-        console.warn('⚠️ Erro ao carregar dados:', error);
+        console.warn('Erro ao carregar dados:', error);
       } finally {
         setLoading(false);
       }
@@ -62,7 +62,6 @@ export default function Dashboard() {
     }
   };
 
-  // Dias restantes (trial ou assinatura)
   const dataExpiracao = user?.plano === 'trial' ? user?.trialExpira : user?.assinaturaExpira;
   const diasRestantes = dataExpiracao 
     ? Math.ceil((new Date(dataExpiracao) - new Date()) / (1000 * 60 * 60 * 24))
@@ -120,7 +119,6 @@ export default function Dashboard() {
         <Link to="/planos" className="btn-primary text-sm px-4 py-2">Ver planos</Link>
       </div>
 
-      {/* Alerta de dias restantes */}
       {diasRestantes !== null && diasRestantes <= 7 && (
         <div className={`card-sm mb-8 flex items-center gap-4 ${diasRestantes <= 3 ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
           <span className="text-2xl">⏳</span>
@@ -137,7 +135,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Atalho compartilhar vitrine */}
       {user?.slug && (
         <div className="card-sm mb-8 flex items-center justify-between">
           <div>
@@ -157,16 +154,15 @@ export default function Dashboard() {
             <h2 className="font-titulo text-2xl text-primaria mb-2">🚀 Primeiros passos!</h2>
             <p className="text-texto/70 text-sm mb-4">Siga essas 3 etapas para começar a vender hoje mesmo:</p>
             <ul className="space-y-2 text-sm font-medium text-texto/80">
-              <li className="flex items-center gap-2">1️⃣ <span>Cadastre seu primeiro perfume (com foto!) em <Link to="/produtos/novo" className="text-primaria underline">Produtos</Link>.</span></li>
+              <li className="flex items-center gap-2">1️⃣ <span>Cadastre seu primeiro perfume em <Link to="/produtos/novo" className="text-primaria underline">Produtos</Link>.</span></li>
               <li className="flex items-center gap-2">2️⃣ <span>Compartilhe sua vitrine no WhatsApp em <Link to="/perfil" className="text-primaria underline">Meu Perfil</Link>.</span></li>
-              <li className="flex items-center gap-2">3️⃣ <span>Cadastre sua chave Pix em <Link to="/perfil/editar" className="text-primaria underline">Editar Perfil</Link> para receber os pagamentos.</span></li>
+              <li className="flex items-center gap-2">3️⃣ <span>Cadastre sua chave Pix em <Link to="/perfil/editar" className="text-primaria underline">Editar Perfil</Link>.</span></li>
             </ul>
             <button onClick={handleFecharDicas} className="mt-4 text-xs text-texto/40 underline">Fechar dicas</button>
           </div>
         </div>
       )}
 
-      {/* Métricas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {[
           { label: 'Produtos ativos', valor: produtosAtivos, icon: Package, cor: 'text-primaria bg-primaria/10' },
@@ -214,13 +210,7 @@ export default function Dashboard() {
       
       {produtos.length === 0 && pedidos.length === 0 && (
         <div className="mt-8">
-          <EmptyState
-            type="produtos"
-            title="Sua jornada começa aqui!"
-            message="Cadastre seu primeiro perfume para ver sua vitrine ganhar vida."
-            linkTo="/produtos/novo"
-            linkText="Adicionar primeiro produto"
-          />
+          <EmptyState type="produtos" title="Sua jornada começa aqui!" message="Cadastre seu primeiro perfume para ver sua vitrine ganhar vida." linkTo="/produtos/novo" linkText="Adicionar primeiro produto" />
         </div>
       )}
     </div>
