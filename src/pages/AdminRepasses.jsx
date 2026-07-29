@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function AdminRepasses() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [repasses, setRepasses] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Proteção: se não for o admin, redireciona
+  useEffect(() => {
+    if (user && user.email !== 'aromaevitrine@gmail.com') {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const carregar = async () => {
     try {
@@ -17,7 +28,11 @@ export default function AdminRepasses() {
     }
   };
 
-  useEffect(() => { carregar(); }, []);
+  useEffect(() => {
+    if (user && user.email === 'aromaevitrine@gmail.com') {
+      carregar();
+    }
+  }, [user]);
 
   const marcarComoPago = async (id) => {
     try {
