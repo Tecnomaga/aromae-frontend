@@ -9,17 +9,28 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (token) {
-      api.get('/auth/me')
-        .then(({ data }) => setUser(data))
-        .catch(() => {
-          // NÃO limpa o token aqui - deixa o interceptor decidir
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
+    if (!token) {
       setLoading(false);
+      return;
     }
+
+    // Tenta validar o token
+    api.get('/auth/me')
+      .then(({ data }) => {
+        setUser(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Falha ao validar token:', err.response?.status || err.message);
+        // SÓ remove o token se for 401 (token realmente inválido)
+        if (err.response?.status === 401) {
+          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
+        }
+        // Se for erro de rede (Render dormindo), mantém o token para tentar depois
+        setUser(null);
+        setLoading(false);
+      });
   }, []);
 
   async function login(email, senha, rememberMe = false) {
