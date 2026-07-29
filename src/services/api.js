@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://aromae-api.onrender.com/api',
-  timeout: 30000
+  baseURL: 'https://aromae-api.onrender.com/api'
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -16,12 +15,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Só remove o token se for erro 401 e NÃO for erro de rede
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
+    console.error('Erro na requisição:', error.config?.url, error.response?.status || error.message);
     return Promise.reject(error);
   }
 );
