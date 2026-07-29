@@ -22,11 +22,14 @@ api.interceptors.response.use(
       data: error.response?.data,
       message: error.message,
     });
-    if (error.response?.status === 401) {
+
+    // Só redireciona se NÃO for a rota /auth/me (evita loop)
+    if (error.response?.status === 401 && !error.config.url.includes('/auth/me')) {
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
       window.location.href = '/login';
     }
+
     return Promise.reject(error);
   }
 );
