@@ -9,8 +9,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       strategies: 'generateSW',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        runtimeCaching: []
+        globPatterns: ['**/*.{png,jpg,jpeg,gif,svg,ico,woff,woff2}'],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true
       },
       manifest: {
         name: 'Aromaê - Sua Vitrine de Perfumes',
@@ -28,5 +30,15 @@ export default defineConfig({
       }
     })
   ],
-  server: { port: 3000 }
+  server: { port: 3000 },
+  build: {
+    rollupOptions: {
+      output: {
+        // Remove hashes dos nomes dos arquivos
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
+    }
+  }
 });
