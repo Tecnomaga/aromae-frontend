@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
@@ -21,12 +21,16 @@ import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
 import AdminRepasses from './pages/AdminRepasses';
 
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Produtos = lazy(() => import('./pages/Produtos'));
+// Páginas críticas SEM lazy load (evita erro 404)
+import Dashboard from './pages/Dashboard';
+import Produtos from './pages/Produtos';
+import Pedidos from './pages/Pedidos';
+import Clientes from './pages/Clientes';
+
+// Páginas secundárias com lazy load (menos críticas)
+import { lazy } from 'react';
 const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
-const Pedidos = lazy(() => import('./pages/Pedidos'));
 const PedidoForm = lazy(() => import('./pages/PedidoForm'));
-const Clientes = lazy(() => import('./pages/Clientes'));
 const ClienteForm = lazy(() => import('./pages/ClienteForm'));
 const Perfil = lazy(() => import('./pages/Perfil'));
 const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
