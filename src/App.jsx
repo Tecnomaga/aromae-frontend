@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
@@ -20,18 +20,17 @@ import GerenciarCupons from './pages/GerenciarCupons';
 import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
 import AdminRepasses from './pages/AdminRepasses';
-
-// Importação DIRETA (sem lazy loading) - resolve erro 404
 import Dashboard from './pages/Dashboard';
 import Produtos from './pages/Produtos';
 import Pedidos from './pages/Pedidos';
 import Clientes from './pages/Clientes';
-import ProdutoForm from './pages/ProdutoForm';
-import PedidoForm from './pages/PedidoForm';
-import ClienteForm from './pages/ClienteForm';
-import Perfil from './pages/Perfil';
-import PerfilEditar from './pages/PerfilEditar';
-import CatalogoPublico from './pages/CatalogoPublico';
+
+const ProdutoForm = lazy(() => import('./pages/ProdutoForm'));
+const PedidoForm = lazy(() => import('./pages/PedidoForm'));
+const ClienteForm = lazy(() => import('./pages/ClienteForm'));
+const Perfil = lazy(() => import('./pages/Perfil'));
+const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
+const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
   const { user, loading } = useAuth();
