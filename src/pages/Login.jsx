@@ -11,7 +11,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, setError, formState: { errors } } = useForm({
@@ -25,9 +25,13 @@ export default function Login() {
   const onSubmit = async (data) => {
     setLoading(true);
     setError('root', { message: '' });
+    
     try {
       await login(data.email, data.senha, rememberMe);
-      navigate('/dashboard');
+      // Redirecionamento seguro com pequeno delay para evitar conflitos
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 300);
     } catch (err) {
       if (err.code === 'ECONNABORTED' || !err.response) {
         setError('root', { message: 'Servidor demorou. Tente novamente.' });
