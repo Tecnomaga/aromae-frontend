@@ -23,7 +23,6 @@ api.interceptors.response.use(
       message: error.message,
     });
 
-    // Tratamento de erro 401 (não autorizado)
     if (error.response?.status === 401) {
       if (!error.config.url.includes('/auth/login')) {
         localStorage.removeItem('token');
