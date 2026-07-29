@@ -9,7 +9,8 @@ export default class ErrorBoundary extends React.Component {
   static getDerivedStateFromError(error) {
     const isChunkError = error.message?.includes('Failed to fetch dynamically imported module') || 
                          error.message?.includes('Loading chunk') ||
-                         error.message?.includes('ChunkLoadError');
+                         error.message?.includes('ChunkLoadError') ||
+                         error.message?.includes('NOT_FOUND');
     
     return { 
       hasError: true, 
@@ -20,22 +21,32 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Erro capturado pelo ErrorBoundary:', error, errorInfo);
-    window.alert('Erro: ' + error.message);
-
-    // Se for erro de chunk, limpa tudo e recarrega com cache busting
     if (this.state.isChunkError) {
-      // Remove service workers
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          registrations.forEach(registration => registration.unregister());
-        });
-      }
-      // Recarrega ignorando completamente o cache
-      setTimeout(() => {
-        window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
-      }, 500);
+      this.handleChunkError();
     }
   }
+
+  handleChunkError = () => {
+    // Remove service workers antigos
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => registration.unregister());
+      }).finally(() => {
+        // Limpa cache e recarrega
+        if (window.caches) {
+          window.caches.keys().then(names => {
+            names.forEach(name => window.caches.delete(name));
+          }).finally(() => {
+            window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
+          });
+        } else {
+          window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
+        }
+      });
+    } else {
+      window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
+    }
+  };
 
   handleReload = () => {
     window.location.replace(window.location.href.split('?')[0] + '?t=' + Date.now());
@@ -51,7 +62,7 @@ export default class ErrorBoundary extends React.Component {
             </h1>
             <p className="text-texto/70 mb-4">
               {this.state.isChunkError 
-                ? 'Uma nova versão do aplicativo foi detectada. A página será recarregada automaticamente.' 
+                ? 'Uma nova versão do sistema está disponível. A página será recarregada automaticamente.' 
                 : 'Ocorreu um erro inesperado. Tente recarregar a página.'}
             </p>
             <button 
