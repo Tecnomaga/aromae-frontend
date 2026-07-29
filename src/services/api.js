@@ -23,7 +23,6 @@ api.interceptors.response.use(
       message: error.message,
     });
 
-    // Se o token for inválido (401), limpa tudo e vai para o login
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
