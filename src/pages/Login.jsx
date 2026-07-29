@@ -8,11 +8,12 @@ import { loginSchema } from '../schemas';
 import api from '../services/api';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user, loading } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false); // DESMARCADO por padrão
-  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const { register, handleSubmit, setError, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
@@ -22,12 +23,18 @@ export default function Login() {
     api.get('/health').catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (shouldRedirect && !loading && user) {
+      navigate('/dashboard');
+    }
+  }, [shouldRedirect, loading, user, navigate]);
+
   const onSubmit = async (data) => {
-    setLoading(true);
+    setSending(true);
     setError('root', { message: '' });
     try {
       await login(data.email, data.senha, rememberMe);
-      navigate('/dashboard');
+      setShouldRedirect(true);
     } catch (err) {
       if (err.code === 'ECONNABORTED' || !err.response) {
         setError('root', { message: 'Servidor demorou. Tente novamente.' });
@@ -37,7 +44,7 @@ export default function Login() {
         setError('root', { message: 'E-mail ou senha inválidos.' });
       }
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   };
 
@@ -68,8 +75,8 @@ export default function Login() {
             </label>
             <Link to="/recuperar-senha" className="text-sm text-primaria hover:underline">Esqueci minha senha</Link>
           </div>
-          <button type="submit" disabled={loading} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition flex items-center justify-center gap-2 disabled:opacity-50">
-            <SignIn size={20} /> {loading ? 'Entrando...' : 'Entrar'}
+          <button type="submit" disabled={sending} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition flex items-center justify-center gap-2 disabled:opacity-50">
+            <SignIn size={20} /> {sending ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
         <p className="text-center text-sm mt-6">Não tem uma loja? <Link to="/cadastro" className="text-primaria font-semibold">Criar agora</Link></p>
