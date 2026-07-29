@@ -41,9 +41,9 @@ function RotasProtegidas() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <ErrorBoundary>
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -82,8 +82,8 @@ export default function App() {
           </Suspense>
           <PushNotificationHandler />
           <InstallPrompt />
-        </ErrorBoundary>
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

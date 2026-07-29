@@ -6,7 +6,14 @@ const AuthContext = createContext({});
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    if (!saved) return null;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return null;
+    }
   });
   const [loading, setLoading] = useState(false);
 
@@ -14,6 +21,10 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/login', { email, senha });
     const loggedUser = data.revendedora;
     const token = data.token;
+
+    if (!loggedUser || !token) {
+      throw new Error('Resposta de login inválida do servidor.');
+    }
 
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(loggedUser));
@@ -24,6 +35,10 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
     const newUser = data.revendedora;
     const token = data.token;
+
+    if (!newUser || !token) {
+      throw new Error('Resposta de cadastro inválida do servidor.');
+    }
 
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(newUser));
