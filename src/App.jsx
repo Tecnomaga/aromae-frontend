@@ -20,7 +20,7 @@ import GerenciarCupons from './pages/GerenciarCupons';
 import GerenciarAvaliacoes from './pages/GerenciarAvaliacoes';
 import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword'; // NOVO
+import AdminRepasses from './pages/AdminRepasses'; // NOVO
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
@@ -63,7 +63,6 @@ export default function App() {
               <Route path="/gerenciar-avaliacoes" element={<GerenciarAvaliacoes />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/recuperar-senha" element={<ForgotPassword />} />
-              <Route path="/redefinir-senha" element={<ResetPassword />} /> {/* NOVA ROTA */}
 
               <Route element={<RotasProtegidas />}>
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -78,6 +77,7 @@ export default function App() {
                 <Route path="/clientes/:id" element={<ClienteForm />} />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/perfil/editar" element={<PerfilEditar />} />
+                <Route path="/admin/repasses" element={<AdminRepasses />} /> {/* NOVA ROTA */}
               </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
