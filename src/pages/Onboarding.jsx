@@ -29,14 +29,14 @@ const onboardingSchema = z.object({
   nomeLoja: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
   slug: z.string().min(3, 'Link deve ter pelo menos 3 caracteres'),
   telefone: z.string().min(10, 'Telefone inválido (mínimo 10 dígitos)'),
-  chavePix: z.string().optional() // Novo campo opcional
+  chavePix: z.string().optional()
 });
 
 export default function Onboarding() {
   const [passo, setPasso] = useState(0);
   const [fotoPerfil, setFotoPerfil] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
-  const { atualizarUsuario } = useAuth();
+  const { user, atualizarUsuario } = useAuth();
   const navigate = useNavigate();
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm({
@@ -78,16 +78,13 @@ export default function Onboarding() {
       if (fotoPerfil) formData.append('foto', fotoPerfil);
 
       const response = await api.put('/auth/loja', formData);
-      
-      // Atualiza o usuário no contexto
-      atualizarUsuario(response.data);
-      
-      toast.success('Vitrine criada com sucesso!');
 
-      // Pequeno delay para garantir que o contexto foi atualizado
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 300);
+      if (atualizarUsuario) {
+        atualizarUsuario(response.data);
+      }
+
+      toast.success('Vitrine criada com sucesso!');
+      navigate('/dashboard');
     } catch (err) {
       console.error('Erro ao salvar loja:', err);
       const mensagem = err.response?.data?.message || 'Erro ao criar a loja. Verifique sua conexão.';
@@ -164,7 +161,6 @@ export default function Onboarding() {
                 <p className="text-xs text-texto/50 mt-1">Esse número será usado no botão "Pedir via WhatsApp" da sua vitrine.</p>
               </div>
 
-              {/* Campo chave Pix */}
               <div>
                 <label className="block text-sm font-semibold mb-1">Chave Pix para receber vendas (opcional)</label>
                 <input type="text" {...register('chavePix')} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
@@ -180,4 +176,4 @@ export default function Onboarding() {
       </div>
     </div>
   );
-                  }
+}
