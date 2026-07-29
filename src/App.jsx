@@ -17,10 +17,9 @@ import Suporte from './pages/Suporte';
 import Financeiro from './pages/Financeiro';
 import Assinatura from './pages/Assinatura';
 import GerenciarCupons from './pages/GerenciarCupons';
-import GerenciarAvaliacoes from './pages/GerenciarAvaliacoes';
 import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
-import AdminRepasses from './pages/AdminRepasses'; // NOVO
+import AdminRepasses from './pages/AdminRepasses';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produtos = lazy(() => import('./pages/Produtos'));
@@ -60,7 +59,6 @@ export default function App() {
               <Route path="/financeiro" element={<Financeiro />} />
               <Route path="/assinatura" element={<Assinatura />} />
               <Route path="/gerenciar-cupons" element={<GerenciarCupons />} />
-              <Route path="/gerenciar-avaliacoes" element={<GerenciarAvaliacoes />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/recuperar-senha" element={<ForgotPassword />} />
 
@@ -77,7 +75,7 @@ export default function App() {
                 <Route path="/clientes/:id" element={<ClienteForm />} />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/perfil/editar" element={<PerfilEditar />} />
-                <Route path="/admin/repasses" element={<AdminRepasses />} /> {/* NOVA ROTA */}
+                <Route path="/admin/repasses" element={<AdminRepasses />} />
               </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
