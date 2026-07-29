@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { House, Package, ClipboardText, Users, User, Gear, CreditCard, Coins, Headset, Tag } from 'phosphor-react';
@@ -22,17 +22,7 @@ export default function MobileBottomNav() {
     setMenuAberto(false);
   };
 
-  // Fecha o menu ao navegar para qualquer página
-  const handleNavClick = (to) => {
-    setMenuAberto(false);
-    if (to === '/logout') {
-      handleLogout();
-    } else {
-      navigate(to);
-    }
-  };
-
-  // Fecha o menu se a rota mudar (usuário tocou em um link)
+  // Fecha o menu se a rota mudar
   useEffect(() => {
     setMenuAberto(false);
   }, [location.pathname]);
@@ -58,7 +48,6 @@ export default function MobileBottomNav() {
       <div className="relative">
         <button
           onClick={() => setMenuAberto(!menuAberto)}
-          onBlur={() => setTimeout(() => setMenuAberto(false), 200)}
           className={`flex flex-col items-center text-xs font-semibold transition-colors duration-200 ${
             menuAberto ? 'text-primaria' : 'text-texto/50 hover:text-texto'
           }`}
