@@ -17,7 +17,6 @@ export default function Login() {
     resolver: zodResolver(loginSchema)
   });
 
-  // Aquece o servidor
   useEffect(() => {
     api.get('/health').catch(() => {});
   }, []);
@@ -27,13 +26,12 @@ export default function Login() {
     setError('root', { message: '' });
     try {
       await login(data.email, data.senha, rememberMe);
-      // Recarga completa para garantir que o AuthContext leia o token
       window.location.href = '/dashboard';
     } catch (err) {
-      if (err.code === 'ECONNABORTED' || !err.response) {
+      if (!err.response) {
         setError('root', { message: 'Servidor demorou. Tente novamente.' });
-      } else if (err.response?.status === 429) {
-        setError('root', { message: 'Muitas tentativas. Aguarde 15 minutos.' });
+      } else if (err.response.status === 429) {
+        setError('root', { message: 'Muitas tentativas. Aguarde.' });
       } else {
         setError('root', { message: 'E-mail ou senha inválidos.' });
       }
