@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aromaê</title>
   <script>
-    // Remove TODOS os service workers imediatamente ao carregar
+    // Remove TODOS os service workers imediatamente
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
@@ -13,17 +13,25 @@
         }
       });
     }
-    // Redireciona para a página principal após limpar
+    // Limpa todo o cache do navegador
+    if (window.caches) {
+      window.caches.keys().then(function(names) {
+        for (let name of names) {
+          window.caches.delete(name);
+        }
+      });
+    }
+    // Redireciona após limpeza
     setTimeout(function() {
       window.location.href = '/login';
-    }, 500);
+    }, 800);
   </script>
 </head>
 <body style="font-family:sans-serif;background:#FDFBF7;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;text-align:center;">
   <div style="background:white;padding:2rem;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
     <h1 style="color:#C17B7B;">Aromaê</h1>
     <p>Atualizando o sistema...</p>
-    <p>Aguarde um momento, você será redirecionado.</p>
+    <p>Você será redirecionado automaticamente.</p>
   </div>
 </body>
 </html>
