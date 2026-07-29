@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SignIn, Eye, EyeSlash } from 'phosphor-react';
 import { loginSchema } from '../schemas';
@@ -9,6 +9,7 @@ import api from '../services/api';
 
 export default function Login() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,15 +27,9 @@ export default function Login() {
     setError('root', { message: '' });
     try {
       await login(data.email, data.senha, rememberMe);
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     } catch (err) {
-      if (!err.response) {
-        setError('root', { message: 'Servidor demorou. Tente novamente.' });
-      } else if (err.response.status === 429) {
-        setError('root', { message: 'Muitas tentativas. Aguarde.' });
-      } else {
-        setError('root', { message: 'E-mail ou senha inválidos.' });
-      }
+      setError('root', { message: 'E-mail ou senha inválidos.' });
     } finally {
       setLoading(false);
     }
