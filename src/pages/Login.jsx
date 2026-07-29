@@ -17,6 +17,7 @@ export default function Login() {
     resolver: zodResolver(loginSchema)
   });
 
+  // Aquece o servidor
   useEffect(() => {
     api.get('/health').catch(() => {});
   }, []);
@@ -26,6 +27,7 @@ export default function Login() {
     setError('root', { message: '' });
     try {
       await login(data.email, data.senha, rememberMe);
+      // Recarga completa para garantir que o AuthContext leia o token
       window.location.href = '/dashboard';
     } catch (err) {
       if (err.code === 'ECONNABORTED' || !err.response) {
