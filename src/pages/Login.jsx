@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SignIn, Eye, EyeSlash } from 'phosphor-react';
 import { loginSchema } from '../schemas';
-import api from '../services/api'; // para aquecimento
+import api from '../services/api';
 
 export default function Login() {
   const { login } = useAuth();
@@ -18,28 +18,22 @@ export default function Login() {
     resolver: zodResolver(loginSchema)
   });
 
-  // Aquece o servidor ao carregar a página
   useEffect(() => {
     api.get('/health').catch(() => {});
   }, []);
 
   const onSubmit = async (data) => {
     setLoading(true);
-    setError('root', { message: '' }); // limpa erros anteriores
+    setError('root', { message: '' });
     try {
       await login(data.email, data.senha, rememberMe);
       navigate('/dashboard');
     } catch (err) {
-      // Erro de rede (sem resposta)
       if (err.code === 'ECONNABORTED' || !err.response) {
         setError('root', { message: 'Servidor demorou. Tente novamente.' });
-      } 
-      // Erro de rate limit (429)
-      else if (err.response?.status === 429) {
+      } else if (err.response?.status === 429) {
         setError('root', { message: 'Muitas tentativas. Aguarde 15 minutos.' });
-      } 
-      // Credenciais inválidas
-      else {
+      } else {
         setError('root', { message: 'E-mail ou senha inválidos.' });
       }
     } finally {
