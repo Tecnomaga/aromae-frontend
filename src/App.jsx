@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
@@ -41,6 +41,19 @@ function RotasProtegidas() {
 }
 
 export default function App() {
+  // Limpa service workers antigos ao iniciar
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          if (registration.active && !registration.active.scriptURL.includes('workbox')) {
+            registration.unregister();
+          }
+        });
+      });
+    }
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
