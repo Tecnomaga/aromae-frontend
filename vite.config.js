@@ -8,6 +8,15 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       strategies: 'generateSW',
+      workbox: {
+        // NÃO faz cache de arquivos JS/CSS/HTML (apenas imagens e fontes)
+        globPatterns: ['**/*.{png,jpg,jpeg,gif,svg,ico,woff,woff2}'],
+        // Limpa caches antigos automaticamente
+        cleanupOutdatedCaches: true,
+        // Força atualização imediata do service worker
+        skipWaiting: true,
+        clientsClaim: true
+      },
       manifest: {
         name: 'Aromaê - Sua Vitrine de Perfumes',
         short_name: 'Aromaê',
