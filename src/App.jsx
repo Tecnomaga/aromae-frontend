@@ -33,8 +33,7 @@ const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
 const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
-  const { user, loading } = useAuth();
-  if (loading) return <div className="p-8 text-center">Carregando...</div>;
+  const { user } = useAuth(); // removido "loading"
   if (!user) return <Navigate to="/login" replace />;
   if (!user.ativo) return <Bloqueado />;
   return <Layout />;
