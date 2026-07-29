@@ -4,16 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import './index.css';
 
-// NOVA LINHA ABAIXO - Força a limpeza de cache e recarga se detectar erro de carregamento
-window.addEventListener('error', function(e) {
-  if (e.message && (e.message.includes('Failed to fetch dynamically imported module') || e.message.includes('NOT_FOUND'))) {
-    if (!sessionStorage.getItem('reloaded')) {
-      sessionStorage.setItem('reloaded', '1');
-      window.location.reload();
-    }
-  }
-});
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
