@@ -10,6 +10,7 @@ import EmptyState from '../components/EmptyState';
 const statusMap = {
   pendente: { label: 'Pendente', cor: 'bg-yellow-100 text-yellow-700' },
   pago: { label: 'Pago', cor: 'bg-green-100 text-green-700' },
+  pago_repasse_pendente: { label: 'Pago', cor: 'bg-green-100 text-green-700' }, // exibe como Pago
   enviado: { label: 'Enviado', cor: 'bg-blue-100 text-blue-700' },
   entregue: { label: 'Entregue', cor: 'bg-sucesso/20 text-sucesso' },
   cancelado: { label: 'Cancelado', cor: 'bg-red-100 text-red-700' }
@@ -150,8 +151,8 @@ export default function Pedidos() {
                 <span className="font-bold text-primaria">
                   R$ {pedido.total ? pedido.total.toFixed(2) : '0.00'}
                 </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusMap[pedido.status]?.cor}`}>
-                  {statusMap[pedido.status]?.label}
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusMap[pedido.status]?.cor || 'bg-gray-100 text-gray-700'}`}>
+                  {statusMap[pedido.status]?.label || pedido.status}
                 </span>
                 <Link to={`/pedidos/${pedido._id}`} className="text-primaria hover:underline flex items-center gap-1">
                   <Eye size={18} /> Ver
