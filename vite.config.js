@@ -24,5 +24,19 @@ export default defineConfig({
       }
     })
   ],
-  server: { port: 3000 }
+  server: { port: 3000 },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['phosphor-react', 'framer-motion'],
+          dashboard: ['./src/pages/Dashboard.jsx'],
+          produtos: ['./src/pages/Produtos.jsx'],
+          pedidos: ['./src/pages/Pedidos.jsx'],
+          clientes: ['./src/pages/Clientes.jsx']
+        }
+      }
+    }
+  }
 });
