@@ -7,53 +7,47 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Carrega usuário e token do localStorage ao iniciar
   useEffect(() => {
-    const storedUser = localStorage.getItem('@Aromae:user');
-    const storedToken = localStorage.getItem('@Aromae:token');
+    // Carrega usuário do localStorage instantaneamente
+    const savedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
 
-    if (storedUser && storedToken) {
-      api.defaults.headers.Authorization = `Bearer ${storedToken}`;
-      setUser(JSON.parse(storedUser));
+    if (savedUser && token) {
+      setUser(JSON.parse(savedUser));
     }
     setLoading(false);
   }, []);
 
-  const login = async (email, senha, rememberMe = false) => {
+  const login = async (email, senha, rememberMe) => {
     const { data } = await api.post('/auth/login', { email, senha });
     const loggedUser = data.revendedora;
     const token = data.token;
 
-    // Salva no localStorage
-    localStorage.setItem('@Aromae:user', JSON.stringify(loggedUser));
-    localStorage.setItem('@Aromae:token', token);
-    api.defaults.headers.Authorization = `Bearer ${token}`;
-
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(loggedUser));
     setUser(loggedUser);
   };
 
-  const registrar = async (nome, email, senha, indicadoPor = '') => {
+  const registrar = async (nome, email, senha, indicadoPor) => {
     const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
     const newUser = data.revendedora;
     const token = data.token;
 
-    localStorage.setItem('@Aromae:user', JSON.stringify(newUser));
-    localStorage.setItem('@Aromae:token', token);
-    api.defaults.headers.Authorization = `Bearer ${token}`;
-
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(newUser));
     setUser(newUser);
     return data;
   };
 
   const atualizarUsuario = (dadosParciais) => {
-    const updatedUser = { ...user, ...dadosParciais };
-    localStorage.setItem('@Aromae:user', JSON.stringify(updatedUser));
-    setUser(updatedUser);
+    const updated = { ...user, ...dadosParciais };
+    localStorage.setItem('user', JSON.stringify(updated));
+    setUser(updated);
   };
 
   const logout = () => {
-    localStorage.removeItem('@Aromae:user');
-    localStorage.removeItem('@Aromae:token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     window.location.href = '/';
   };
