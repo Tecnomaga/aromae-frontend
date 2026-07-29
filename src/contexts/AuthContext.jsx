@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext({});
@@ -15,41 +15,34 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
-  const [loading, setLoading] = useState(false);
 
-  const login = async (email, senha, rememberMe) => {
+  const login = async (email, senha) => {
     const { data } = await api.post('/auth/login', { email, senha });
-    const loggedUser = data.revendedora;
-    const token = data.token;
-
-    if (!loggedUser || !token) {
-      throw new Error('Resposta de login inválida do servidor.');
+    if (!data.revendedora || !data.token) {
+      throw new Error('Resposta de login inválida.');
     }
-
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(loggedUser));
-    setUser(loggedUser);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.revendedora));
+    setUser(data.revendedora);
   };
 
   const registrar = async (nome, email, senha, indicadoPor) => {
     const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
-    const newUser = data.revendedora;
-    const token = data.token;
-
-    if (!newUser || !token) {
-      throw new Error('Resposta de cadastro inválida do servidor.');
+    if (!data.revendedora || !data.token) {
+      throw new Error('Resposta de cadastro inválida.');
     }
-
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(newUser));
-    setUser(newUser);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.revendedora));
+    setUser(data.revendedora);
     return data;
   };
 
   const atualizarUsuario = (dados) => {
-    const updated = { ...user, ...dados };
-    localStorage.setItem('user', JSON.stringify(updated));
-    setUser(updated);
+    setUser((atual) => {
+      const updated = atual ? { ...atual, ...dados } : dados;
+      localStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const logout = () => {
@@ -60,7 +53,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, registrar, logout, atualizarUsuario }}>
+    <AuthContext.Provider value={{ user, login, registrar, logout, atualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   );
