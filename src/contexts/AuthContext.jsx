@@ -34,14 +34,10 @@ export function AuthProvider({ children }) {
   }
 
   async function registrar(nome, email, senha, indicadoPor = '') {
-    try {
-      const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
-      localStorage.setItem('token', data.token);
-      setUser(data.revendedora);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const { data } = await api.post('/auth/register', { nome, email, senha, indicadoPor });
+    localStorage.setItem('token', data.token);
+    setUser(data.revendedora);
+    return data;
   }
 
   function atualizarUsuario(dadosParciais) {
