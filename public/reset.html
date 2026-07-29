@@ -3,57 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atualização Aromaê</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #FDFBF7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-    }
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    button {
-      background: #C17B7B;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Aromaê</h1>
-    <p>Se o sistema estiver com erro, clique no botão abaixo para limpar o cache e atualizar.</p>
-    <button onclick="limpar()">Limpar Cache e Atualizar</button>
-  </div>
+  <title>Aromaê</title>
   <script>
-    async function limpar() {
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const registration of registrations) {
-          await registration.unregister();
+    // Remove TODOS os service workers imediatamente ao carregar
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
         }
-      }
-      if (window.caches) {
-        const keys = await window.caches.keys();
-        for (const key of keys) {
-          await window.caches.delete(key);
-        }
-      }
-      window.location.href = '/login';
+      });
     }
+    // Redireciona para a página principal após limpar
+    setTimeout(function() {
+      window.location.href = '/login';
+    }, 500);
   </script>
+</head>
+<body style="font-family:sans-serif;background:#FDFBF7;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;text-align:center;">
+  <div style="background:white;padding:2rem;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+    <h1 style="color:#C17B7B;">Aromaê</h1>
+    <p>Atualizando o sistema...</p>
+    <p>Aguarde um momento, você será redirecionado.</p>
+  </div>
 </body>
 </html>
