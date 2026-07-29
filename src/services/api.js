@@ -6,7 +6,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('@Aromae:token');
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -16,15 +16,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Só remove o token se for erro 401 e NÃO for erro de rede
     if (error.response && error.response.status === 401) {
-      const isAuthUrl = error.config.url.includes('/auth');
-      if (!isAuthUrl) {
-        localStorage.removeItem('@Aromae:user');
-        localStorage.removeItem('@Aromae:token');
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
-        }
-      }
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
