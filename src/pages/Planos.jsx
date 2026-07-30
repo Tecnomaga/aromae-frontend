@@ -12,10 +12,7 @@ export default function Planos() {
   const handleAssinar = async (tipoPlano) => {
     setLoading(true);
     try {
-      const response = await api.post('/payments/subscribe', {
-        tipoPlano,
-        periodo,
-      });
+      const response = await api.post('/payments/subscribe', { tipoPlano, periodo });
       if (response.data.checkoutUrl) {
         window.location.href = response.data.checkoutUrl;
       } else {
@@ -58,7 +55,7 @@ export default function Planos() {
       nome: 'Pro',
       precoMensal: 29.90,
       precoAnual: 299.00,
-      features: ['Todos os benefícios do Básico +', 'Relatórios de lucro', 'Exportação CSV', '✔️ Checkout Pix (vendas diretas)'],
+      features: ['Todos os recursos do plano Básico', 'Relatórios de lucro', 'Exportação CSV', 'Checkout Pix (repasse manual)'],
       icon: <FileCsv size={24} />,
       destaque: true,
     },
@@ -67,7 +64,7 @@ export default function Planos() {
       nome: 'Premium',
       precoMensal: 49.90,
       precoAnual: 499.00,
-      features: ['Todos os benefícios do Pro +', 'Múltiplos usuários', 'Suporte prioritário', '✔️ Checkout Pix + comissão reduzida'],
+      features: ['Todos os recursos do plano Pro', 'Múltiplos usuários', 'Suporte prioritário', 'Checkout Pix + taxa reduzida (repasse manual)'],
       icon: <Users size={24} />,
     },
   ];
@@ -86,20 +83,10 @@ export default function Planos() {
 
       <div className="flex justify-center mb-8">
         <div className="bg-gray-100 p-1 rounded-xl">
-          <button
-            onClick={() => setPeriodo('mensal')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              periodo === 'mensal' ? 'bg-white shadow-sm text-primaria' : 'text-texto/50'
-            }`}
-          >
+          <button onClick={() => setPeriodo('mensal')} className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${periodo === 'mensal' ? 'bg-white shadow-sm text-primaria' : 'text-texto/50'}`}>
             Mensal
           </button>
-          <button
-            onClick={() => setPeriodo('anual')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              periodo === 'anual' ? 'bg-white shadow-sm text-primaria' : 'text-texto/50'
-            }`}
-          >
+          <button onClick={() => setPeriodo('anual')} className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${periodo === 'anual' ? 'bg-white shadow-sm text-primaria' : 'text-texto/50'}`}>
             Anual (economize até 20%)
           </button>
         </div>
@@ -112,41 +99,23 @@ export default function Planos() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: plano.destaque ? 0.2 : 0 }}
-            className={`relative bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all ${
-              plano.destaque ? 'border-2 border-primaria shadow-md' : 'border border-gray-100'
-            }`}
+            className={`relative bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all ${plano.destaque ? 'border-2 border-primaria shadow-md' : 'border border-gray-100'}`}
           >
             {plano.destaque && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primaria text-white px-3 py-0.5 rounded-full text-xs font-bold">
-                Mais popular
-              </span>
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primaria text-white px-3 py-0.5 rounded-full text-xs font-bold">Mais popular</span>
             )}
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-primaria/10 flex items-center justify-center text-primaria">
-                {plano.icon}
-              </div>
+              <div className="w-10 h-10 rounded-xl bg-primaria/10 flex items-center justify-center text-primaria">{plano.icon}</div>
               <h3 className="font-titulo text-xl">{plano.nome}</h3>
             </div>
-            <p className="text-3xl font-bold text-primaria">
-              R$ {periodo === 'mensal' ? plano.precoMensal.toFixed(2) : plano.precoAnual.toFixed(2)}
-            </p>
+            <p className="text-3xl font-bold text-primaria">R$ {periodo === 'mensal' ? plano.precoMensal.toFixed(2) : plano.precoAnual.toFixed(2)}</p>
             <p className="text-sm text-texto/50">{periodo === 'mensal' ? 'por mês' : 'por ano'}</p>
             <ul className="mt-6 space-y-2 text-sm text-texto/70">
               {plano.features.map((f, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <CheckCircle size={16} className="text-sucesso" weight="fill" /> {f}
-                </li>
+                <li key={i} className="flex items-center gap-2"><CheckCircle size={16} className="text-sucesso" weight="fill" /> {f}</li>
               ))}
             </ul>
-            <button
-              onClick={() => handleAssinar(plano.id)}
-              disabled={loading}
-              className={`mt-6 w-full py-2 rounded-xl font-semibold transition-all ${
-                plano.destaque
-                  ? 'bg-primaria text-white hover:bg-primaria/90'
-                  : 'bg-gray-100 hover:bg-gray-200 text-texto'
-              }`}
-            >
+            <button onClick={() => handleAssinar(plano.id)} disabled={loading} className={`mt-6 w-full py-2 rounded-xl font-semibold transition-all ${plano.destaque ? 'bg-primaria text-white hover:bg-primaria/90' : 'bg-gray-100 hover:bg-gray-200 text-texto'}`}>
               {loading ? 'Carregando...' : 'Assinar'}
             </button>
           </motion.div>
@@ -154,8 +123,8 @@ export default function Planos() {
       </div>
 
       <div className="mt-8 p-4 bg-gray-50 rounded-2xl text-center text-sm text-texto/60">
-        <p className="font-semibold text-texto/80">⚡ Taxa de repasse</p>
-        <p>Para vendas realizadas via <strong>Checkout Pix</strong>, a plataforma cobra uma comissão de <strong>5%</strong> sobre o valor da venda (descontada automaticamente). Planos Básico não possuem Checkout Pix.</p>
+        <p className="font-semibold text-texto/80">⚡ Sobre as taxas</p>
+        <p>Para vendas via <strong>Checkout Pix</strong>, a plataforma cobra uma comissão de <strong>5%</strong> (Pro) ou <strong>3%</strong> (Premium) sobre o valor da venda. <strong>Os repasses são feitos manualmente pelo suporte.</strong> Há incidência de taxas do Mercado Pago e tributação.</p>
         <p className="mt-2 text-xs">Sem fidelidade. Cancele quando quiser.</p>
       </div>
     </div>
