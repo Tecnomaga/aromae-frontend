@@ -162,9 +162,9 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-1">Chave Pix para receber vendas (opcional)</label>
+                <label className="block text-sm font-semibold mb-1">Chave Pix para receber repasses (opcional)</label>
                 <input type="text" {...register('chavePix')} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
-                <p className="text-xs text-texto/50 mt-1">Você poderá alterar depois no perfil. Recomendamos cadastrar para receber pagamentos via Pix.</p>
+                <p className="text-xs text-texto/50 mt-1">Chave usada para receber os repasses das vendas via Pix. O suporte Aromaê fará a transferência após sua solicitação.</p>
               </div>
 
               <button type="submit" disabled={isSubmitting} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50 flex items-center justify-center gap-2">
