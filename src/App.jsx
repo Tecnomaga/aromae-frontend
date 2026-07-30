@@ -19,7 +19,6 @@ import Assinatura from './pages/Assinatura';
 import GerenciarCupons from './pages/GerenciarCupons';
 import Configuracoes from './pages/Configuracoes';
 import ForgotPassword from './pages/ForgotPassword';
-import AdminRepasses from './pages/AdminRepasses';
 import Dashboard from './pages/Dashboard';
 import Produtos from './pages/Produtos';
 import Pedidos from './pages/Pedidos';
@@ -33,7 +32,7 @@ const PerfilEditar = lazy(() => import('./pages/PerfilEditar'));
 const CatalogoPublico = lazy(() => import('./pages/CatalogoPublico'));
 
 function RotasProtegidas() {
-  const { user } = useAuth(); // removido "loading"
+  const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   if (!user.ativo) return <Bloqueado />;
   return <Layout />;
@@ -41,9 +40,9 @@ function RotasProtegidas() {
 
 export default function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <ErrorBoundary>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -74,7 +73,6 @@ export default function App() {
                 <Route path="/clientes/:id" element={<ClienteForm />} />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/perfil/editar" element={<PerfilEditar />} />
-                <Route path="/admin/repasses" element={<AdminRepasses />} />
               </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
@@ -82,8 +80,8 @@ export default function App() {
           </Suspense>
           <PushNotificationHandler />
           <InstallPrompt />
-        </BrowserRouter>
-      </AuthProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
