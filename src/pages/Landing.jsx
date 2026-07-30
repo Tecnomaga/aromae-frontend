@@ -254,7 +254,7 @@ export default function Landing() {
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Todos os recursos do plano Pro</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Múltiplos usuários</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Suporte prioritário</li>
-              <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Checkout Pix + comissão reduzida (repasse manual)</li>
+              <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Checkout Pix + taxa reduzida (repasse manual)</li>
             </ul>
             <Link to="/cadastro" className="mt-8 block w-full bg-primaria text-white py-3 rounded-xl font-semibold text-center hover:bg-primaria/90 active:scale-95 transition-all shadow-md">
               Assinar Premium
@@ -317,4 +317,4 @@ export default function Landing() {
       </footer>
     </div>
   );
-}
+                                                        }
