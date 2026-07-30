@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MagnifyingGlass, ClipboardText, Eye, FileCsv, Trash } from 'phosphor-react';
+import { Plus, MagnifyingGlass, ClipboardText, Eye, FileCsv, Trash, WhatsappLogo } from 'phosphor-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
@@ -8,7 +8,6 @@ import ConfirmModal from '../components/ConfirmModal';
 const statusMap = {
   pendente: { label: 'Pendente', cor: 'bg-yellow-100 text-yellow-700' },
   pago: { label: 'Pago', cor: 'bg-green-100 text-green-700' },
-  pago_repasse_pendente: { label: 'Pago', cor: 'bg-green-100 text-green-700' },
   enviado: { label: 'Enviado', cor: 'bg-blue-100 text-blue-700' },
   entregue: { label: 'Entregue', cor: 'bg-sucesso/20 text-sucesso' },
   cancelado: { label: 'Cancelado', cor: 'bg-red-100 text-red-700' }
@@ -44,6 +43,19 @@ export default function Pedidos() {
     setDeleteTarget(null);
   };
 
+  const solicitarRepasse = (pedido) => {
+    const numeroSuporte = '5513996984764';
+    const valor = pedido.total ? pedido.total.toFixed(2) : '0.00';
+    const produto = pedido.itens?.[0]?.produto?.nome || 'Produto não informado';
+    const cliente = pedido.cliente?.nome || 'Cliente não informado';
+    const endereco = pedido.endereco || 'Não informado';
+    const chavePix = pedido.revendedora?.chavePix || 'Não cadastrada';
+    
+    const mensagem = `Olá! Solicito o repasse do pedido:\n\n*Pedido:* #${pedido._id.slice(-6)}\n*Cliente:* ${cliente}\n*Produto:* ${produto}\n*Valor:* R$ ${valor}\n*Chave Pix:* ${chavePix}\n*Endereço:* ${endereco}`;
+    
+    window.open(`https://wa.me/${numeroSuporte}?text=${encodeURIComponent(mensagem)}`, '_blank');
+  };
+
   if (loading) return (
     <div className="p-8 text-center">
       <div className="w-12 h-12 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin mx-auto mb-4"></div>
@@ -69,17 +81,28 @@ export default function Pedidos() {
         <div className="text-center py-10 bg-white rounded-xl shadow-sm"><ClipboardText size={48} className="mx-auto text-texto/20 mb-3" /><p className="text-texto/60">Nenhum pedido encontrado.</p><Link to="/pedidos/novo" className="text-primaria font-semibold underline mt-2 inline-block">Registrar primeiro pedido</Link></div>
       ) : (
         <div className="space-y-3">
-          {pedidosFiltrados.map((pedido) => (
-            <div key={pedido._id} className="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="flex-1"><p className="font-bold text-lg">{pedido.cliente?.nome || 'Cliente não informado'}</p><p className="text-sm text-texto/60">{pedido.cliente?.telefone}</p><p className="text-xs text-texto/40 mt-1">Pedido #{pedido._id.slice(-6)}</p></div>
-              <div className="flex items-center gap-4">
-                <span className="font-bold text-primaria">R$ {pedido.total ? pedido.total.toFixed(2) : '0.00'}</span>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusMap[pedido.status]?.cor}`}>{statusMap[pedido.status]?.label}</span>
-                <Link to={`/pedidos/${pedido._id}`} className="text-primaria hover:underline flex items-center gap-1"><Eye size={18} /> Ver</Link>
-                {(pedido.status === 'cancelado' || pedido.status === 'entregue') && <button onClick={() => setDeleteTarget(pedido._id)} className="text-red-500 hover:text-red-700 transition"><Trash size={18} /></button>}
+          {pedidosFiltrados.map((pedido) => {
+            const isPix = pedido.paymentId && pedido.paymentId !== '';
+            const isPago = pedido.status === 'pago';
+            const mostrarBotaoRepasse = isPix && isPago;
+            
+            return (
+              <div key={pedido._id} className="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex-1"><p className="font-bold text-lg">{pedido.cliente?.nome || 'Cliente não informado'}</p><p className="text-sm text-texto/60">{pedido.cliente?.telefone}</p><p className="text-xs text-texto/40 mt-1">Pedido #{pedido._id.slice(-6)}</p></div>
+                <div className="flex items-center gap-4 flex-wrap">
+                  <span className="font-bold text-primaria">R$ {pedido.total ? pedido.total.toFixed(2) : '0.00'}</span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusMap[pedido.status]?.cor}`}>{statusMap[pedido.status]?.label}</span>
+                  <Link to={`/pedidos/${pedido._id}`} className="text-primaria hover:underline flex items-center gap-1"><Eye size={18} /> Ver</Link>
+                  {mostrarBotaoRepasse && (
+                    <button onClick={() => solicitarRepasse(pedido)} className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 hover:bg-green-600 transition">
+                      <WhatsappLogo size={16} weight="fill" /> Solicitar Repasse
+                    </button>
+                  )}
+                  {(pedido.status === 'cancelado' || pedido.status === 'entregue') && <button onClick={() => setDeleteTarget(pedido._id)} className="text-red-500 hover:text-red-700 transition"><Trash size={18} /></button>}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
       <ConfirmModal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} title="Excluir Pedido" message="Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita." confirmText="Excluir" />
