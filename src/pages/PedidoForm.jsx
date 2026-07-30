@@ -39,7 +39,9 @@ export default function PedidoForm() {
         reset({
           cliente: data.cliente?._id || '',
           itens: data.itens.map((item) => ({
-            produto: item.produto, quantidade: item.quantidade, precoUnitario: item.precoUnitario
+            produto: item.produto._id || item.produto,
+            quantidade: item.quantidade,
+            precoUnitario: item.precoUnitario
           })),
           status: data.status
         });
