@@ -36,7 +36,7 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
   };
 
   const mensagemWhatsApp = lojaWhatsapp && pedidoDetalhes
-    ? `Olá! Acabei de fazer um pedido no valor de R$ ${pedidoDetalhes.total.toFixed(2)} e gostaria de confirmar a entrega.`
+    ? `Olá! Acabei de fazer um pedido no valor de R$ ${pedidoDetalhes.total.toFixed(2)}. Segue o comprovante de pagamento em anexo.`
     : '';
 
   return (
@@ -47,19 +47,28 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
             <CheckCircle size={64} className="mx-auto text-sucesso mb-4" weight="fill" />
             <h3 className="font-titulo text-xl text-primaria mb-2">Pagamento confirmado!</h3>
             <p className="text-texto/50 mb-4">Seu pedido foi aprovado e a loja já foi notificada.</p>
+            
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+              <p className="text-sm text-amber-800 font-semibold mb-1">📎 Não se esqueça!</p>
+              <p className="text-xs text-amber-700">
+                Envie o comprovante de pagamento para a loja pelo WhatsApp abaixo. Isso ajuda a agilizar a confirmação e entrega do seu pedido.
+              </p>
+            </div>
+
             <div className="bg-fundo rounded-xl p-4 text-left space-y-2 mb-6">
               <p className="text-sm"><strong>Produto:</strong> {pedidoDetalhes.itens?.[0]?.produto?.nome || 'Produto'}</p>
               <p className="text-sm"><strong>Total:</strong> R$ {pedidoDetalhes.total.toFixed(2)}</p>
               <p className="text-sm"><strong>Endereço:</strong> {pedidoDetalhes.endereco || 'Não informado'}</p>
             </div>
+            
             {lojaWhatsapp && (
               <a
                 href={`https://wa.me/${lojaWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensagemWhatsApp)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold inline-flex items-center gap-2 hover:bg-green-600 transition"
+                className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold inline-flex items-center justify-center gap-2 hover:bg-green-600 transition"
               >
-                <WhatsappLogo size={20} weight="fill" /> Falar com a loja
+                <WhatsappLogo size={20} weight="fill" /> Enviar comprovante para a loja
               </a>
             )}
             <button
@@ -97,9 +106,7 @@ export default function PixModal({ isOpen, qrCodeBase64, qrCodeText, onClose, pa
               </button>
             </div>
             
-            <p className="text-xs text-texto/40 mt-6">
-              O pagamento é processado pelo Mercado Pago. Em caso de dúvidas, entre em contato com a loja.
-            </p>
+            <p className="text-xs text-texto/40 mt-6">O pagamento é processado pelo Mercado Pago.</p>
           </>
         )}
       </div>
