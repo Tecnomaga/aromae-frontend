@@ -12,8 +12,6 @@ import {
   ChartBar, 
   ArrowRight, 
   CheckCircle,
-  ShieldCheck,
-  FileCsv,
   CreditCard
 } from 'phosphor-react';
 
@@ -35,7 +33,6 @@ const scaleOnHover = {
 };
 
 export default function Landing() {
-  // Aquece o servidor silenciosamente assim que a landing page carrega
   useEffect(() => {
     api.get('/health').catch(() => {});
   }, []);
@@ -237,7 +234,7 @@ export default function Landing() {
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Todos os recursos do plano Básico</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Relatórios de lucro</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Exportação CSV</li>
-              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Checkout Pix (vendas diretas)</li>
+              <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Checkout Pix (repasse manual)</li>
             </ul>
             <Link to="/cadastro" className="mt-8 block w-full bg-primaria text-white py-3 rounded-xl font-semibold text-center hover:bg-primaria/90 active:scale-95 transition-all shadow-lg">
               Assinar Pro
@@ -257,7 +254,7 @@ export default function Landing() {
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Todos os recursos do plano Pro</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Múltiplos usuários</li>
               <li className="flex items-center gap-3"><CheckCircle size={20} className="text-sucesso" weight="fill" /> Suporte prioritário</li>
-              <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Checkout Pix + comissão reduzida</li>
+              <li className="flex items-center gap-3"><Sparkle size={20} className="text-secundaria" weight="fill" /> Checkout Pix + comissão reduzida (repasse manual)</li>
             </ul>
             <Link to="/cadastro" className="mt-8 block w-full bg-primaria text-white py-3 rounded-xl font-semibold text-center hover:bg-primaria/90 active:scale-95 transition-all shadow-md">
               Assinar Premium
@@ -274,7 +271,7 @@ export default function Landing() {
               'Preciso de um site separado?',
               'Como funciona o período de teste?',
               'Posso cancelar quando quiser?',
-              'Qual a comissão da plataforma?',
+              'Como recebo o dinheiro das vendas via Pix?',
               'O sistema funciona no celular?'
             ].map((q, i) => (
               <motion.details 
@@ -297,7 +294,7 @@ export default function Landing() {
                   {i === 0 && 'Não! O Aromaê cria sua vitrine automaticamente. Você só compartilha o link.'}
                   {i === 1 && 'Você tem 3 dias grátis para testar todos os recursos. Depois, escolhe um plano para continuar.'}
                   {i === 2 && 'Sim! Você pode cancelar a qualquer momento. Não há fidelidade.'}
-                  {i === 3 && 'A Aromaê cobra uma taxa de 5% sobre as vendas realizadas via Checkout Pix (exclusivo dos planos Pro e Premium). A taxa é descontada automaticamente no momento da venda. Não há custo adicional para o cliente.'}
+                  {i === 3 && 'Após o pagamento ser confirmado, você solicita o repasse pelo WhatsApp do suporte Aromaê. A transferência é feita para sua chave Pix em até 24 horas úteis, com desconto das taxas da plataforma e do Mercado Pago.'}
                   {i === 4 && 'Sim! O Aromaê é 100% responsivo e pode ser usado pelo navegador do celular.'}
                 </motion.div>
               </motion.details>
