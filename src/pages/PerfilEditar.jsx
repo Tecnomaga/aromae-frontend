@@ -18,7 +18,6 @@ export default function PerfilEditar() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
 
-  // Campos de alteração de senha
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -117,7 +116,6 @@ export default function PerfilEditar() {
 
       {erro && <p className="text-red-500 mb-4">{erro}</p>}
 
-      {/* Formulário de perfil */}
       <form onSubmit={handleSubmitPerfil} className="bg-white p-6 rounded-2xl shadow-sm space-y-4 mb-6">
         <div className="text-center">
           <div className="w-24 h-24 mx-auto rounded-full bg-primaria/10 flex items-center justify-center overflow-hidden mb-2">
@@ -163,9 +161,9 @@ export default function PerfilEditar() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-1">Chave Pix para recebimento</label>
+          <label className="block text-sm font-semibold mb-1">Chave Pix para receber repasses</label>
           <input type="text" name="chavePix" value={form.chavePix} onChange={handleChange} placeholder="CPF, e-mail, telefone ou chave aleatória" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
-          <p className="text-xs text-texto/50 mt-1">O valor líquido das vendas será enviado automaticamente para esta chave.</p>
+          <p className="text-xs text-texto/50 mt-1">Chave usada para receber os repasses manuais das vendas via Pix. O suporte Aromaê fará a transferência após a solicitação.</p>
         </div>
 
         <button type="submit" disabled={loading} className="w-full bg-primaria text-white py-3 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50">
@@ -173,39 +171,16 @@ export default function PerfilEditar() {
         </button>
       </form>
 
-      {/* Seção de alteração de senha */}
       <div className="bg-white p-6 rounded-2xl shadow-sm">
         <h2 className="font-bold text-lg flex items-center gap-2 mb-4">
           <LockKey size={20} className="text-primaria" /> Alterar senha
         </h2>
         {erroSenha && <p className="text-red-500 text-sm mb-3">{erroSenha}</p>}
         <form onSubmit={handleAlterarSenha} className="space-y-3">
-          <input
-            type="password"
-            placeholder="Senha atual"
-            value={senhaAtual}
-            onChange={(e) => setSenhaAtual(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
-          <input
-            type="password"
-            placeholder="Nova senha (mín. 6 caracteres)"
-            value={novaSenha}
-            onChange={(e) => setNovaSenha(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
-          <input
-            type="password"
-            placeholder="Confirmar nova senha"
-            value={confirmarSenha}
-            onChange={(e) => setConfirmarSenha(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria"
-          />
-          <button
-            type="submit"
-            disabled={alterandoSenha}
-            className="w-full bg-primaria text-white py-2 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50"
-          >
+          <input type="password" placeholder="Senha atual" value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <input type="password" placeholder="Nova senha (mín. 6 caracteres)" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <input type="password" placeholder="Confirmar nova senha" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primaria" />
+          <button type="submit" disabled={alterandoSenha} className="w-full bg-primaria text-white py-2 rounded-lg font-semibold hover:bg-primaria/90 transition disabled:opacity-50">
             {alterandoSenha ? 'Alterando...' : 'Alterar senha'}
           </button>
         </form>
