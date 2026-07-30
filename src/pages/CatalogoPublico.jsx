@@ -28,7 +28,7 @@ export default function CatalogoPublico() {
   const [enderecoModalAberto, setEnderecoModalAberto] = useState(false);
   const [detalhesModalAberto, setDetalhesModalAberto] = useState(false);
   const [ordenacao, setOrdenacao] = useState('recentes');
-  const [termoBusca, setTermoBusca] = useState(''); // estado separado para a busca submetida
+  const [termoBusca, setTermoBusca] = useState('');
 
   const sentinelRef = useRef(null);
   const observerRef = useRef(null);
@@ -67,32 +67,22 @@ export default function CatalogoPublico() {
     }
   }, [slug, termoBusca, ordenacao]);
 
-  // Carrega produtos iniciais e ao mudar ordenação
-  useEffect(() => {
-    carregarProdutos(1, true);
-  }, [carregarProdutos]);
+  useEffect(() => { carregarProdutos(1, true); }, [carregarProdutos]);
 
-  // Scroll infinito
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
     if (!hasMore || loading || loadingMore) return;
-
     const observer = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore && !loadingMore) {
         carregarProdutos(page + 1, false);
       }
     }, { threshold: 0.1 });
-
     if (sentinelRef.current) observer.observe(sentinelRef.current);
     observerRef.current = observer;
-
     return () => observer.disconnect();
   }, [hasMore, loading, loadingMore, page, carregarProdutos]);
 
-  const handleBuscaSubmit = (e) => {
-    e.preventDefault();
-    setTermoBusca(busca); // aplica o termo digitado
-  };
+  const handleBuscaSubmit = (e) => { e.preventDefault(); setTermoBusca(busca); };
 
   useEffect(() => {
     const cart = localStorage.getItem(`cart_${slug}`);
@@ -106,33 +96,25 @@ export default function CatalogoPublico() {
     toast.success(`${produto.nome} adicionado à lista!`);
   };
 
-  const limparCarrinho = () => {
-    setCarrinho([]);
-    localStorage.removeItem(`cart_${slug}`);
-  };
+  const limparCarrinho = () => { setCarrinho([]); localStorage.removeItem(`cart_${slug}`); };
 
   const gerarMensagemCarrinho = () => {
     if (carrinho.length === 0) return '';
     let texto = `Olá! Tenho interesse nos seguintes perfumes:\n\n`;
-    carrinho.forEach((p, i) => {
-      texto += `${i+1}. ${p.nome} (Ref: ${p._id.slice(-6)}) - R$ ${p.preco?.toFixed(2) || '0.00'}\n`;
-    });
+    carrinho.forEach((p, i) => { texto += `${i+1}. ${p.nome} (Ref: ${p._id.slice(-6)}) - R$ ${p.preco?.toFixed(2) || '0.00'}\n`; });
     return texto;
   };
 
   const compartilhar = () => {
     const url = window.location.href;
-    if (navigator.share) { navigator.share({ title: loja?.nomeLoja, url }); } 
+    if (navigator.share) { navigator.share({ title: loja?.nomeLoja, url }); }
     else { navigator.clipboard.writeText(url); toast.success('Link copiado!'); }
   };
 
   const gerarMensagemWhatsApp = (produto) => {
     const texto = `Olá! Tenho interesse no *${produto.nome}* (Ref: ${produto._id.slice(-6)}). Pode me ajudar?`;
     const numero = loja?.telefone?.replace(/\D/g, '') || '';
-    if (!numero) {
-      toast.error('Esta loja ainda não cadastrou um número de WhatsApp.');
-      return '#';
-    }
+    if (!numero) { toast.error('Esta loja ainda não cadastrou um número de WhatsApp.'); return '#'; }
     return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
   };
 
@@ -176,21 +158,15 @@ export default function CatalogoPublico() {
     } catch (error) {
       console.error('🔥 Erro ao gerar Pix:', error);
       let mensagem = 'Erro ao gerar Pix. Tente novamente.';
-      if (error.response && error.response.data) {
-        mensagem = error.response.data.message || mensagem;
-      } else if (error.request) {
-        mensagem = 'Erro de conexão com o servidor.';
-      }
+      if (error.response && error.response.data) mensagem = error.response.data.message || mensagem;
+      else if (error.request) mensagem = 'Erro de conexão com o servidor.';
       toast.error(mensagem);
     } finally {
       setPixLoading(false);
     }
   };
 
-  const abrirDetalhes = (produto) => {
-    setProdutoSelecionado(produto);
-    setDetalhesModalAberto(true);
-  };
+  const abrirDetalhes = (produto) => { setProdutoSelecionado(produto); setDetalhesModalAberto(true); };
 
   if (loading) return <div className="min-h-screen bg-fundo flex items-center justify-center">Carregando vitrine...</div>;
   if (erro) return (
@@ -208,7 +184,7 @@ export default function CatalogoPublico() {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="text-texto/60 hover:text-texto"><ArrowLeft size={24} /></button>
-          {loja?.fotoPerfil ? (<img src={loja.fotoPerfil} alt={loja.nomeLoja} className="w-12 h-12 rounded-full object-cover" />) : 
+          {loja?.fotoPerfil ? (<img src={loja.fotoPerfil} alt={loja.nomeLoja} className="w-12 h-12 rounded-full object-cover" />) :
             (<div className="w-12 h-12 rounded-full bg-primaria/10 flex items-center justify-center text-primaria font-titulo text-xl">{loja?.nomeLoja?.charAt(0) || 'A'}</div>)}
           <div className="flex-1">
             <h1 className="font-titulo text-2xl text-primaria">{loja?.nomeLoja}</h1>
@@ -218,13 +194,7 @@ export default function CatalogoPublico() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <select
-              value={ordenacao}
-              onChange={(e) => {
-                setOrdenacao(e.target.value);
-              }}
-              className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white"
-            >
+            <select value={ordenacao} onChange={(e) => { setOrdenacao(e.target.value); carregarProdutos(1, true, busca, e.target.value); }} className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white">
               <option value="recentes">Mais recentes</option>
               <option value="menor_preco">Menor preço</option>
               <option value="maior_preco">Maior preço</option>
@@ -235,13 +205,7 @@ export default function CatalogoPublico() {
         <form onSubmit={handleBuscaSubmit} className="px-4 pb-3">
           <div className="relative">
             <MagnifyingGlass size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-texto/30" />
-            <input
-              type="text"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar perfume ou marca..."
-              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria bg-white"
-            />
+            <input type="text" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar perfume ou marca..." className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primaria bg-white" />
           </div>
         </form>
       </header>
@@ -283,27 +247,12 @@ export default function CatalogoPublico() {
                       <h3 className="font-bold text-sm line-clamp-2">{produto.nome}</h3>
                     </button>
                     <p className="text-xs text-texto/50 mt-1">{produto.marca}</p>
-                    <p className="text-primaria font-bold text-lg mt-2">
-                      R$ {Number(produto.preco).toFixed(2)}
-                    </p>
-                    <button 
-                      onClick={() => {
-                        const url = gerarMensagemWhatsApp(produto);
-                        if (url !== '#') {
-                          window.open(url, '_blank');
-                        }
-                      }} 
-                      className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition"
-                    >
+                    <p className="text-primaria font-bold text-lg mt-2">R$ {Number(produto.preco).toFixed(2)}</p>
+                    <button onClick={() => { const url = gerarMensagemWhatsApp(produto); if (url !== '#') window.open(url, '_blank'); }} className="mt-2 w-full bg-green-500 text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-green-600 transition">
                       <WhatsappLogo size={18} weight="fill" /> Pedir
                     </button>
-                    
                     {isPremiumOrPro && (
-                      <button 
-                        onClick={() => abrirModalEndereco(produto)} 
-                        disabled={pixLoading}
-                        className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition"
-                      >
+                      <button onClick={() => abrirModalEndereco(produto)} disabled={pixLoading} className="mt-2 w-full bg-primaria text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-1 hover:bg-primaria/90 transition">
                         <CreditCard size={18} /> Comprar (Pix)
                       </button>
                     )}
@@ -311,13 +260,8 @@ export default function CatalogoPublico() {
                 </div>
               ))}
             </div>
-
             {hasMore && <div ref={sentinelRef} className="h-4" />}
-            {loadingMore && (
-              <div className="flex justify-center py-4">
-                <div className="w-8 h-8 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin" />
-              </div>
-            )}
+            {loadingMore && (<div className="flex justify-center py-4"><div className="w-8 h-8 rounded-full border-4 border-primaria/20 border-t-primaria animate-spin" /></div>)}
           </>
         )}
       </main>
@@ -349,29 +293,12 @@ export default function CatalogoPublico() {
       )}
 
       {pixModal && pixModal.isOpen && (
-        <PixModal
-          isOpen={pixModal.isOpen}
-          qrCodeBase64={pixModal.qrCodeBase64}
-          qrCodeText={pixModal.qrCodeText}
-          onClose={() => setPixModal(null)}
-          paymentId={pixModal.paymentId}
-          lojaWhatsapp={loja?.telefone}
-        />
+        <PixModal isOpen={pixModal.isOpen} qrCodeBase64={pixModal.qrCodeBase64} qrCodeText={pixModal.qrCodeText} onClose={() => setPixModal(null)} paymentId={pixModal.paymentId} lojaWhatsapp={loja?.telefone} />
       )}
 
-      <EnderecoModal
-        isOpen={enderecoModalAberto}
-        onClose={() => setEnderecoModalAberto(false)}
-        onConfirm={handleComprarAgora}
-        valorOriginal={Number(produtoSelecionado?.preco) || 0}
-        revendedoraId={loja?._id}
-      />
+      <EnderecoModal isOpen={enderecoModalAberto} onClose={() => setEnderecoModalAberto(false)} onConfirm={handleComprarAgora} valorOriginal={Number(produtoSelecionado?.preco) || 0} revendedoraId={loja?._id} />
 
-      <DetalhesProdutoModal
-        produto={produtoSelecionado}
-        isOpen={detalhesModalAberto}
-        onClose={() => setDetalhesModalAberto(false)}
-      />
+      <DetalhesProdutoModal produto={produtoSelecionado} isOpen={detalhesModalAberto} onClose={() => setDetalhesModalAberto(false)} />
     </div>
   );
 }
