@@ -171,6 +171,10 @@ export default function Onboarding() {
                 <CheckCircle size={20} /> {isSubmitting ? 'Salvando...' : 'Concluir e entrar na loja'}
               </button>
             </form>
+
+            <p className="text-xs text-purple-600 mt-4 text-center">
+              💡 <strong>Dica:</strong> Convide amigas para usar seu e-mail como código de indicação no cadastro e ganhe 10% de desconto vitalício!
+            </p>
           </div>
         )}
       </div>
