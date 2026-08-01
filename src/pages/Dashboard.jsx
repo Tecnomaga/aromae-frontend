@@ -121,6 +121,20 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Card de Indicação */}
+      <div className="card-sm mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200">
+        <div className="flex items-center gap-4">
+          <span className="text-3xl">👯</span>
+          <div className="flex-1">
+            <p className="font-semibold text-purple-700">Indique amigas e ganhe 10% de desconto!</p>
+            <p className="text-xs text-purple-600">
+              Peça para elas usarem seu e-mail <strong>{user?.email}</strong> no campo "Código de indicação" durante o cadastro. 
+              Você ganha 10% de desconto vitalício enquanto elas mantiverem a assinatura ativa!
+            </p>
+          </div>
+        </div>
+      </div>
+
       {user?.slug && (
         <div className="card-sm mb-8 flex items-center justify-between">
           <div>
